@@ -13,12 +13,12 @@ using HLPC.Views;
 namespace HLPC.Views
 {
 
-    public partial class MainWindow : ReactiveWindow<SomeViewModel>
+    public partial class MainWindow : ReactiveWindow<MainViewModel>
     {
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new SomeViewModel();
+            DataContext = new MainViewModel();
         }
 
 

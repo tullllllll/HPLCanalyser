@@ -11,12 +11,12 @@ using ReactiveUI;
 
 namespace HLPC.ViewModels
 {
-    public class SomeViewModel : ReactiveObject
+    public class MainViewModel : ReactiveObject
     {
         public ICommand UploadFileCommand { get; }
         public string uploadFile { get; } = "Upload file";
 
-        public SomeViewModel()
+        public MainViewModel()
         {
             UploadFileCommand = ReactiveCommand.CreateFromTask(UploadFileAsync);
         }
