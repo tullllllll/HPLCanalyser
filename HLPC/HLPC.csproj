@@ -12,11 +12,17 @@
     <Compile Remove="Model\**" />
     <EmbeddedResource Remove="Model\**" />
     <None Remove="Model\**" />
+    <Compile Update="Views\MainWindow.axaml.cs">
+      <DependentUpon>MainWindow.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="Avalonia" Version="11.2.1" />
+    <PackageReference Include="Avalonia" Version="11.2.5" />
     <PackageReference Include="Avalonia.Desktop" Version="11.2.1" />
+    <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.5" />
+    <PackageReference Include="Avalonia.ReactiveUI.Events" Version="0.10.22" />
     <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.1" />
     <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.1" />
     <!--Condition below is needed to remove Avalonia.Diagnostics package from build output in Release configuration.-->
@@ -25,10 +31,10 @@
       <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
     </PackageReference>
     <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-rc5.4" />
+    <PackageReference Include="ReactiveUI" Version="20.2.45" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Models\" />
     <Folder Include="Controls\" />
     <Folder Include="Resources\" />
     <Folder Include="Services\" />
