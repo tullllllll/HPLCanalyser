@@ -34,7 +34,7 @@ namespace HLPC.ViewModels
                 SuggestedStartLocation = suggestedStartLocation,
                 Title = "Open Text File",
                 AllowMultiple = false,
-                FileTypeFilter = GetFileTypeList()
+                FileTypeFilter = GetFileTypeList(),
             });
 
             var file = files.FirstOrDefault();
@@ -49,13 +49,10 @@ namespace HLPC.ViewModels
 
         public List<FilePickerFileType> GetFileTypeList()
         {
-            
-            
-            return new List<FilePickerFileType>
-            {
-                new FilePickerFileType("Text Files") { Patterns = new[] { "*.txt" } },
-                new FilePickerFileType("CSV Files") { Patterns = new[] { "*.csv" } }
-            };
+            //list wont initialise in constructor
+            List <FilePickerFileType> fileTypeList = new List<FilePickerFileType>();
+            fileTypeList.Add(new FilePickerFileType(".txt and .csv"){ Patterns = new[] { "*.txt", "*.csv" } } );
+            return fileTypeList;
         }
     }
 }

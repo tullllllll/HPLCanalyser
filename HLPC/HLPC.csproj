@@ -39,4 +39,9 @@
     <Folder Include="Resources\" />
     <Folder Include="Services\" />
   </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Assets\logo.png" />
+    <AvaloniaResource Include="Assets\logo.png" />
+  </ItemGroup>
 </Project>
