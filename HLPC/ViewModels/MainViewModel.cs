@@ -16,6 +16,11 @@ namespace HLPC.ViewModels
         public ICommand UploadFileCommand { get; }
         public string uploadFile { get; } = "Upload file";
 
+        public static FilePickerFileType FileTypes { get; } = new(".txt and .csv")
+        {
+            Patterns = new[] { "*.txt", "*.csv" }
+        };
+
         public MainViewModel()
         {
             UploadFileCommand = ReactiveCommand.CreateFromTask(UploadFileAsync);
@@ -23,7 +28,11 @@ namespace HLPC.ViewModels
 
         private async Task UploadFileAsync()
         {
-            var topLevel = TopLevel.GetTopLevel(Avalonia.Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop ? desktop.MainWindow : null);
+            var topLevel =
+                TopLevel.GetTopLevel(
+                    Avalonia.Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
+                        ? desktop.MainWindow
+                        : null);
             if (topLevel == null) return;
 
             var documentsFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
@@ -34,7 +43,7 @@ namespace HLPC.ViewModels
                 SuggestedStartLocation = suggestedStartLocation,
                 Title = "Open Text File",
                 AllowMultiple = false,
-                FileTypeFilter = GetFileTypeList(),
+                FileTypeFilter = new[] { FileTypes },
             });
 
             var file = files.FirstOrDefault();
@@ -45,14 +54,6 @@ namespace HLPC.ViewModels
 
             var fileContent = await streamReader.ReadToEndAsync();
             // Add code here to process the content of the file.
-        }
-
-        public List<FilePickerFileType> GetFileTypeList()
-        {
-            //list wont initialise in constructor
-            List <FilePickerFileType> fileTypeList = new List<FilePickerFileType>();
-            fileTypeList.Add(new FilePickerFileType(".txt and .csv"){ Patterns = new[] { "*.txt", "*.csv" } } );
-            return fileTypeList;
         }
     }
 }
