@@ -15,7 +15,7 @@
 	</Window.DataContext>
 
 	<StackPanel>
-		<TextBlock Text="{Binding tekst}"/>
+		<TextBlock Text="{Binding tekst}" HorizontalAlignment="Center"/>
 		<lvc:CartesianChart Height="300" Width="500" HorizontalAlignment="Center" VerticalAlignment="Center" Background="White"
             Series="{Binding Series}">
 		</lvc:CartesianChart>
