@@ -1,0 +1,27 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:HLPC.Views"
+        xmlns:viewModels="clr-namespace:HLPC.ViewModels"
+        mc:Ignorable="d"
+        d:DesignWidth="800" d:DesignHeight="450"
+        x:Class="HLPC.Views.MainWindow"
+        Title="HLPC"
+        x:DataType="viewModels:MainViewModel">
+
+    <StackPanel>
+        <StackPanel>
+            <Image Margin="20" Height="200" Width="100" Source="avares://HLPC/Assets/logo.png" />
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="80">
+            <Button Command="{Binding UploadFileCommand}"
+                    Content="{Binding uploadFile}"
+                    FontSize="25"
+                    Background="Purple"
+                    Foreground="White"
+                    FontWeight="UltraLight" />
+        </StackPanel>
+    </StackPanel>
+
+</Window>
