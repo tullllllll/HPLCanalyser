@@ -20,22 +20,13 @@ namespace HLPC
         }
         private void SetupDatabase()
         {
-            try
+            
+            using (var db = new HplcDbContext())
             {
-                var options = new DbContextOptionsBuilder<HplcDbContext>()
-                    .UseNpgsql("Host=127.0.0.1;Port=5432;Database=postgres;User Id=postgres;Password=Miella-61!;")
-                    .Options;
-
-                DbContext = new HplcDbContext(options);
-                DbContext.Database.EnsureCreated(); // Ensures DB exists
-                DbContext.Products.Add(new Product(){Id = 1,Name = "Joehoe", Price = 0.99m});
-                DbContext.SaveChanges();
+                //db.Database.EnsureDeleted();
+                db.Database.EnsureCreated();
                 Debug.WriteLine("Database setup complete!");
-            }
-            catch (Exception ex)
-            {
-                Debug.WriteLine($"Database setup failed: {ex.Message}");
-            }
+            }  
         }
 
         public override void OnFrameworkInitializationCompleted()
