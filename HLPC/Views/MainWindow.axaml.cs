@@ -1,9 +1,9 @@
-using Avalonia.ReactiveUI;
+using Avalonia.Controls;
 using HLPC.ViewModels;
 
 namespace HLPC.Views
 {
-    public partial class MainWindow : ReactiveWindow<MainViewModel>
+    public partial class MainWindow : Window
     {
         public MainWindow()
         {
