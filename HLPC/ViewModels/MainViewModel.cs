@@ -1,5 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -8,13 +9,16 @@ using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
 using ReactiveUI;
+using HLPC.Models;
+using DataSet = HLPC.Models.DataSet;
 
 namespace HLPC.ViewModels
 {
     public class MainViewModel : ReactiveObject
     {
         public ICommand UploadFileCommand { get; }
-        public string uploadFile { get; } = "Upload file";
+        public string UploadFile { get; } = "New DataSet";
+        public ObservableCollection<DataSet> RecentDataSets { get; }
 
         public static FilePickerFileType FileTypes { get; } = new(".txt and .csv")
         {
@@ -24,6 +28,14 @@ namespace HLPC.ViewModels
         public MainViewModel()
         {
             UploadFileCommand = ReactiveCommand.CreateFromTask(UploadFileAsync);
+            RecentDataSets = new ObservableCollection<DataSet>
+            {
+                new DataSet { ID = 1, Name = "Dataset 1", Date_Added = DateTime.Now.AddDays(-2), Machine_Type = "Machine 1"},
+                new DataSet { ID = 2, Name = "Dataset 2", Date_Added = DateTime.Now.AddDays(-3), Machine_Type = "Machine 2"},
+                new DataSet { ID = 3, Name = "Dataset 3", Date_Added = DateTime.Now.AddDays(-4), Machine_Type = "Machine 2"},
+                new DataSet { ID = 4, Name = "Dataset 4", Date_Added = DateTime.Now.AddDays(-5), Machine_Type = "Machine 1"},
+                new DataSet { ID = 5, Name = "Dataset 5", Date_Added = DateTime.Now.AddDays(-6), Machine_Type = "Machine 2"}
+            };
         }
 
         private async Task UploadFileAsync()
