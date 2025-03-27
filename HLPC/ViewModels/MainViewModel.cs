@@ -27,11 +27,12 @@ namespace HLPC.ViewModels
                 OnPropertyChanged(nameof(CurrentPage));
             }
         }
+        
         public static FilePickerFileType FileTypes { get; } = new(".txt and .csv")
         {
             Patterns = new[] { "*.txt", "*.csv" }
         };
-        
+
         private DataSet _dataSet;
         
         public DataSet DataSet
@@ -90,7 +91,12 @@ namespace HLPC.ViewModels
             // Set default page to home
             CurrentPage = new HomeWindow(this);
         }
-        
+
+        public void MainViewModel2()
+        {
+            UploadFileCommand = ReactiveCommand.CreateFromTask(UploadFileAsync);
+        }
+
         private async Task UploadFileAsync()
         {
             var topLevel =
