@@ -52,7 +52,7 @@ namespace HLPC.ViewModels
         public List<DataSet> RecentDataSets { get; }
         
         // Button Commands
-        public ICommand UploadFileCommand { get; }
+        public ICommand UploadFileCommand { get; set;}
         public ICommand NavigateCommand { get; }
         
         public MainViewModel()
