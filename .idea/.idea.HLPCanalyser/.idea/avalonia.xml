@@ -5,6 +5,9 @@
       <map>
         <entry key="HLPC/App.axaml" value="HLPC/HLPC.csproj" />
         <entry key="HLPC/ViewModels/MainWindow.axaml" value="HLPC/HLPC.csproj" />
+        <entry key="HLPC/Views/GraphWindow.axaml" value="HLPC/HLPC.csproj" />
+        <entry key="HLPC/Views/HomeWindow.axaml" value="HLPC/HLPC.csproj" />
+        <entry key="HLPC/Views/MainWindow.axaml" value="HLPC/HLPC.csproj" />
       </map>
     </option>
   </component>
