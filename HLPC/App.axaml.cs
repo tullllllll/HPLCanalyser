@@ -37,6 +37,13 @@ public partial class App : Application
                 Name = "Sample Product",
                 Price = 9.99m
             });
+
+            db.DataSet.Add(new DataSet
+            {
+                Name = "Sample DataSet",
+                Date_Added = DateTime.Now,
+
+            });
             db.SaveChanges();
         }  
       
