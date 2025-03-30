@@ -1,21 +1,19 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using HLPC.Models;
+using SQLitePCL;
 
-using HLPC.Models;
+
 
 namespace HLPC.Data
 {
     public class HplcDbContext : DbContext
     {
         public DbSet<Product> Products { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseNpgsql("Host=127.0.0.1;Port=5432;Database=postgres;User Id=postgres;Password=****;");
-                
-                
-            }
+            Batteries.Init();
+            optionsBuilder.UseSqlite("Data Source=app.db");
         }
     }
 }
