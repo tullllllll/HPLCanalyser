@@ -1,4 +1,6 @@
-﻿using Avalonia.Controls;
+﻿using System.Linq;
+using Avalonia.Controls;
+using HLPC.Data;
 using HLPC.ViewModels;
 
 namespace HLPC.Views;

@@ -28,16 +28,9 @@ public partial class GraphWindow : UserControl
             ID = 1, 
             Name = "Dataset 1", 
             Date_Added = DateTime.Now.AddDays(-2), 
-            Variables = new List<Variable>
+            DataPoints = new List<DataPoint>
             {
-                new Variable{ ID = 1, DataSetID = 1, Type = "string", Value = "Some Value 1"},
-                new Variable{ ID = 2, DataSetID = 1, Type = "string", Value = "Some Value 2"},
-                new Variable{ ID = 3, DataSetID = 1, Type = "string", Value = "Some Value 3"},
-                new Variable{ ID = 4, DataSetID = 1, Type = "string", Value = "Some Value 4"},
-                new Variable{ ID = 5, DataSetID = 1, Type = "string", Value = "Some Value 5"},
-                new Variable{ ID = 6, DataSetID = 1, Type = "string", Value = "Some Value 6"},
-                new Variable{ ID = 7, DataSetID = 1, Type = "string", Value = "Some Value 7"},
-                new Variable{ ID = 8, DataSetID = 1, Type = "string", Value = "Some Value 8"},
+                new DataPoint{ ID = 1, DataSetID = 1, Time = 0.008333, Value = 3}
             }};
 
         viewModel.SetDataSet(_dataSet);
@@ -53,11 +46,9 @@ public partial class GraphWindow : UserControl
             ID = 1, 
             Name = "Dataset 1", 
             Date_Added = DateTime.Now.AddDays(-2), 
-            Variables = new List<Variable>
+            DataPoints = new List<DataPoint>
             {
-                new Variable{ ID = 1, DataSetID = 1, Type = "string", Value = "Some Value 1"},
-                new Variable{ ID = 2, DataSetID = 1, Type = "string", Value = "Some Value 2"},
-                new Variable{ ID = 3, DataSetID = 1, Type = "string", Value = "Some Value 3"},
+                new DataPoint{ ID = 1, DataSetID = 1, Time = 0.03, Value = 6}
             }};
         
         this.DataContext = this;
