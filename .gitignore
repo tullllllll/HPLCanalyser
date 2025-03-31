@@ -363,3 +363,4 @@ MigrationBackup/
 FodyWeavers.xsd
 HLPC/app.db-shm
 HLPC/app.db-wal
+/.idea
