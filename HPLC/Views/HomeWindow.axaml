@@ -1,0 +1,55 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:HPLC.ViewModels"
+             x:Class="HPLC.Views.HomeWindow"
+             x:DataType="vm:MainViewModel">
+    <StackPanel>
+        <StackPanel>
+            <Image Margin="20 10 20 0" Height="300" Width="300" Source="avares://HPLC/Assets/logo.png" />
+            <TextBlock Text="HPLC Data Analyser" TextAlignment="Center" FontSize="50"></TextBlock>
+        </StackPanel>
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="60">
+            <StackPanel>
+                <TextBlock HorizontalAlignment="Center" FontSize="25" Text="Recent DataSets"></TextBlock>
+                <ItemsControl ItemsSource="{Binding RecentDataSets}" Margin="20">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Horizontal"></StackPanel>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Button Cursor="Hand" Background="Transparent" BorderBrush="Purple" BorderThickness="2" CornerRadius="5" Padding="0" Margin="5">
+                                <StackPanel Orientation="Vertical" Margin="5">
+                                    <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                    <TextBlock Text="{Binding Date_Added}" HorizontalAlignment="Center"/>
+                                </StackPanel>
+                            </Button>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </StackPanel>
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal">
+                <Button Command="{Binding UploadFileCommand}"
+                        Content="Upload File"
+                        FontSize="25"
+                        Background="Purple"
+                        Foreground="White"
+                        FontWeight="UltraLight"
+                        HorizontalAlignment="Center"
+                        Margin="10 20"
+                        Cursor="Hand"/>
+                <Button Command="{Binding NavigateCommand}" 
+                        CommandParameter="Graph"
+                        Content="Without DataSet"
+                        FontSize="25"
+                        Background="Purple"
+                        Foreground="White"
+                        FontWeight="UltraLight"
+                        HorizontalAlignment="Center"
+                        Margin="10 20"
+                        Cursor="Hand"/>
+            </StackPanel>
+        </StackPanel>
+    </StackPanel>
+</UserControl>

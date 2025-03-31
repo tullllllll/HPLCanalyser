@@ -1,0 +1,76 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:HPLC.ViewModels"
+             xmlns:views="clr-namespace:HPLC.Views"
+             x:Class="HPLC.Views.GraphWindow"
+             x:DataType="vm:MainViewModel">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        <Grid Grid.Column="0" x:Name="DataSetViewer">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="Auto"></RowDefinition>
+            </Grid.RowDefinitions>
+            
+            <ScrollViewer Grid.Row="0">
+                <StackPanel>
+                    <ItemsControl ItemsSource="{Binding AllDataSets}">
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Button Cursor="Hand" 
+                                        Background="Transparent"
+                                        Padding="0" Margin="0 0 0 5"
+                                        Width="200">
+                                    <StackPanel Orientation="Vertical" Margin="5">
+                                        <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" FontWeight="Bold"/>
+                                        <TextBlock Text="{Binding Date_Added}" HorizontalAlignment="Center"/>
+                                    </StackPanel>
+                                </Button>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </StackPanel>
+            </ScrollViewer>
+            
+            <Button Grid.Row="1" 
+                    Command="{Binding UploadFileCommand}"
+                    VerticalAlignment="Bottom"
+                    Content="Upload File"
+                    FontSize="25"
+                    Background="Purple"
+                    Foreground="White"
+                    FontWeight="UltraLight"
+                    Width="200"
+                    Cursor="Hand"/>
+        </Grid>
+        
+        <Grid Grid.Column="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*" />
+                <RowDefinition Height="200" />
+            </Grid.RowDefinitions>
+            
+            <Border Grid.Row="0" BorderBrush="Transparent" BorderThickness="0" x:Name="MainGraph">
+           
+                <StackPanel>
+                    <views:someGraph/>
+                </StackPanel>
+                
+                
+                
+                
+                
+            </Border>
+            
+            <DataGrid Grid.Row="1" x:Name="VariableTable" 
+                      ItemsSource="{Binding DataSet.DataPoints}"
+                      AutoGenerateColumns="True" IsReadOnly="True"
+                      GridLinesVisibility="All" 
+                      BorderThickness="1" BorderBrush="Gray">
+            </DataGrid>
+        </Grid>
+    </Grid>
+</UserControl>
