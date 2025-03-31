@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using Avalonia.Controls;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 
@@ -10,10 +11,19 @@ namespace HPLC.ViewModels
 
         public GraphViewModel()
         {
+            Control control = new Control();
+            
+            
             SeriesCollection = new ObservableCollection<ISeries>
             {
-                new LineSeries<double> { Values = new double[] { 3, 5, 7, 4, 2, 6 } },
+
+                new LineSeries<double>
+                {
+                    Values = new double[] { 3, 5, 7, 4, 2, 6 },
+
+                },
                 new LineSeries<double> { Values = new double[] { 5, 2, 8, 3, 7, 1 } }
+                
             };
         }
     }

@@ -11,6 +11,7 @@
         Width="1500"
         Height="800"
         Series="{Binding SeriesCollection}"
+        TooltipPosition="Hidden"
         ZoomMode="X">
     </lvc:CartesianChart>
 </UserControl>

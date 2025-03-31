@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="2bd2304b-ddc6-484d-a9dd-508e9a0840e2" name="Changes" comment="requirement tooltip hidden">
+      <change beforePath="$PROJECT_DIR$/HPLC/ViewModels/GraphViewModel.cs" beforeDir="false" afterPath="$PROJECT_DIR$/HPLC/ViewModels/GraphViewModel.cs" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/HPLC/Views/someGraph.axaml" beforeDir="false" afterPath="$PROJECT_DIR$/HPLC/Views/someGraph.axaml" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="MetaFilesCheckinStateConfiguration" checkMetaFiles="false" />
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "node.js.selected.package.tslint": "(autodetect)"
+  }
+}]]></component>
+  <component name="TaskManager">
+    <servers />
+  </component>
+  <component name="UnityCheckinConfiguration" checkUnsavedScenes="false" />
+  <component name="UnityProjectConfiguration" hasMinimizedUI="false" />
+</project>
