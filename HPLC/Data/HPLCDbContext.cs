@@ -1,24 +1,21 @@
-﻿using Microsoft.EntityFrameworkCore;
-using HLPC.Models;
+﻿using System;
+using System.IO;
+using Microsoft.EntityFrameworkCore;
+using HPLC.Models;
 
-using HLPC.Models;
-
-namespace HLPC.Data
+namespace HPLC.Data
 {
-    public class HplcDbContext : DbContext
+    public class HPLCDbContext : DbContext
     {
-        public DbSet<Product> Products { get; set; }
         public DbSet<DataSet> DataSet { get; set; }
-        public DbSet<DataPoint> DataPoints { get; set; }
         
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            if (!optionsBuilder.IsConfigured)
-            {
-                optionsBuilder.UseNpgsql("Host=127.0.0.1;Port=5432;Database=postgres;User Id=postgres;Password=****;");
-                
-                
-            }
+            // Potential issue when compiling: Routes outside of the debug folder
+            var projectRoot = Directory.GetParent(AppContext.BaseDirectory).Parent.Parent.Parent.FullName;
+            var dbPath = Path.Combine(projectRoot, "HPLC.db");
+
+            options.UseSqlite($"Data Source={dbPath}");
         }
     }
 }

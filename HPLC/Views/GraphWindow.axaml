@@ -1,7 +1,7 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             xmlns:vm="clr-namespace:HLPC.ViewModels"
-             x:Class="HLPC.Views.GraphWindow"
+             xmlns:vm="clr-namespace:HPLC.ViewModels"
+             x:Class="HPLC.Views.GraphWindow"
              x:DataType="vm:MainViewModel">
     <Grid>
         <Grid.ColumnDefinitions>
@@ -15,23 +15,6 @@
             </Grid.RowDefinitions>
             
             <ScrollViewer Grid.Row="0">
-                <StackPanel>
-                    <ItemsControl ItemsSource="{Binding AllDataSets}">
-                        <ItemsControl.ItemTemplate>
-                            <DataTemplate>
-                                <Button Cursor="Hand" 
-                                        Background="Transparent"
-                                        Padding="0" Margin="0 0 0 5"
-                                        Width="200">
-                                    <StackPanel Orientation="Vertical" Margin="5">
-                                        <TextBlock Text="{Binding Name}" HorizontalAlignment="Center" FontWeight="Bold"/>
-                                        <TextBlock Text="{Binding Date_Added}" HorizontalAlignment="Center"/>
-                                    </StackPanel>
-                                </Button>
-                            </DataTemplate>
-                        </ItemsControl.ItemTemplate>
-                    </ItemsControl>
-                </StackPanel>
             </ScrollViewer>
             
             <Button Grid.Row="1" 

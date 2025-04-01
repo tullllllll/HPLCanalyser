@@ -1,14 +1,13 @@
 using Avalonia.Controls;
-using HLPC.ViewModels;
+using HPLC.ViewModels;
 
-namespace HLPC.Views
+namespace HPLC.Views
 {
     public partial class MainWindow : Window
     {
         public MainWindow()
         {
             InitializeComponent();
-            DataContext = new MainViewModel();
         }
     }
 }

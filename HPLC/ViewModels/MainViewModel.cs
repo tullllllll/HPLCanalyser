@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
-using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,17 +8,19 @@ using System.Windows.Input;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Platform.Storage;
-using HLPC.Data;
 using ReactiveUI;
-using HLPC.Views;
-using DataSet = HLPC.Models.DataSet;
+using HPLC.Data;
+using HPLC.Models;
+using HPLC.Services;
+using HPLC.Views;
 
-namespace HLPC.ViewModels
+namespace HPLC.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
         // Variables
         private UserControl _currentPage;
+        
         public UserControl CurrentPage 
         { 
             get => _currentPage; 
@@ -30,9 +31,8 @@ namespace HLPC.ViewModels
             } 
         }
         
-        public static FilePickerFileType FileTypes { get; } = new(".txt and .csv")
-        {
-            Patterns = new[] { "*.txt", "*.csv" }
+        private static FilePickerFileType FileTypes { get; } = new(".txt and .csv") {
+            Patterns = ["*.txt", "*.csv"]
         };
 
         private DataSet _dataSet;
@@ -50,20 +50,26 @@ namespace HLPC.ViewModels
             }
         }
         
-        public List<DataSet> AllDataSets { get; set; }
-        public List<DataSet> RecentDataSets { get; set; }
+        public IEnumerable<DataSet> RecentDataSets { get; set; }
         
         // Button Commands
-        public ICommand UploadFileCommand { get; set;}
-        public ICommand NavigateCommand { get; }
-        private DatasetRepository _datasetRepository;
+        public ICommand UploadFileCommand { get; set; }
+        public ICommand NavigateCommand { get; set;  }
         
-        public MainViewModel()
+        // Services
+        private readonly SimpleKeyCRUDService<DataSet> _dataSetCrudService;
+        private readonly DataSetService _dataSetService;
+        
+        public MainViewModel(SimpleKeyCRUDService<DataSet> dataSetCrudService, DataSetService dataSetService)
         {
-            _datasetRepository = new DatasetRepository();
-            _datasetRepository.GetDataset();
-            AllDataSets = _datasetRepository.GetDataset();
-            RecentDataSets = AllDataSets.Take(5).ToList();
+            // for Dependency injection
+            _dataSetCrudService = dataSetCrudService;
+            _dataSetService = dataSetService;
+            
+            // Set variables
+            RecentDataSets = _dataSetCrudService.Get().ToList().Take(5);
+            
+            // Button Commands
             UploadFileCommand = ReactiveCommand.CreateFromTask(UploadFileAsync);
             NavigateCommand = ReactiveCommand.Create<object>(NavigateToPage);
             
@@ -98,40 +104,24 @@ namespace HLPC.ViewModels
             using var streamReader = new StreamReader(stream);
 
             var fileContent = await streamReader.ReadToEndAsync();
-            DatasetRepository datasetRepository = new DatasetRepository();
-            datasetRepository.ReadFile(file.Name,fileContent);
+            
+            _dataSetService.ReadFile(file.Name,fileContent);
             CurrentPage = new GraphWindow(this);
         }
 
         private void NavigateToPage(object page)
         {
-            _datasetRepository.GetDataset();
-            AllDataSets = _datasetRepository.GetDataset();
             if (page is string pageName)
             {
-                switch (pageName)
+                CurrentPage = pageName switch
                 {
-                    case "Home":
-                    {
-                        RecentDataSets = AllDataSets.Take(5).ToList();
-                        CurrentPage = new HomeWindow(this);
-                        
-                        break;
-                    }
-                    case "Graph":
-                    {
-                        CurrentPage = new GraphWindow(this);
-                        break;
-                    }
-                }
+                    "Home" => new HomeWindow(this),
+                    "Graph" => new GraphWindow(this),
+                    _ => CurrentPage
+                };
             }
         }
         
-        // Method to set DataSet in MainViewModel from GraphWindow
-        public void SetDataSet(DataSet dataSet)
-        {
-            DataSet = dataSet;
-        }
         public event PropertyChangedEventHandler PropertyChanged;
         protected void OnPropertyChanged(string propertyName) => 
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));

@@ -2,7 +2,7 @@
 using System;
 using Avalonia.ReactiveUI;
 
-namespace HLPC;
+namespace HPLC;
 
 class Program
 {

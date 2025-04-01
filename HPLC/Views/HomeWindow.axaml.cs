@@ -1,9 +1,9 @@
 ﻿using System.Linq;
 using Avalonia.Controls;
-using HLPC.Data;
-using HLPC.ViewModels;
+using HPLC.Data;
+using HPLC.ViewModels;
 
-namespace HLPC.Views;
+namespace HPLC.Views;
 
 public partial class HomeWindow : UserControl
 {

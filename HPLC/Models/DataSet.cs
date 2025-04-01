@@ -1,19 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 
-namespace HLPC.Models
+namespace HPLC.Models
 {
     public class DataSet
     {
-        // Backing field for Date_Added in UTC
-        private DateTime _dateAddedUtc;
-
+        [Key]
         public int ID { get; set; }
+        [Required]
         public string Name { get; set; }
-
-        // Property for Date_Added that returns Local Time (for UI purposes)
+        [Required]
         public DateTime Date_Added { get; set; }
-
-        public List<DataPoint> DataPoints { get; set; }
+        public ICollection<DataPoint> DataPoints { get; set; } = [];
     }
 }
