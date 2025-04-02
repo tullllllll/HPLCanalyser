@@ -1,6 +1,7 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:HPLC.ViewModels"
+             xmlns:views="clr-namespace:HPLC.Views"
              x:Class="HPLC.Views.GraphWindow"
              x:DataType="vm:MainViewModel">
     <Grid>
@@ -36,16 +37,7 @@
             </Grid.RowDefinitions>
             
             <Border Grid.Row="0" BorderBrush="Transparent" BorderThickness="0" x:Name="MainGraph">
-                <Button Command="{Binding NavigateCommand}" 
-                        CommandParameter="Home"
-                        Content="Back to Home"
-                        FontSize="25"
-                        Background="Purple"
-                        Foreground="White"
-                        FontWeight="UltraLight"
-                        HorizontalAlignment="Center"
-                        Margin="10 20"
-                        Cursor="Hand"/>
+                    <views:GraphUserControl/>
             </Border>
             
             <DataGrid Grid.Row="1" x:Name="VariableTable" 
