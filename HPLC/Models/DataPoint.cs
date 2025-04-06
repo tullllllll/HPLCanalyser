@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HPLC.Models
 {
@@ -13,6 +14,7 @@ namespace HPLC.Models
         public double Value { get; set; }
 
         // Required for reference navigation
+        [NotMapped]
         public DataSet DataSet { get; set; } = null!;
     }
 }

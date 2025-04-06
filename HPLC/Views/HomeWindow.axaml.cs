@@ -1,15 +1,11 @@
-﻿using System.Linq;
-using Avalonia.Controls;
-using HPLC.Data;
-using HPLC.ViewModels;
+﻿using Avalonia.Controls;
 
 namespace HPLC.Views;
 
 public partial class HomeWindow : UserControl
 {
-    public HomeWindow(MainViewModel viewModel)
+    public HomeWindow()
     {
         InitializeComponent();
-        DataContext = viewModel;
     }
 }
