@@ -106,6 +106,7 @@ namespace HPLC.ViewModels
             var fileContent = await streamReader.ReadToEndAsync();
             
             _dataSetService.ReadFile(file.Name,fileContent);
+            DataSet = _dataSetCrudService.GetLast();
             CurrentPage = new GraphWindow(this);
         }
 

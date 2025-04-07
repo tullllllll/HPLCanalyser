@@ -24,6 +24,8 @@ public partial class GraphWindow : UserControl
         
         NavigateCommand = ReactiveCommand.Create<object>(NavigateToPage);
         DataContext = viewModel;
+        var graphControl = new GraphUserControl(viewModel.DataSet);
+        MainGraph.Child = graphControl;
     }
 
     public void NavigateToPage(object page)

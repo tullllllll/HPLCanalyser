@@ -37,9 +37,7 @@
             </Grid.RowDefinitions>
             
             <Border Grid.Row="0" BorderBrush="Transparent" BorderThickness="0" x:Name="MainGraph">
-                    <views:GraphUserControl/>
             </Border>
-            
             <DataGrid Grid.Row="1" x:Name="VariableTable" 
                       ItemsSource="{Binding DataSet.DataPoints}"
                       AutoGenerateColumns="True" IsReadOnly="True"
