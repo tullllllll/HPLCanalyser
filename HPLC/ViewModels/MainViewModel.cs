@@ -50,8 +50,6 @@ namespace HPLC.ViewModels
             }
         }
         
-        public IEnumerable<DataSet> RecentDataSets { get; set; }
-        
         // Button Commands
         public ICommand UploadFileCommand { get; set; }
         public ICommand NavigateCommand { get; set;  }
@@ -69,7 +67,6 @@ namespace HPLC.ViewModels
             _serviceProvider = serviceProvider;
             
             // Set variables
-            RecentDataSets = _dataSetCrudService.Get().ToList().Take(5);
             _dataSet = _dataSetCrudService.GetWithChildren(1);
             
             // Button Commands
@@ -109,7 +106,9 @@ namespace HPLC.ViewModels
             var fileContent = await streamReader.ReadToEndAsync();
             
             _dataSetService.ReadFile(file.Name,fileContent);
-            CurrentPage = _serviceProvider.GetRequiredService<HomeWindow>();
+            _dataSet = _dataSetCrudService.GetWithChildren(_dataSetCrudService.Get().ToList().Count());
+            CurrentPage = null;
+            CurrentPage = _serviceProvider.GetRequiredService<GraphWindow>();
         }
 
         private void NavigateToPage(object page)
