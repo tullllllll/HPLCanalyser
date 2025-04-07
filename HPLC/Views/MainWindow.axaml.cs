@@ -1,5 +1,4 @@
 using Avalonia.Controls;
-using HPLC.ViewModels;
 
 namespace HPLC.Views
 {

@@ -1,33 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
-using Avalonia.Controls;
-using System.Windows.Input;
-using HPLC.Models;
-using HPLC.Services;
-using HPLC.ViewModels;
-using ReactiveUI;
+﻿using Avalonia.Controls;
 
 namespace HPLC.Views;
 
 public partial class GraphWindow : UserControl
 {
-    private DataSet _dataSet { get; set; }
-    
-    public MainViewModel ViewModel => (MainViewModel)DataContext;
-    
-    // Button commands
-    public ICommand NavigateCommand { get; }
-    
-    public GraphWindow(MainViewModel viewModel)
+    public GraphWindow()
     {
         InitializeComponent();
-        
-        NavigateCommand = ReactiveCommand.Create<object>(NavigateToPage);
-        DataContext = viewModel;
-    }
-
-    public void NavigateToPage(object page)
-    {
-        ViewModel.NavigateCommand.Execute(page);
     }
 }

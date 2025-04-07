@@ -1,9 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using CommunityToolkit.Mvvm.ComponentModel;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace HPLC.Models
 {
-    public class DataPoint : ObservableObject
+    public class DataPoint
     {
         [Key]
         public int ID { get; set; }
@@ -14,6 +14,7 @@ namespace HPLC.Models
         public double Value { get; set; }
 
         // Required for reference navigation
+        [NotMapped]
         public DataSet DataSet { get; set; } = null!;
     }
 }
