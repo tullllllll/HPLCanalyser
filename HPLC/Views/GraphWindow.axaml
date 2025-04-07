@@ -1,43 +1,16 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:HPLC.ViewModels"
+             xmlns:views="clr-namespace:HPLC.Views"
              x:Class="HPLC.Views.GraphWindow"
              x:DataType="vm:MainViewModel">
         
         <Grid>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*" />
-                <RowDefinition Height="*" MaxHeight="500" />
             </Grid.RowDefinitions>
             
-            <Border Grid.Row="0" BorderBrush="Transparent" BorderThickness="0" x:Name="MainGraph" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Button Command="{Binding UploadFileCommand}"
-                        VerticalAlignment="Bottom"
-                        Content="Upload File"
-                        FontSize="25"
-                        Background="Purple"
-                        Foreground="White"
-                        FontWeight="UltraLight"
-                        Width="200"
-                        Cursor="Hand"/>
-            </Border>
-            
-            <Expander Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
-                <Expander.Header>
-                    Data Table
-                </Expander.Header>
-                <DataGrid x:Name="VariableTable"
-                          ItemsSource="{Binding DataSet.DataPoints}"
-                          IsReadOnly="True"
-                          CanUserReorderColumns="True"
-                          CanUserResizeColumns="True"
-                          GridLinesVisibility="All" 
-                          BorderThickness="1" BorderBrush="Gray">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Time"  Binding="{Binding Time}"/>
-                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" />
-                    </DataGrid.Columns>
-                </DataGrid>
-            </Expander>
+            <views:GraphUserControl/>
+
         </Grid>
 </UserControl>

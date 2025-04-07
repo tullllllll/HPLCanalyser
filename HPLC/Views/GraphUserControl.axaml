@@ -15,37 +15,9 @@
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="300"/>
             <ColumnDefinition Width="*"/>
-
         </Grid.ColumnDefinitions>
         
-        <Expander Grid.Row="0" Grid.Column="0" ExpandDirection="Right" VerticalAlignment="Stretch">
-            <Expander.Header>
-                <TextBlock Text="DataGrid" 
-                           HorizontalAlignment="Center"
-                           VerticalAlignment="Center">
-                    <TextBlock.RenderTransform>
-                        <RotateTransform Angle="-90"/> 
-                    </TextBlock.RenderTransform>
-                </TextBlock>
-            </Expander.Header>
-            
-            
-            <DataGrid ItemsSource="{Binding ObservableValues}"
-                      AutoGenerateColumns="False" IsReadOnly="False"
-                      GridLinesVisibility="All"
-                      BorderThickness="1" BorderBrush="Gray"
-            >
-                <DataGrid.Columns>
-                    <DataGridTextColumn Header="X" Binding="{Binding X}" />
-                    <DataGridTextColumn Header="Y" Binding="{Binding Y}" />
-                </DataGrid.Columns>
-            </DataGrid>
-        </Expander>
-        
-        
-        
-        
-        <lvc:CartesianChart Series="{Binding SeriesCollection}"
+    <lvc:CartesianChart Series="{Binding SeriesCollection}"
                             XAxes="{Binding XAxes}"
                             YAxes="{Binding YAxes}"
                             ZoomMode="Y"

@@ -17,6 +17,7 @@ public static class ServiceCollectionExtensions
         // Views
         collection.AddSingleton<HomeWindow>();
         collection.AddSingleton<GraphWindow>();
+        collection.AddSingleton<GraphUserControl>();
         
         // Database Context
         collection.AddSingleton<HPLCDbContext>();

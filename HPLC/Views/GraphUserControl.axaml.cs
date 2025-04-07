@@ -5,9 +5,9 @@ namespace HPLC.Views;
 
 public partial class GraphUserControl : UserControl
 {
-    public GraphUserControl()
+    public GraphUserControl(GraphUserControlViewModel viewModel)
     {
         InitializeComponent();
-        DataContext = new GraphUserControlViewModel();
+        DataContext = viewModel;
     }
 }
