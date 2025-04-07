@@ -1,7 +1,6 @@
 using System;
 using System.Linq;
 using HPLC.Data;
-using HPLC.Models;
 using Microsoft.EntityFrameworkCore;
 
 namespace HPLC.Services;
@@ -17,6 +16,30 @@ public class SimpleKeyCRUDService<T> (HPLCDbContext context)
     public T? Get(int id)
     {
         return context.Set<T>().Find(id);
+    }
+    
+    public IQueryable<T> GetWithChildren()
+    {
+        IQueryable<T> query = context.Set<T>();
+
+        var navigations = context.Model.FindEntityType(typeof(T))?
+            .GetNavigations();
+
+        if (navigations != null)
+        {
+            foreach (var navigation in navigations)
+            {
+                query = query.Include(navigation.Name);
+            }
+        }
+
+        return query;
+    }
+    
+    public T? GetWithChildren(int id)
+    {
+        return GetWithChildren().FirstOrDefault(e =>
+            EF.Property<int>(e, "ID") == id);
     }
     
     public void Add(T entity)

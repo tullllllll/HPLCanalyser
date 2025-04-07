@@ -2,6 +2,7 @@ using HPLC.Data;
 using HPLC.Models;
 using HPLC.Services;
 using HPLC.ViewModels;
+using HPLC.Views;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HPLC;
@@ -12,6 +13,10 @@ public static class ServiceCollectionExtensions
     {
         // Main View Model
         collection.AddTransient<MainViewModel>();
+        
+        // Views
+        collection.AddSingleton<HomeWindow>();
+        collection.AddSingleton<GraphWindow>();
         
         // Database Context
         collection.AddSingleton<HPLCDbContext>();

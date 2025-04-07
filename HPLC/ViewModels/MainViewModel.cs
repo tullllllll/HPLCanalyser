@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.IO;
@@ -14,6 +14,10 @@ using HPLC.Models;
 using HPLC.Services;
 using HPLC.Views;
 using Microsoft.EntityFrameworkCore;
+using HPLC.Models;
+using HPLC.Services;
+using HPLC.Views;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace HPLC.ViewModels
 {
@@ -60,22 +64,25 @@ namespace HPLC.ViewModels
         // Services
         private readonly SimpleKeyCRUDService<DataSet> _dataSetCrudService;
         private readonly DataSetService _dataSetService;
+        private readonly IServiceProvider _serviceProvider;
         
-        public MainViewModel(SimpleKeyCRUDService<DataSet> dataSetCrudService, DataSetService dataSetService)
+        public MainViewModel(SimpleKeyCRUDService<DataSet> dataSetCrudService, DataSetService dataSetService, IServiceProvider serviceProvider)
         {
             // for Dependency injection
             _dataSetCrudService = dataSetCrudService;
             _dataSetService = dataSetService;
+            _serviceProvider = serviceProvider;
             
             // Set variables
             RecentDataSets = _dataSetCrudService.Get().ToList().Take(5);
+            _dataSet = _dataSetCrudService.GetWithChildren(1);
             
             // Button Commands
             UploadFileCommand = ReactiveCommand.CreateFromTask(UploadFileAsync);
             NavigateCommand = ReactiveCommand.Create<object>(NavigateToPage);
             
             // Set default page to home
-            CurrentPage = new HomeWindow(this);
+            CurrentPage = _serviceProvider.GetRequiredService<HomeWindow>();
         }
 
         private async Task UploadFileAsync()
@@ -117,8 +124,8 @@ namespace HPLC.ViewModels
             {
                 CurrentPage = pageName switch
                 {
-                    "Home" => new HomeWindow(this),
-                    "Graph" => new GraphWindow(this),
+                    "Home" => _serviceProvider.GetRequiredService<HomeWindow>(),
+                    "Graph" => _serviceProvider.GetRequiredService<GraphWindow>(),
                     _ => CurrentPage
                 };
             }
