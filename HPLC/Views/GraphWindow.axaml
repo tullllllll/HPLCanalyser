@@ -1,6 +1,7 @@
 ﻿<UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:vm="clr-namespace:HPLC.ViewModels"
+             xmlns:views="clr-namespace:HPLC.Views"
              x:Class="HPLC.Views.GraphWindow"
              x:DataType="vm:MainViewModel">
         
@@ -10,17 +11,7 @@
                 <RowDefinition Height="*" MaxHeight="500" />
             </Grid.RowDefinitions>
             
-            <Border Grid.Row="0" BorderBrush="Transparent" BorderThickness="0" x:Name="MainGraph" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <Button Command="{Binding UploadFileCommand}"
-                        VerticalAlignment="Bottom"
-                        Content="Upload File"
-                        FontSize="25"
-                        Background="Purple"
-                        Foreground="White"
-                        FontWeight="UltraLight"
-                        Width="200"
-                        Cursor="Hand"/>
-            </Border>
+            <views:GraphUserControl Grid.Row="0" DataContext="{Binding GraphViewModel}"/>
             
             <Expander Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
                 <Expander.Header>

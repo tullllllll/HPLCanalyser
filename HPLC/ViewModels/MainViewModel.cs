@@ -18,9 +18,11 @@ namespace HPLC.ViewModels
 {
     public class MainViewModel : INotifyPropertyChanged
     {
+        // ViewModels
+        public GraphViewModel GraphViewModel { get; set; }
+        
         // Variables
         private UserControl _currentPage;
-        
         public UserControl CurrentPage 
         { 
             get => _currentPage; 
@@ -30,21 +32,17 @@ namespace HPLC.ViewModels
                 OnPropertyChanged(nameof(CurrentPage));
             } 
         }
-        
         private static FilePickerFileType FileTypes { get; } = new(".txt and .csv") {
             Patterns = ["*.txt", "*.csv"]
         };
-
-        private DataSet _dataSet;
-        
         public DataSet DataSet
         {
-            get => _dataSet;
+            get => _dataSetService.SelectedDataSet;
             set
             {
-                if (_dataSet != value)
+                if (_dataSetService.SelectedDataSet != value)
                 {
-                    _dataSet = value;
+                    _dataSetService.SelectedDataSet = value;
                     OnPropertyChanged(nameof(DataSet));
                 }
             }
@@ -66,8 +64,11 @@ namespace HPLC.ViewModels
             _dataSetService = dataSetService;
             _serviceProvider = serviceProvider;
             
+            // Set viewmodels
+            GraphViewModel = _serviceProvider.GetService<GraphViewModel>();
+            
             // Set variables
-            _dataSet = _dataSetCrudService.GetWithChildren(1);
+            DataSet = _dataSetCrudService.GetWithChildren(1);
             
             // Button Commands
             UploadFileCommand = ReactiveCommand.CreateFromTask(UploadFileAsync);
@@ -106,7 +107,7 @@ namespace HPLC.ViewModels
             var fileContent = await streamReader.ReadToEndAsync();
             
             _dataSetService.ReadFile(file.Name,fileContent);
-            _dataSet = _dataSetCrudService.GetWithChildren(_dataSetCrudService.Get().ToList().Count());
+            DataSet = _dataSetCrudService.GetWithChildren(_dataSetCrudService.Get().ToList().Count());
             CurrentPage = null;
             CurrentPage = _serviceProvider.GetRequiredService<GraphWindow>();
         }

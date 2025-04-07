@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Globalization;
 using System.Text.RegularExpressions;
 using HPLC.Models;
@@ -9,6 +10,22 @@ namespace HPLC.Services;
 
 public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService)
 {
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    private DataSet _selectedDataSet;
+    public DataSet SelectedDataSet
+    {
+        get => _selectedDataSet;
+        set
+        {
+            if (_selectedDataSet != value)
+            {
+                _selectedDataSet = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedDataSet)));
+            }
+        }
+    }
+    
     public void ReadFile(string fileName, string fileContent)
     {
         string datapointString = fileContent.Substring(fileContent.ToLower().LastIndexOf("intensity", StringComparison.Ordinal)+9);
