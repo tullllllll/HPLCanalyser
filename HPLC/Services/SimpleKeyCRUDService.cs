@@ -18,12 +18,6 @@ public class SimpleKeyCRUDService<T> (HPLCDbContext context)
     {
         return context.Set<T>().Find(id);
     }
-    public T? GetLast()
-    {
-        return context.Set<T>().OrderByDescending(e => EF.Property<int>(e, "ID")).FirstOrDefault();
-    }
-
-
     
     public void Add(T entity)
     {

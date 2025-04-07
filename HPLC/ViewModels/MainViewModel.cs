@@ -13,6 +13,7 @@ using HPLC.Data;
 using HPLC.Models;
 using HPLC.Services;
 using HPLC.Views;
+using Microsoft.EntityFrameworkCore;
 
 namespace HPLC.ViewModels
 {
@@ -106,7 +107,7 @@ namespace HPLC.ViewModels
             var fileContent = await streamReader.ReadToEndAsync();
             
             _dataSetService.ReadFile(file.Name,fileContent);
-            DataSet = _dataSetCrudService.GetLast();
+            DataSet = _dataSetCrudService.Get().OrderByDescending(e => EF.Property<int>(e, "ID")).FirstOrDefault();
             CurrentPage = new GraphWindow(this);
         }
 

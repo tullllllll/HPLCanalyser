@@ -27,8 +27,8 @@ namespace HPLC.ViewModels
 
             // Extract data points for X and Y values
             var dataPoints = dataSet.DataPoints.ToList();
-            var minX = dataPoints.Min(p => p.Time);
-            var maxX = dataPoints.Max(p => p.Time);
+            var minX = dataPoints.FirstOrDefault().Time;
+            var maxX = dataPoints.LastOrDefault().Time;
             var minY = dataPoints.Min(p => p.Value);
             var maxY = dataPoints.Max(p => p.Value);
 
@@ -52,7 +52,7 @@ namespace HPLC.ViewModels
             {
                 new Axis
                 {
-                    Name = "Time",
+                    Name = "Time (Min)",
                     MinLimit = minX,
                     MaxLimit = maxX,
                     LabelsRotation = 15,
@@ -67,7 +67,7 @@ namespace HPLC.ViewModels
             {
                 new Axis
                 {
-                    Name = "Value",
+                    Name = "Value (mV)",
                     MinLimit = minY,
                     MaxLimit = maxY,
                     SeparatorsPaint = new SolidColorPaint { Color = SKColors.White },
