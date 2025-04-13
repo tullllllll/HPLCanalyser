@@ -10,7 +10,24 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
             
-            <views:GraphUserControl/>
-
+            <views:GraphUserControl Grid.Row="0" DataContext="{Binding GraphViewModel}"/>
+            
+            <Expander Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+                <Expander.Header>
+                    Data Table
+                </Expander.Header>
+                <DataGrid x:Name="VariableTable"
+                          ItemsSource="{Binding DataSet.DataPoints}"
+                          IsReadOnly="True"
+                          CanUserReorderColumns="True"
+                          CanUserResizeColumns="True"
+                          GridLinesVisibility="All" 
+                          BorderThickness="1" BorderBrush="Gray">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Time"  Binding="{Binding Time}"/>
+                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Expander>
         </Grid>
 </UserControl>

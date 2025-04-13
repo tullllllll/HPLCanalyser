@@ -1,13 +1,13 @@
-﻿using Avalonia.Controls;
-using HPLC.ViewModels;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Markup.Xaml;
 
 namespace HPLC.Views;
 
 public partial class GraphUserControl : UserControl
 {
-    public GraphUserControl(GraphUserControlViewModel viewModel)
+    public GraphUserControl()
     {
         InitializeComponent();
-        DataContext = viewModel;
     }
 }
