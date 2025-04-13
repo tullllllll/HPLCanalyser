@@ -6,28 +6,52 @@
              x:DataType="vm:MainViewModel">
         
         <Grid>
-            <Grid.RowDefinitions>
-                <RowDefinition Height="*" />
-            </Grid.RowDefinitions>
+            <views:GraphUserControl Grid.Row="0" DataContext="{Binding GraphViewModel}" Margin="0,0,0,50"/>
             
-            <views:GraphUserControl Grid.Row="0" DataContext="{Binding GraphViewModel}"/>
-            
-            <Expander Grid.Row="1" VerticalAlignment="Bottom" HorizontalAlignment="Stretch">
+            <Expander Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" MinHeight="50" MaxHeight="500" ZIndex="10">
                 <Expander.Header>
-                    Data Table
+                    Lijn data
                 </Expander.Header>
-                <DataGrid x:Name="VariableTable"
-                          ItemsSource="{Binding DataSet.DataPoints}"
-                          IsReadOnly="True"
-                          CanUserReorderColumns="True"
-                          CanUserResizeColumns="True"
-                          GridLinesVisibility="All" 
-                          BorderThickness="1" BorderBrush="Gray">
-                    <DataGrid.Columns>
-                        <DataGridTextColumn Header="Time"  Binding="{Binding Time}"/>
-                        <DataGridTextColumn Header="Value" Binding="{Binding Value}" />
-                    </DataGrid.Columns>
-                </DataGrid>
+                <TabControl>
+                    <TabItem Header="Hoofdlijn">
+                        <DataGrid ItemsSource="{Binding DataSet.DataPoints}"
+                                  IsReadOnly="True"
+                                  CanUserReorderColumns="True"
+                                  CanUserResizeColumns="True"
+                                  GridLinesVisibility="All" 
+                                  BorderThickness="1" BorderBrush="Gray">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Time"  Binding="{Binding Time}"/>
+                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                    </TabItem>
+                    <TabItem Header="Referentielijn">
+                        <StackPanel>
+                            <Button Command="{Binding UploadFileCommand}"
+                                    CommandParameter="reference"
+                                    Content="Upload File"
+                                    FontSize="16"
+                                    Background="Purple"
+                                    Foreground="White"
+                                    FontWeight="UltraLight"
+                                    HorizontalAlignment="Center"
+                                    Margin="5 10"
+                                    Cursor="Hand"/>
+                            <DataGrid ItemsSource="{Binding ReferenceDataSet.DataPoints}"
+                                      IsReadOnly="True"
+                                      CanUserReorderColumns="True"
+                                      CanUserResizeColumns="True"
+                                      GridLinesVisibility="All" 
+                                      BorderThickness="1" BorderBrush="Gray">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Time"  Binding="{Binding Time}"/>
+                                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
+                    </TabItem>
+                </TabControl>
             </Expander>
         </Grid>
 </UserControl>

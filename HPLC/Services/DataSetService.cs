@@ -25,6 +25,20 @@ public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService)
             }
         }
     }
+
+    private DataSet _selectedReferenceDataSet;
+    public DataSet SelectedReferenceDataSet
+    {
+        get => _selectedReferenceDataSet;
+        set
+        {
+            if (_selectedReferenceDataSet != value)
+            {
+                _selectedReferenceDataSet = value;
+                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedReferenceDataSet)));
+            }
+        }
+    }
     
     public void ReadFile(string fileName, string fileContent)
     {
