@@ -1,0 +1,13 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:HPLC.ViewModels"
+             xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
+             x:Class="HPLC.Views.GraphUserControl"
+             x:DataType="vm:GraphViewModel">
+    
+    <lvc:CartesianChart Series="{Binding SeriesCollection}"
+                        XAxes="{Binding XAxes}"
+                        YAxes="{Binding YAxes}"
+                        ZoomMode="Y"
+                        TooltipPosition="Hidden"/>
+</UserControl>
