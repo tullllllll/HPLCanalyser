@@ -47,6 +47,19 @@ namespace HPLC.ViewModels
                 }
             }
         }
+
+        public DataSet ReferenceDataSet
+        {
+            get => _dataSetService.SelectedReferenceDataSet;
+            set
+            {
+                if (_dataSetService.SelectedReferenceDataSet != value)
+                {
+                    _dataSetService.SelectedReferenceDataSet = value;
+                    OnPropertyChanged(nameof(ReferenceDataSet));
+                }
+            }
+        }
         
         // Button Commands
         public ICommand UploadFileCommand { get; set; }
@@ -71,14 +84,14 @@ namespace HPLC.ViewModels
             DataSet = _dataSetCrudService.GetWithChildren(1);
             
             // Button Commands
-            UploadFileCommand = ReactiveCommand.CreateFromTask(UploadFileAsync);
+            UploadFileCommand = ReactiveCommand.CreateFromTask<string>(UploadFileAsync);
             NavigateCommand = ReactiveCommand.Create<object>(NavigateToPage);
             
             // Set default page to home
             CurrentPage = _serviceProvider.GetRequiredService<HomeWindow>();
         }
 
-        private async Task UploadFileAsync()
+        private async Task UploadFileAsync(string dataSetType)
         {
             var topLevel =
                 TopLevel.GetTopLevel(
@@ -107,9 +120,25 @@ namespace HPLC.ViewModels
             var fileContent = await streamReader.ReadToEndAsync();
             
             _dataSetService.ReadFile(file.Name,fileContent);
-            DataSet = _dataSetCrudService.GetWithChildren(_dataSetCrudService.Get().ToList().Count());
-            CurrentPage = null;
-            CurrentPage = _serviceProvider.GetRequiredService<GraphWindow>();
+            switch (dataSetType)
+            {
+                case "reference":
+                {
+                    ReferenceDataSet = _dataSetCrudService.GetWithChildren(_dataSetCrudService.Get().ToList().Count());
+                    break;
+                }
+                case "main":
+                {
+                    DataSet = _dataSetCrudService.GetWithChildren(_dataSetCrudService.Get().ToList().Count());
+                    break;
+                }
+            }
+
+            if (CurrentPage is not GraphWindow)
+            {
+                CurrentPage = null;
+                CurrentPage = _serviceProvider.GetRequiredService<GraphWindow>();
+            }
         }
 
         private void NavigateToPage(object page)

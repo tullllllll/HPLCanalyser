@@ -1,4 +1,6 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using HPLC.Models;
 using HPLC.Services;
@@ -17,7 +19,9 @@ public class GraphViewModel : INotifyPropertyChanged
     
     // Variables
     public DataSet DataSet => _dataSetService.SelectedDataSet;
+    public DataSet ReferenceDataSet => _dataSetService.SelectedReferenceDataSet;
     public ObservableCollection<ObservablePoint> ObservablePoints { get; set; }
+    public ObservableCollection<ObservablePoint> ReferenceObservablePoints { get; set; }
     public ObservableCollection<ISeries> SeriesCollection { get; set; }
     public Axis[] XAxes { get; set; } = {
         new Axis
@@ -48,10 +52,20 @@ public class GraphViewModel : INotifyPropertyChanged
 
         _dataSetService.PropertyChanged += (s, e) =>
         {
-            if (e.PropertyName == nameof(DataSetService.SelectedDataSet))
+            switch (e.PropertyName)
             {
-                OnPropertyChanged(nameof(DataSet));
-                UpdateChartData();
+                case nameof(DataSetService.SelectedDataSet):
+                {
+                    OnPropertyChanged(nameof(DataSet));
+                    UpdateChartData();
+                    break;
+                }
+                case nameof(DataSetService.SelectedReferenceDataSet):
+                {
+                    OnPropertyChanged(nameof(ReferenceDataSet));
+                    UpdateReference();
+                    break;
+                }
             }
         };
         
@@ -76,6 +90,24 @@ public class GraphViewModel : INotifyPropertyChanged
         };
         
         OnPropertyChanged(nameof(SeriesCollection));
+    }
+    
+    public void UpdateReference()
+    {
+        if (SeriesCollection.Count > 1)
+            SeriesCollection.RemoveAt(1);
+        
+        ReferenceObservablePoints = new ObservableCollection<ObservablePoint>();
+        
+        foreach (var dp in ReferenceDataSet.DataPoints)
+            ReferenceObservablePoints.Add(new ObservablePoint(dp.Time, dp.Value));
+
+        var newLine = new LineSeries<ObservablePoint>(ReferenceObservablePoints)
+        {
+            Fill = null
+        };
+        
+        SeriesCollection.Add(newLine);
     }
     
     public event PropertyChangedEventHandler PropertyChanged;

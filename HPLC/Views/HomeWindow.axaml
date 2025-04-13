@@ -10,6 +10,7 @@
         </StackPanel>
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Margin="60">
                 <Button Command="{Binding UploadFileCommand}"
+                        CommandParameter="main"
                         Content="Upload File"
                         FontSize="25"
                         Background="Purple"
