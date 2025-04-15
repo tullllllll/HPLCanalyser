@@ -1,0 +1,49 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vm="clr-namespace:HPLC.ViewModels"
+        mc:Ignorable="d"
+        d:DesignWidth="1920" d:DesignHeight="1080"
+        x:Class="HPLC.Views.MainWindow"
+        Title="HLPC"
+        x:DataType="vm:MainViewModel">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200" />
+            <ColumnDefinition Width="*" />
+        </Grid.ColumnDefinitions>
+        
+        <Border Background="Transparent" BorderBrush="Black" BorderThickness="0,0,2,0" CornerRadius="0">
+            <StackPanel Grid.Column="0">
+                <Button Command="{Binding NavigateCommand}" 
+                        CommandParameter="Home"
+                        Width="200"
+                        Content="Home"
+                        FontSize="25"
+                        Foreground="Black"
+                        Background="LightGray"
+                        FontWeight="UltraLight"
+                        HorizontalAlignment="Center"
+                        HorizontalContentAlignment="Center"
+                        CornerRadius="0"
+                        Cursor="Hand"/>
+                
+                    <Button Command="{Binding NavigateCommand}" 
+                            CommandParameter="Graph"
+                            Width="200"
+                            Content="Graph"
+                            FontSize="25"
+                            Foreground="Black"
+                            Background="LightGray"
+                            FontWeight="UltraLight"
+                            HorizontalAlignment="Center"
+                            HorizontalContentAlignment="Center"
+                            CornerRadius="0"
+                            Cursor="Hand"/>
+            </StackPanel>
+        </Border>
+        
+        <ContentControl Grid.Column="1" Content="{Binding CurrentPage}" />
+    </Grid>
+</Window>

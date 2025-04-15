@@ -1,0 +1,24 @@
+﻿<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:vm="clr-namespace:HPLC.ViewModels"
+             x:Class="HPLC.Views.HomeWindow"
+             x:DataType="vm:MainViewModel">
+    <StackPanel>
+        <StackPanel>
+            <Image Margin="20 10 20 0" Height="300" Width="300" Source="avares://HPLC/Assets/logo.png" />
+            <TextBlock Text="HLPC Data Analyser" TextAlignment="Center" FontSize="50"></TextBlock>
+        </StackPanel>
+            <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Margin="60">
+                <Button Command="{Binding UploadFileCommand}"
+                        CommandParameter="main"
+                        Content="Upload File"
+                        FontSize="25"
+                        Background="Purple"
+                        Foreground="White"
+                        FontWeight="UltraLight"
+                        HorizontalAlignment="Center"
+                        Margin="10 20"
+                        Cursor="Hand"/>
+            </StackPanel>
+    </StackPanel>
+</UserControl>
