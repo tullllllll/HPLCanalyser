@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Platform.Storage;
 using ReactiveUI;
 using HPLC.Models;
 using HPLC.Services;
@@ -20,6 +15,7 @@ namespace HPLC.ViewModels
     {
         // ViewModels
         public GraphViewModel GraphViewModel { get; set; }
+        public FileSelectViewModel FileSelectViewModel { get; set; }
         
         // Variables
         private UserControl _currentPage;
@@ -32,9 +28,6 @@ namespace HPLC.ViewModels
                 OnPropertyChanged(nameof(CurrentPage));
             } 
         }
-        private static FilePickerFileType FileTypes { get; } = new(".txt and .csv") {
-            Patterns = ["*.txt", "*.csv"]
-        };
         public DataSet DataSet
         {
             get => _dataSetService.SelectedDataSet;
@@ -62,68 +55,55 @@ namespace HPLC.ViewModels
         }
         
         // Button Commands
-        public ICommand UploadFileCommand { get; set; }
         public ICommand NavigateCommand { get; set;  }
+        public ICommand SelectFileCommand { get; set; }
         
         // Services
         private readonly SimpleKeyCRUDService<DataSet> _dataSetCrudService;
         private readonly DataSetService _dataSetService;
+        private readonly MessengerService _messengerService;
         private readonly IServiceProvider _serviceProvider;
         
-        public MainViewModel(SimpleKeyCRUDService<DataSet> dataSetCrudService, DataSetService dataSetService, IServiceProvider serviceProvider)
+        private FileSelect window { get; set; }
+        
+        public MainViewModel(SimpleKeyCRUDService<DataSet> dataSetCrudService, DataSetService dataSetService, IServiceProvider serviceProvider, MessengerService messengerService)
         {
             // for Dependency injection
             _dataSetCrudService = dataSetCrudService;
             _dataSetService = dataSetService;
+            _messengerService = messengerService;
             _serviceProvider = serviceProvider;
+
+            _messengerService.FileUploaded += FileHasBeenUploaded;
             
             // Set viewmodels
             GraphViewModel = _serviceProvider.GetService<GraphViewModel>();
+            FileSelectViewModel = _serviceProvider.GetService<FileSelectViewModel>();
             
             // Set variables
             DataSet = _dataSetCrudService.GetWithChildren(1);
             
             // Button Commands
-            UploadFileCommand = ReactiveCommand.CreateFromTask<string>(UploadFileAsync);
             NavigateCommand = ReactiveCommand.Create<object>(NavigateToPage);
+            SelectFileCommand = ReactiveCommand.Create(SelectFile);
             
             // Set default page to home
             CurrentPage = _serviceProvider.GetRequiredService<HomeWindow>();
         }
 
-        private async Task UploadFileAsync(string dataSetType)
+        private void SelectFile()
         {
-            var topLevel =
-                TopLevel.GetTopLevel(
-                    Avalonia.Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
-                        ? desktop.MainWindow
-                        : null);
-            if (topLevel == null) return;
+            window = new FileSelect(FileSelectViewModel);
+            window.Show();
+        }
 
-            var documentsFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var suggestedStartLocation = await topLevel.StorageProvider.TryGetFolderFromPathAsync(documentsFolderPath);
-
-            var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-            {
-                SuggestedStartLocation = suggestedStartLocation,
-                Title = "Open Text File",
-                AllowMultiple = false,
-                FileTypeFilter = new[] { FileTypes },
-            });
-
-            var file = files.FirstOrDefault();
-            if (file == null) return;
-
-            await using var stream = await file.OpenReadAsync();
-            using var streamReader = new StreamReader(stream);
-
-            var fileContent = await streamReader.ReadToEndAsync();
-            
-            _dataSetService.ReadFile(file.Name,fileContent);
+        private void FileHasBeenUploaded(string dataSetType)
+        {
             switch (dataSetType)
             {
                 case "reference":
                 {
+                    // Change to last insert
                     ReferenceDataSet = _dataSetCrudService.GetWithChildren(_dataSetCrudService.Get().ToList().Count());
                     break;
                 }
@@ -139,8 +119,10 @@ namespace HPLC.ViewModels
                 CurrentPage = null;
                 CurrentPage = _serviceProvider.GetRequiredService<GraphWindow>();
             }
+            
+            window.Close();
         }
-
+        
         private void NavigateToPage(object page)
         {
             if (page is string pageName)

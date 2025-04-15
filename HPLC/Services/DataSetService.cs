@@ -51,7 +51,8 @@ public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService)
         {
             Name = Path.GetFileNameWithoutExtension(fileName),
             Date_Added = DateTime.Now,
-            DataPoints = dataPoints
+            DataPoints = dataPoints,
+            Last_Used = DateTime.Now,
         });
     }
     

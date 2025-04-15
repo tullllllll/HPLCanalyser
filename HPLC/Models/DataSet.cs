@@ -12,6 +12,8 @@ namespace HPLC.Models
         public string Name { get; set; }
         [Required]
         public DateTime Date_Added { get; set; }
+        [Required]
+        public DateTime Last_Used { get; set; }
         public ICollection<DataPoint> DataPoints { get; set; } = [];
     }
 }

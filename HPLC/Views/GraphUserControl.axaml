@@ -8,6 +8,7 @@
     <lvc:CartesianChart Series="{Binding SeriesCollection}"
                         XAxes="{Binding XAxes}"
                         YAxes="{Binding YAxes}"
-                        ZoomMode="Y"
-                        TooltipPosition="Hidden"/>
+                        TooltipPosition="Hidden"
+                        ZoomMode="Both"
+                        />
 </UserControl>

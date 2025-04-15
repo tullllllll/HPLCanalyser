@@ -22,14 +22,14 @@
                                   BorderThickness="1" BorderBrush="Gray">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Time"  Binding="{Binding Time}"/>
-                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" />
+                                <DataGridTextColumn Header="Value" Binding="{Binding Value, StringFormat=F2}" />
                             </DataGrid.Columns>
                         </DataGrid>
                     </TabItem>
                     <TabItem Header="Referentielijn">
                         <StackPanel>
-                            <Button Command="{Binding UploadFileCommand}"
-                                    CommandParameter="reference"
+                            <Button 
+                                    
                                     Content="Upload File"
                                     FontSize="16"
                                     Background="Purple"
@@ -46,7 +46,7 @@
                                       BorderThickness="1" BorderBrush="Gray">
                                 <DataGrid.Columns>
                                     <DataGridTextColumn Header="Time"  Binding="{Binding Time}"/>
-                                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" />
+                                    <DataGridTextColumn Header="Value" Binding="{Binding Value, StringFormat=F2}" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </StackPanel>

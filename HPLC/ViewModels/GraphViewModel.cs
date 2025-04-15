@@ -26,7 +26,7 @@ public class GraphViewModel : INotifyPropertyChanged
     public Axis[] XAxes { get; set; } = {
         new Axis
         {
-            Name = "Tijd in: ",
+            Name = "Time: ",
             TextSize = 14,
             SeparatorsPaint = new SolidColorPaint
             {
@@ -37,8 +37,8 @@ public class GraphViewModel : INotifyPropertyChanged
     public Axis[] YAxes { get; set; } = {
         new Axis
         {
-            Name = "Variabele: ",
-            MinLimit = 0,
+            Name = "Variable: ",
+            MinLimit = -1,
             SeparatorsPaint = new SolidColorPaint
             {
                 Color = SKColors.White

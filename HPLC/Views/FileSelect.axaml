@@ -1,0 +1,65 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:HPLC.ViewModels"
+        Width="700" Height="450"
+        x:Class="HPLC.Views.FileSelect"
+        x:DataType="vm:FileSelectViewModel"
+        Title="File Selector"
+        Icon="/Assets/logo.png"
+        CornerRadius="0">
+    <Window.Styles>
+        <Style Selector="Button.effect:pressed">
+            <Setter Property="RenderTransform" Value="{x:Null}"/>
+        </Style>
+        <Style Selector="Button.effect:pointerover /template/ ContentPresenter">
+            <Setter Property="Background" Value="MediumPurple"/>
+        </Style>
+        <Style Selector="Button.effect">
+            <Setter Property="Background" Value="Purple"/>
+        </Style>
+    </Window.Styles>
+    
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="*"></RowDefinition>
+            <RowDefinition Height="40"></RowDefinition>
+        </Grid.RowDefinitions>
+        <DataGrid Grid.Row="0" ItemsSource="{Binding dataSets}"
+                  IsReadOnly="True"
+                  SelectionMode="Single"
+                  CanUserReorderColumns="True"
+                  CanUserResizeColumns="True"
+                  GridLinesVisibility="All"
+                  HorizontalAlignment="Stretch">
+            <DataGrid.Columns>
+                <DataGridTextColumn Header="File Name"  Binding="{Binding Name}" Width="*"/>
+                <DataGridTextColumn Header="Last Used" Binding="{Binding Last_Used}" Width="*"/>
+                <DataGridTextColumn Header="Uploaded at" Binding="{Binding Date_Added}" Width="*"/>
+                <DataGridTemplateColumn Header="Action" Width="125">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Content="Select"
+                                    Foreground="White"
+                                    FontWeight="UltraLight"
+                                    VerticalAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
+                                    Classes="effect"
+                                    CornerRadius="0"
+                                    Cursor="Hand"/>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Button Grid.Row="1" Content="Upload new file"
+                Command="{Binding UploadFileCommand}"
+                CommandParameter="main"
+                Foreground="White"
+                FontWeight="UltraLight"
+                FontSize="20"
+                HorizontalAlignment="Stretch"
+                Classes="effect"
+                CornerRadius="0"
+                Cursor="Hand"/>
+    </Grid>
+</Window>
