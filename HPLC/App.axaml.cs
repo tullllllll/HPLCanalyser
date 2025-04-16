@@ -1,7 +1,9 @@
+using System.Diagnostics;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
+using HPLC.Data;
 using HPLC.ViewModels;
 using HPLC.Views;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,7 +22,11 @@ public class App : Application
         // Register all the services needed for the application to run
         var collection = new ServiceCollection();
         collection.AddCommonServices();
-        
+        using (var context = new HPLCDbContext())
+        {
+            context.Database.EnsureDeleted(); // Zorgt dat de db en tabellen bestaan
+            context.Database.EnsureCreated(); // Zorgt dat de db en tabellen bestaan
+        }
         // Creates a ServiceProvider containing services from the provided IServiceCollection
         var services = collection.BuildServiceProvider();
         

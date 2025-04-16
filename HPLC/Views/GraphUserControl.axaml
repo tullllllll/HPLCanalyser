@@ -20,7 +20,7 @@
             <ColumnDefinition Width="*"/>
         </Grid.ColumnDefinitions>
 
-        <Button Content="Knop 1" Grid.Row="0" Grid.Column="0" Margin="5" Command="{Binding AddItemCommand}"/>
+        <Button Content="Knop 1" Grid.Row="0" Grid.Column="0" Margin="5" Command="{Binding ToggleSelectionMode}"/>
 
         <!-- Tweede rij: CartesianChart -->
         <lvc:CartesianChart Series="{Binding SeriesCollection}"
@@ -28,6 +28,9 @@
                             YAxes="{Binding YAxes}"
                             ZoomMode="Y"
                             TooltipPosition="Hidden"
+                            Width="1000"
+                            Height="800"
+                            x:Name="Chart"
                             Grid.Row="1" Grid.Column="0"/>
     </Grid>
     

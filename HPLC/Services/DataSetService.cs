@@ -14,12 +14,19 @@ public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService)
         string datapointString = fileContent.Substring(fileContent.ToLower().LastIndexOf("intensity", StringComparison.Ordinal)+9);
         
         var dataPoints = FormatFileContent(datapointString);
- 
+
         dataSetService.Add(new DataSet()
         {
             Name = Path.GetFileNameWithoutExtension(fileName),
             Date_Added = DateTime.Now,
-            DataPoints = dataPoints
+            DataPoints = dataPoints,
+            Frequency = 1 / ((dataPoints[1].Time - dataPoints[0].Time) * 60),
+            Peaks = new List<Peak>{new Peak
+            {
+                StartTime = dataPoints[239].Time,
+                EndTime = dataPoints[273].Time,
+                Name = "test"
+            }}
         });
     }
     

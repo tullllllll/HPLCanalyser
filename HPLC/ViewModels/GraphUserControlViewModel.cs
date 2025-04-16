@@ -7,6 +7,9 @@ using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using CommunityToolkit.Mvvm.ComponentModel;
+using HPLC.Services;
 using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 
@@ -15,6 +18,8 @@ namespace HPLC.ViewModels
     public partial class GraphUserControlViewModel
     {
         public ObservableCollection<ISeries> SeriesCollection { get; set; }
+        
+        public bool IsSelectionModeActive { get; set; }
         
         // Properties for X and Y axes
         public Axis[] XAxes { get; set; }
@@ -27,11 +32,12 @@ namespace HPLC.ViewModels
 
             // Extract data points for X and Y values
             var dataPoints = dataSet.DataPoints.ToList();
+            var peaks = dataSet.Peaks.ToList();
             var minX = dataPoints.FirstOrDefault().Time;
             var maxX = dataPoints.LastOrDefault().Time;
-            var minY = dataPoints.Min(p => p.Value);
+            var minY = double.Min(dataPoints.Min(p => p.Value),0);
             var maxY = dataPoints.Max(p => p.Value);
-
+            
             // Create the series
             var newSeries = new LineSeries<ObservablePoint>
             {
@@ -43,10 +49,24 @@ namespace HPLC.ViewModels
                 GeometryStroke = null,
                 LineSmoothness = 0
             };
+            var peakLine = new LineSeries<ObservablePoint>
+            {
+                Values = new ObservableCollection<ObservablePoint>(
+                    dataPoints.Where(dp => dp.Time == peaks[0].StartTime || dp.Time == peaks[0].EndTime)
+                        .Select(dp => new ObservablePoint(dp.Time, dp.Value))
+                ),
+                Fill = null,
+                GeometryFill = null,
+                GeometryStroke = null,
+                LineSmoothness = 0
+            };
 
             // Add the new series to the series collection
             SeriesCollection.Add(newSeries);
-
+            SeriesCollection.Add(peakLine);
+            Debug.WriteLine(MathService.GetPeakMaximum(peaks[0],dataSet));
+            Debug.WriteLine(MathService.GetRetentionTime(peaks[0]));
+            Debug.WriteLine(MathService.CalculatePeakArea(peaks[0],dataSet,true));
             // Dynamically set axis limits based on the data points
             XAxes = new Axis[]
             {
@@ -78,21 +98,19 @@ namespace HPLC.ViewModels
         }
 
         // RelayCommand to add a new item (series) to the chart
-        [RelayCommand]
-        public void AddItem()
-        {
-            var newSeries = new LineSeries<ObservablePoint>
-            {
-                Values = new ObservableCollection<ObservablePoint>
-                {
-                    new ObservablePoint(1, 10),
-                    new ObservablePoint(2, 16),
-                    new ObservablePoint(3, 22)
-                },
-                Fill = null
-            };
 
-            SeriesCollection.Add(newSeries);
+        [RelayCommand]
+        public void ToggleSelectionMode()
+        {
+            IsSelectionModeActive = !IsSelectionModeActive;
+            Debug.WriteLine($"Selection mode: {IsSelectionModeActive}");
         }
+
+        public bool getSelectionMode()
+        {
+            return IsSelectionModeActive;
+        }
+
+        
     }
 }

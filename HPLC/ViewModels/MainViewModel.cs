@@ -75,7 +75,6 @@ namespace HPLC.ViewModels
             
             // Set variables
             RecentDataSets = _dataSetCrudService.Get().ToList().Take(5);
-            _dataSet = _dataSetCrudService.GetWithChildren(1);
             
             // Button Commands
             UploadFileCommand = ReactiveCommand.CreateFromTask(UploadFileAsync);
