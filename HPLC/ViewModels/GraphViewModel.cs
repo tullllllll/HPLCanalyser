@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using HPLC.Models;
 using HPLC.Services;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Avalonia;
 using LiveChartsCore.SkiaSharpView.Painting;
+using ReactiveUI;
 using SkiaSharp;
 
 namespace HPLC.ViewModels;
@@ -28,6 +31,8 @@ public class GraphViewModel : INotifyPropertyChanged
         {
             Name = "Tijd in: ",
             TextSize = 14,
+            MinLimit = null,
+            MaxLimit = null,
             SeparatorsPaint = new SolidColorPaint
             {
                 Color = SKColors.White
@@ -38,11 +43,14 @@ public class GraphViewModel : INotifyPropertyChanged
         new Axis
         {
             Name = "Variabele: ",
-            MinLimit = 0,
+            MinLimit = null,
+            MaxLimit = null,
             SeparatorsPaint = new SolidColorPaint
             {
                 Color = SKColors.White
-            }
+            },
+            
+            
         }
     };
     
@@ -85,8 +93,11 @@ public class GraphViewModel : INotifyPropertyChanged
         {
             new LineSeries<ObservablePoint> (ObservablePoints)
             {
-                Fill = null
-            }
+                Fill = null,
+                GeometryFill = null,
+                GeometryStroke = null,
+                Name = DataSet.Name
+            },
         };
         
         OnPropertyChanged(nameof(SeriesCollection));
@@ -104,7 +115,10 @@ public class GraphViewModel : INotifyPropertyChanged
 
         var newLine = new LineSeries<ObservablePoint>(ReferenceObservablePoints)
         {
-            Fill = null
+            Fill = null,
+            GeometryFill = null,
+            GeometryStroke = null,
+            Name = DataSet.Name
         };
         
         SeriesCollection.Add(newLine);

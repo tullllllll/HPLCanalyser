@@ -5,9 +5,11 @@
              x:Class="HPLC.Views.GraphUserControl"
              x:DataType="vm:GraphViewModel">
     
-    <lvc:CartesianChart Series="{Binding SeriesCollection}"
+    <lvc:CartesianChart x:Name="SomeChart"
+                        Series="{Binding SeriesCollection}"
                         XAxes="{Binding XAxes}"
                         YAxes="{Binding YAxes}"
                         ZoomMode="Y"
+                        LegendPosition="Bottom"
                         TooltipPosition="Hidden"/>
 </UserControl>

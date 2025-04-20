@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
 using System.Linq;
@@ -58,6 +59,31 @@ namespace HPLC.ViewModels
                     _dataSetService.SelectedReferenceDataSet = value;
                     OnPropertyChanged(nameof(ReferenceDataSet));
                 }
+            }
+        }
+        public ObservableCollection<Peak> Peaks { get; set; } = new ObservableCollection<Peak>();
+        public ObservableCollection<Peak> ReferencePeaks { get; set; } = new ObservableCollection<Peak>();
+
+
+        public void LoadPeaks(List<DataPoint> dataPoints, double threshold, double minPeakWidth)
+        {
+            var mathService = new MathService();
+            var detectedPeaks = mathService.DetectPeaks(dataPoints, threshold, minPeakWidth);
+            Peaks.Clear();
+            foreach (var peak in detectedPeaks)
+            {
+                Peaks.Add(peak);
+            }
+        }
+        
+        public void LoadReferencePeaks(List<DataPoint> dataPoints, double threshold, double minPeakWidth)
+        {
+            var mathService = new MathService();
+            var detectedPeaks = mathService.DetectPeaks(dataPoints, threshold, minPeakWidth);
+            ReferencePeaks.Clear();
+            foreach (var peak in detectedPeaks)
+            {
+                ReferencePeaks.Add(peak);
             }
         }
         
@@ -125,11 +151,13 @@ namespace HPLC.ViewModels
                 case "reference":
                 {
                     ReferenceDataSet = _dataSetCrudService.GetWithChildren(_dataSetCrudService.Get().ToList().Count());
+                    LoadReferencePeaks(ReferenceDataSet.DataPoints.ToList(),0,0);
                     break;
                 }
                 case "main":
                 {
                     DataSet = _dataSetCrudService.GetWithChildren(_dataSetCrudService.Get().ToList().Count());
+                    LoadPeaks(DataSet.DataPoints.ToList(), 0, 0);
                     break;
                 }
             }

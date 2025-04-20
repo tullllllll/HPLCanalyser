@@ -28,5 +28,6 @@ public static class ServiceCollectionExtensions
         
         // Services
         collection.AddScoped<DataSetService>();
+        collection.AddScoped<MathService>();
     } 
 }
