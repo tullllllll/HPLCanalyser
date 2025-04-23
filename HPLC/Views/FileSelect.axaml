@@ -102,7 +102,7 @@
         </DataGrid>
         <Button Grid.Row="1"
                 Command="{Binding UploadFileCommand}"
-                CommandParameter="main"
+                CommandParameter="{Binding ActiveDataSetType}"
                 Background="SlateBlue"
                 Foreground="White"
                 FontWeight="UltraLight"

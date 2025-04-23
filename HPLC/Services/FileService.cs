@@ -57,6 +57,6 @@ public class FileService
         
         _dataSetService.ReadFile(file.Name,fileContent);
         
-        _messengerService.SendMessage("main");
+        _messengerService.SendMessage(dataSetType);
     }
 }
