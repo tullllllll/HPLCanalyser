@@ -108,7 +108,30 @@ public class GraphViewModel : INotifyPropertyChanged
 
     private void DrawThemPeaks()
     {
-        var listoPeaks = _mathService.DetectPeaks(DataSet.DataPoints.ToList(),0,0);
+        if (DataSet == null || DataSet.DataPoints == null) return;
+
+        var detectedPeaks = _mathService.DetectPeaks(DataSet.DataPoints.ToList(), 60, 0.1);
+
+        foreach (var peak in detectedPeaks)
+        {
+            var peakLine = new LineSeries<ObservablePoint>
+            {
+                Values = new ObservableCollection<ObservablePoint>(
+                    DataSet.DataPoints
+                        .Where(dp => dp.Time == peak.StartTime || dp.Time == peak.EndTime)
+                        .Select(dp => new ObservablePoint(dp.Time, dp.Value))
+                ),
+                Fill = null,
+                GeometryFill = null,
+                GeometryStroke = null,
+                LineSmoothness = 0,
+                Name = $"Peak at {peak.PeakTime}"
+            };
+
+            SeriesCollection.Add(peakLine);
+        }
+
+        OnPropertyChanged(nameof(SeriesCollection));
     }
 
     public void UpdateReference()

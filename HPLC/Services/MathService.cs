@@ -30,7 +30,7 @@ public class MathService
         return smoothed;
     }
     
-    public List<Peak> DetectPeaks(List<DataPoint> dataPoints, double threshold, double minPeakWidth = 0.0)
+    public List<Peak> DetectPeaks(List<DataPoint> dataPoints, double threshold, double minPeakWidth)
     {
         var peaks = new List<Peak>();
 
@@ -38,6 +38,8 @@ public class MathService
         int peakStartIndex = -1;
         int peakMaxIndex = -1;
         double peakMaxValue = double.MinValue;
+        double peakStartValue = 0; // To store the starting value of the peak
+
 
         for (int i = 0; i < dataPoints.Count; i++)
         {
@@ -51,6 +53,7 @@ public class MathService
                     peakStartIndex = i;
                     peakMaxIndex = i;
                     peakMaxValue = dp.Value;
+                    peakStartValue = dp.Value;
                 }
                 else
                 {
@@ -58,6 +61,14 @@ public class MathService
                     {
                         peakMaxValue = dp.Value;
                         peakMaxIndex = i;
+                    }
+
+                    //Als startwaarde * treshhold groter is dan datapoint waarde dan eindig piek
+                    if (peakStartValue * 1.45 > dp.Value)
+                    {
+                        // End the current peak
+                        peaks.Add(CreatePeak(dataPoints, peakStartIndex, i - 1, peakMaxIndex));
+                        inPeak = false;                    
                     }
                 }
             }
@@ -76,7 +87,6 @@ public class MathService
             peaks.Add(CreatePeak(dataPoints, peakStartIndex, dataPoints.Count - 1, peakMaxIndex));
         }
 
-        // Filter pieken op minimale breedte
         return peaks.Where(p => (p.EndTime - p.StartTime) >= minPeakWidth).ToList();
     }
     

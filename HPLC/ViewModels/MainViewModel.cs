@@ -157,7 +157,7 @@ namespace HPLC.ViewModels
                 case "main":
                 {
                     DataSet = _dataSetCrudService.GetWithChildren(_dataSetCrudService.Get().ToList().Count());
-                    LoadPeaks(DataSet.DataPoints.ToList(), 0, 0);
+                    LoadPeaks(DataSet.DataPoints.ToList(), 60, 0.1);
                     break;
                 }
             }
