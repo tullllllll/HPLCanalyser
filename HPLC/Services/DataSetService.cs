@@ -4,12 +4,13 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using HPLC.Data;
 using HPLC.Models;
 using Path = System.IO.Path;
 
 namespace HPLC.Services;
 
-public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService)
+public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService, HPLCDbContext context)
 {
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -109,5 +110,12 @@ public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService)
         }
 
         return dataPoints;
+    }
+
+    public int GetLastInsertID()
+    {
+        return context.DataSet.OrderByDescending(e => e.ID)
+            .Select(e => e.ID)
+            .FirstOrDefault();
     }
 }

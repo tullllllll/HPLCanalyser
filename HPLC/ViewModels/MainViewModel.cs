@@ -104,12 +104,12 @@ namespace HPLC.ViewModels
                 case "reference":
                 {
                     // Change to last insert
-                    ReferenceDataSet = _dataSetCrudService.GetWithChildren(_dataSetCrudService.Get().ToList().Count());
+                    ReferenceDataSet = _dataSetCrudService.GetWithChildren(_dataSetService.GetLastInsertID());
                     break;
                 }
                 case "main":
                 {
-                    DataSet = _dataSetCrudService.GetWithChildren(_dataSetCrudService.Get().ToList().Count());
+                    DataSet = _dataSetCrudService.GetWithChildren(_dataSetService.GetLastInsertID());
                     break;
                 }
             }
