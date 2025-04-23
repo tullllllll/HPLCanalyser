@@ -14,7 +14,7 @@
                 </Expander.Header>
                 <TabControl>
                     <TabItem Header="MainDataset">
-                        <DataGrid ItemsSource="{Binding Peaks}"
+                        <DataGrid ItemsSource="{Binding GraphViewModel.Peaks}"
                                   IsReadOnly="True"
                                   CanUserReorderColumns="True"
                                   CanUserResizeColumns="True"
@@ -30,23 +30,7 @@
                             </DataGrid.Columns>
                         </DataGrid>
                     </TabItem>
-                    <TabItem Header="Referentielijn">
-                            <DataGrid ItemsSource="{Binding ReferencePeaks}"
-                                      IsReadOnly="True"
-                                      CanUserReorderColumns="True"
-                                      CanUserResizeColumns="True"
-                                      GridLinesVisibility="All"
-                                      BorderThickness="1" BorderBrush="Gray">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Start Time" Binding="{Binding StartTime}" />
-                                    <DataGridTextColumn Header="Peak Time" Binding="{Binding PeakTime}" />
-                                    <DataGridTextColumn Header="End Time" Binding="{Binding EndTime}" />
-                                    <DataGridTextColumn Header="Peak Height" Binding="{Binding PeakHeight}" />
-                                    <DataGridTextColumn Header="Area" Binding="{Binding Area}" />
-                                    <DataGridTextColumn Header="Width at Half Height" Binding="{Binding WidthAtHalfHeight}" />
-                                </DataGrid.Columns>
-                            </DataGrid>
-                    </TabItem>
+  
                     <TabItem>
                         <Button Command="{Binding UploadFileCommand}"
                                 CommandParameter="reference"
