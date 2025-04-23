@@ -13,43 +13,35 @@
                     Lijn data
                 </Expander.Header>
                 <TabControl>
-                    <TabItem Header="Hoofdlijn">
-                        <DataGrid ItemsSource="{Binding DataSet.DataPoints}"
+                    <TabItem Header="MainDataset">
+                        <DataGrid ItemsSource="{Binding GraphViewModel.Peaks}"
                                   IsReadOnly="True"
                                   CanUserReorderColumns="True"
                                   CanUserResizeColumns="True"
-                                  GridLinesVisibility="All" 
+                                  GridLinesVisibility="All"
                                   BorderThickness="1" BorderBrush="Gray">
                             <DataGrid.Columns>
-                                <DataGridTextColumn Header="Time"  Binding="{Binding Time}"/>
-                                <DataGridTextColumn Header="Value" Binding="{Binding Value}" />
+                                <DataGridTextColumn Header="Start Time" Binding="{Binding StartTime}" />
+                                <DataGridTextColumn Header="Peak Time" Binding="{Binding PeakTime}" />
+                                <DataGridTextColumn Header="End Time" Binding="{Binding EndTime}" />
+                                <DataGridTextColumn Header="Peak Height" Binding="{Binding PeakHeight}" />
+                                <DataGridTextColumn Header="Area" Binding="{Binding Area}" />
+                                <DataGridTextColumn Header="Width at Half Height" Binding="{Binding WidthAtHalfHeight}" />
                             </DataGrid.Columns>
                         </DataGrid>
                     </TabItem>
-                    <TabItem Header="Referentielijn">
-                        <StackPanel>
-                            <Button Command="{Binding UploadFileCommand}"
-                                    CommandParameter="reference"
-                                    Content="Upload File"
-                                    FontSize="16"
-                                    Background="Purple"
-                                    Foreground="White"
-                                    FontWeight="UltraLight"
-                                    HorizontalAlignment="Center"
-                                    Margin="5 10"
-                                    Cursor="Hand"/>
-                            <DataGrid ItemsSource="{Binding ReferenceDataSet.DataPoints}"
-                                      IsReadOnly="True"
-                                      CanUserReorderColumns="True"
-                                      CanUserResizeColumns="True"
-                                      GridLinesVisibility="All" 
-                                      BorderThickness="1" BorderBrush="Gray">
-                                <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Time"  Binding="{Binding Time}"/>
-                                    <DataGridTextColumn Header="Value" Binding="{Binding Value}" />
-                                </DataGrid.Columns>
-                            </DataGrid>
-                        </StackPanel>
+  
+                    <TabItem>
+                        <Button Command="{Binding UploadFileCommand}"
+                                CommandParameter="reference"
+                                Content="Upload File"
+                                FontSize="16"
+                                Background="Purple"
+                                Foreground="White"
+                                FontWeight="UltraLight"
+                                HorizontalAlignment="Center"
+                                Margin="5 10"
+                                Cursor="Hand"/>
                     </TabItem>
                 </TabControl>
             </Expander>
