@@ -12,10 +12,32 @@
             <Setter Property="RenderTransform" Value="{x:Null}"/>
         </Style>
         <Style Selector="Button.effect:pointerover /template/ ContentPresenter">
-            <Setter Property="Background" Value="MediumPurple"/>
+            <Setter Property="Opacity" Value="0.6"/>
         </Style>
-        <Style Selector="Button.effect">
-            <Setter Property="Background" Value="Purple"/>
+        
+        <Style Selector="DataGridRow:selected /template/ Border DataGridFrozenGrid Rectangle">
+            <Setter Property="Fill" Value="Transparent"/>
+        </Style>
+        
+        <Style Selector="DataGridRow:pointerover /template/ Border DataGridFrozenGrid Rectangle">
+            <Setter Property="Fill" Value="Gray"/>
+            <Setter Property="Opacity" Value="0.1"/>
+        </Style>
+        
+        <Style Selector="DataGridRow:pointerover /template/ Border DataGridFrozenGrid DataGridCellsPresenter DataGridCell Border Grid Rectangle">
+            <Setter Property="Opacity" Value="0.0"/>
+        </Style>
+        
+        <Style Selector="DataGrid:focus DataGridCell:current /template/ Grid#FocusVisual"> 
+            <Setter Property="IsVisible" Value="False" /> 
+        </Style> 
+        
+        <Style Selector="Rectangle">
+            
+        </Style>
+        
+        <Style Selector="DataGridRow:pointerover /template/ Border">
+            <Setter Property="Background" Value="Transparent"></Setter>
         </Style>
     </Window.Styles>
     
@@ -24,7 +46,9 @@
             <RowDefinition Height="*"></RowDefinition>
             <RowDefinition Height="40"></RowDefinition>
         </Grid.RowDefinitions>
-        <DataGrid Grid.Row="0" ItemsSource="{Binding dataSets}"
+        <DataGrid Grid.Row="0"
+                  x:Name="FileSelectGrid"
+                  ItemsSource="{Binding dataSets}"
                   IsReadOnly="True"
                   SelectionMode="Single"
                   CanUserReorderColumns="True"
@@ -35,31 +59,60 @@
                 <DataGridTextColumn Header="File Name"  Binding="{Binding Name}" Width="*"/>
                 <DataGridTextColumn Header="Last Used" Binding="{Binding Last_Used}" Width="*"/>
                 <DataGridTextColumn Header="Uploaded at" Binding="{Binding Date_Added}" Width="*"/>
-                <DataGridTemplateColumn Header="Action" Width="125">
+                <DataGridTemplateColumn Header="Select" Width="125">
                     <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate>
-                            <Button Content="Select"
+                        <DataTemplate >
+                            <Button Command="{Binding $parent[DataGrid].((vm:FileSelectViewModel)DataContext).SelectDatasetCommand}"
+                                    CommandParameter="{Binding ID}"
+                                    Background="DarkBlue"
                                     Foreground="White"
                                     FontWeight="UltraLight"
                                     VerticalAlignment="Stretch"
                                     HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"
                                     Classes="effect"
                                     CornerRadius="0"
-                                    Cursor="Hand"/>
+                                    Cursor="Hand"
+                                    IsEnabled="True">
+                                <TextBlock FontWeight="Bold">Select</TextBlock>
+                            </Button>
+                        </DataTemplate>
+                    </DataGridTemplateColumn.CellTemplate>
+                </DataGridTemplateColumn>
+                <DataGridTemplateColumn Header="Delete" Width="125">
+                    <DataGridTemplateColumn.CellTemplate>
+                        <DataTemplate>
+                            <Button Command="{Binding $parent[DataGrid].((vm:FileSelectViewModel)DataContext).DeleteCommand}"
+                                    CommandParameter="{Binding ID}"
+                                    Background="Red"
+                                    Foreground="White"
+                                    FontWeight="UltraLight"
+                                    VerticalAlignment="Stretch"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"
+                                    Classes="effect"
+                                    CornerRadius="0"
+                                    Cursor="Hand">
+                                <TextBlock FontWeight="Bold">Delete</TextBlock>
+                            </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>
                 </DataGridTemplateColumn>
             </DataGrid.Columns>
         </DataGrid>
-        <Button Grid.Row="1" Content="Upload new file"
+        <Button Grid.Row="1"
                 Command="{Binding UploadFileCommand}"
                 CommandParameter="main"
+                Background="SlateBlue"
                 Foreground="White"
                 FontWeight="UltraLight"
                 FontSize="20"
                 HorizontalAlignment="Stretch"
                 Classes="effect"
                 CornerRadius="0"
-                Cursor="Hand"/>
+                Cursor="Hand"
+                HorizontalContentAlignment="Center">
+            <TextBlock FontWeight="Bold">Upload File</TextBlock>
+        </Button>
     </Grid>
 </Window>

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Linq;
 using HPLC.Models;
 using HPLC.Services;
 using LiveChartsCore;
@@ -85,9 +86,15 @@ public class GraphViewModel : INotifyPropertyChanged
         {
             new LineSeries<ObservablePoint> (ObservablePoints)
             {
-                Fill = null
+                Fill = null,
+                ZIndex = 2
             }
         };
+        
+        XAxes.First().MinLimit = null;
+        XAxes.First().MaxLimit = null;
+        YAxes.First().MinLimit = null;
+        YAxes.First().MaxLimit = null;
         
         OnPropertyChanged(nameof(SeriesCollection));
     }
@@ -104,7 +111,8 @@ public class GraphViewModel : INotifyPropertyChanged
 
         var newLine = new LineSeries<ObservablePoint>(ReferenceObservablePoints)
         {
-            Fill = null
+            Fill = null,
+            ZIndex = 1
         };
         
         SeriesCollection.Add(newLine);

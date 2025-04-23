@@ -4,13 +4,15 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using HPLC.Data;
 using HPLC.Models;
+using HPLC.ViewModels;
 using Path = System.IO.Path;
 
 namespace HPLC.Services;
 
-public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService, HPLCDbContext context)
+public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService, HPLCDbContext context, NavigationService navigationService)
 {
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -112,10 +114,30 @@ public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService, HPLCD
         return dataPoints;
     }
 
-    public int GetLastInsertID()
+    public int GetLastInsertId()
     {
         return context.DataSet.OrderByDescending(e => e.ID)
             .Select(e => e.ID)
             .FirstOrDefault();
+    }
+
+    public void DeleteDataSet(int datasetId)
+    {
+        dataSetService.Delete(datasetId);
+    }
+    
+    public void SetActiveDataSet(int dataSetId)
+    {
+        SelectedDataSet = dataSetService.GetWithChildren(dataSetId);
+        SelectedDataSet.Last_Used = DateTime.Now;
+        context.SaveChanges();
+        navigationService.Navigate("Graph");
+    }
+
+    public void SetReferenceDataSet(int dataSetId)
+    {
+        SelectedReferenceDataSet = dataSetService.GetWithChildren(dataSetId);
+        SelectedReferenceDataSet.Last_Used = DateTime.Now;
+        context.SaveChanges();
     }
 }

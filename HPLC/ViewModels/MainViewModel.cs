@@ -7,6 +7,7 @@ using ReactiveUI;
 using HPLC.Models;
 using HPLC.Services;
 using HPLC.Views;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HPLC.ViewModels
@@ -63,36 +64,38 @@ namespace HPLC.ViewModels
         private readonly DataSetService _dataSetService;
         private readonly MessengerService _messengerService;
         private readonly IServiceProvider _serviceProvider;
+        private readonly NavigationService _navigationService;
         
         private FileSelect window { get; set; }
         
-        public MainViewModel(SimpleKeyCRUDService<DataSet> dataSetCrudService, DataSetService dataSetService, IServiceProvider serviceProvider, MessengerService messengerService)
+        public MainViewModel(SimpleKeyCRUDService<DataSet> dataSetCrudService, DataSetService dataSetService,
+            IServiceProvider serviceProvider, MessengerService messengerService, NavigationService navigationService)
         {
             // for Dependency injection
             _dataSetCrudService = dataSetCrudService;
             _dataSetService = dataSetService;
             _messengerService = messengerService;
             _serviceProvider = serviceProvider;
+            _navigationService = navigationService;
 
             _messengerService.FileUploaded += FileHasBeenUploaded;
+            _navigationService.Navigate = NavigateToPage;
             
             // Set viewmodels
             GraphViewModel = _serviceProvider.GetService<GraphViewModel>();
             FileSelectViewModel = _serviceProvider.GetService<FileSelectViewModel>();
             
-            // Set variables
-            DataSet = _dataSetCrudService.GetWithChildren(1);
-            
             // Button Commands
             NavigateCommand = ReactiveCommand.Create<object>(NavigateToPage);
-            SelectFileCommand = ReactiveCommand.Create(SelectFile);
+            SelectFileCommand = ReactiveCommand.Create<string>(SelectFile);
             
             // Set default page to home
             CurrentPage = _serviceProvider.GetRequiredService<HomeWindow>();
         }
 
-        private void SelectFile()
+        private void SelectFile(string dataSetType)
         {
+            FileSelectViewModel.ActiveDataSetType = dataSetType;
             window = new FileSelect(FileSelectViewModel);
             window.Show();
         }
@@ -104,12 +107,12 @@ namespace HPLC.ViewModels
                 case "reference":
                 {
                     // Change to last insert
-                    ReferenceDataSet = _dataSetCrudService.GetWithChildren(_dataSetService.GetLastInsertID());
+                    ReferenceDataSet = _dataSetCrudService.GetWithChildren(_dataSetService.GetLastInsertId());
                     break;
                 }
                 case "main":
                 {
-                    DataSet = _dataSetCrudService.GetWithChildren(_dataSetService.GetLastInsertID());
+                    DataSet = _dataSetCrudService.GetWithChildren(_dataSetService.GetLastInsertId());
                     break;
                 }
             }
@@ -133,6 +136,12 @@ namespace HPLC.ViewModels
                     "Graph" => _serviceProvider.GetRequiredService<GraphWindow>(),
                     _ => CurrentPage
                 };
+
+                if (window != null)
+                {
+                    if (window.IsVisible)
+                        window.Close();
+                }
             }
         }
         
