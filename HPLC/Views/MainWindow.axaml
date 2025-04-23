@@ -6,8 +6,9 @@
         mc:Ignorable="d"
         d:DesignWidth="1920" d:DesignHeight="1080"
         x:Class="HPLC.Views.MainWindow"
-        Title="HLPC"
-        x:DataType="vm:MainViewModel">
+        Title="Chromalyse"
+        x:DataType="vm:MainViewModel"
+        Icon="/Assets/logo.png">
     <Grid>
         <Grid.ColumnDefinitions>
             <ColumnDefinition Width="200" />

@@ -4,12 +4,13 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using HPLC.Data;
 using HPLC.Models;
 using Path = System.IO.Path;
 
 namespace HPLC.Services;
 
-public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService)
+public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService, HPLCDbContext context, NavigationService navigationService)
 {
     public event PropertyChangedEventHandler PropertyChanged;
 
@@ -51,7 +52,8 @@ public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService)
         {
             Name = Path.GetFileNameWithoutExtension(fileName),
             Date_Added = DateTime.Now,
-            DataPoints = dataPoints
+            DataPoints = dataPoints,
+            Last_Used = DateTime.Now,
         });
     }
     
@@ -76,10 +78,31 @@ public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService)
         
         return dataPoints;
     }
-    
-    private List<DataPoint> ApplyBaselineCorrection(List<DataPoint> dataPoints)
+
+    public int GetLastInsertId()
     {
-    ///Loop threw half a second worth of datapoint.values. take the average of points that are below zero
-    return null;
+        return context.DataSet.OrderByDescending(e => e.ID)
+            .Select(e => e.ID)
+            .FirstOrDefault();
+    }
+
+    public void DeleteDataSet(int datasetId)
+    {
+        dataSetService.Delete(datasetId);
+    }
+    
+    public void SetActiveDataSet(int dataSetId)
+    {
+        SelectedDataSet = dataSetService.GetWithChildren(dataSetId);
+        SelectedDataSet.Last_Used = DateTime.Now;
+        context.SaveChanges();
+        navigationService.Navigate("Graph");
+    }
+
+    public void SetReferenceDataSet(int dataSetId)
+    {
+        SelectedReferenceDataSet = dataSetService.GetWithChildren(dataSetId);
+        SelectedReferenceDataSet.Last_Used = DateTime.Now;
+        context.SaveChanges();
     }
 }

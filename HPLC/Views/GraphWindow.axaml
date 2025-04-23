@@ -14,34 +14,58 @@
                 </Expander.Header>
                 <TabControl>
                     <TabItem Header="MainDataset">
-                        <DataGrid ItemsSource="{Binding GraphViewModel.Peaks}"
-                                  IsReadOnly="True"
-                                  CanUserReorderColumns="True"
-                                  CanUserResizeColumns="True"
-                                  GridLinesVisibility="All"
-                                  BorderThickness="1" BorderBrush="Gray">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Start Time" Binding="{Binding StartTime}" />
-                                <DataGridTextColumn Header="Peak Time" Binding="{Binding PeakTime}" />
-                                <DataGridTextColumn Header="End Time" Binding="{Binding EndTime}" />
-                                <DataGridTextColumn Header="Peak Height" Binding="{Binding PeakHeight}" />
-                                <DataGridTextColumn Header="Area" Binding="{Binding Area}" />
-                                <DataGridTextColumn Header="Width at Half Height" Binding="{Binding WidthAtHalfHeight}" />
-                            </DataGrid.Columns>
-                        </DataGrid>
+                        <StackPanel>
+                            <Button Command="{Binding SelectFileCommand}"
+                                    CommandParameter="main"
+                                    Content="Select File"
+                                    FontSize="25"
+                                    Background="Purple"
+                                    Foreground="White"
+                                    FontWeight="UltraLight"
+                                    HorizontalAlignment="Center"
+                                    Margin="10 20"
+                                    Cursor="Hand"/>
+                            <DataGrid ItemsSource="{Binding GraphViewModel.Peaks}"
+                                      IsReadOnly="True"
+                                      CanUserReorderColumns="True"
+                                      CanUserResizeColumns="True"
+                                      GridLinesVisibility="All"
+                                      BorderThickness="1" BorderBrush="Gray">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Start Time" Binding="{Binding StartTime}" />
+                                    <DataGridTextColumn Header="Peak Time" Binding="{Binding PeakTime}" />
+                                    <DataGridTextColumn Header="End Time" Binding="{Binding EndTime}" />
+                                    <DataGridTextColumn Header="Peak Height" Binding="{Binding PeakHeight}" />
+                                    <DataGridTextColumn Header="Area" Binding="{Binding Area}" />
+                                    <DataGridTextColumn Header="Width at Half Height" Binding="{Binding WidthAtHalfHeight}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
                     </TabItem>
-  
-                    <TabItem>
-                        <Button Command="{Binding UploadFileCommand}"
-                                CommandParameter="reference"
-                                Content="Upload File"
-                                FontSize="16"
-                                Background="Purple"
-                                Foreground="White"
-                                FontWeight="UltraLight"
-                                HorizontalAlignment="Center"
-                                Margin="5 10"
-                                Cursor="Hand"/>
+                    <TabItem Header="Referentielijn">
+                        <StackPanel>
+                            <Button Command="{Binding SelectFileCommand}"
+                                    CommandParameter="reference"
+                                    Content="Select File"
+                                    FontSize="25"
+                                    Background="Purple"
+                                    Foreground="White"
+                                    FontWeight="UltraLight"
+                                    HorizontalAlignment="Center"
+                                    Margin="10 20"
+                                    Cursor="Hand"/>
+                            <DataGrid ItemsSource="{Binding ReferenceDataSet.DataPoints}"
+                                      IsReadOnly="True"
+                                      CanUserReorderColumns="True"
+                                      CanUserResizeColumns="True"
+                                      GridLinesVisibility="All" 
+                                      BorderThickness="1" BorderBrush="Gray">
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Time"  Binding="{Binding Time}"/>
+                                    <DataGridTextColumn Header="Value" Binding="{Binding Value, StringFormat=F2}" />
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </StackPanel>
                     </TabItem>
                 </TabControl>
             </Expander>

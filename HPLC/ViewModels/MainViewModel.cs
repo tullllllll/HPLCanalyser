@@ -2,17 +2,14 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
-using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Controls;
-using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Platform.Storage;
 using ReactiveUI;
 using HPLC.Models;
 using HPLC.Services;
 using HPLC.Views;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HPLC.ViewModels
@@ -21,9 +18,11 @@ namespace HPLC.ViewModels
     {
         // ViewModels
         public GraphViewModel GraphViewModel { get; set; }
+        public FileSelectViewModel FileSelectViewModel { get; set; }
         
         // Variables
         private UserControl _currentPage;
+        
         public UserControl CurrentPage 
         { 
             get => _currentPage; 
@@ -33,9 +32,9 @@ namespace HPLC.ViewModels
                 OnPropertyChanged(nameof(CurrentPage));
             } 
         }
-        private static FilePickerFileType FileTypes { get; } = new(".txt and .csv") {
-            Patterns = ["*.txt", "*.csv"]
-        };
+
+        private DataSet _dataSet;
+        
         public DataSet DataSet
         {
             get => _dataSetService.SelectedDataSet;
@@ -63,74 +62,63 @@ namespace HPLC.ViewModels
         }
         
         // Button Commands
-        public ICommand UploadFileCommand { get; set; }
         public ICommand NavigateCommand { get; set;  }
+        public ICommand SelectFileCommand { get; set; }
         
         // Services
         private readonly SimpleKeyCRUDService<DataSet> _dataSetCrudService;
         private readonly DataSetService _dataSetService;
+        private readonly MessengerService _messengerService;
         private readonly IServiceProvider _serviceProvider;
+        private readonly NavigationService _navigationService;
         
-        public MainViewModel(SimpleKeyCRUDService<DataSet> dataSetCrudService, DataSetService dataSetService, IServiceProvider serviceProvider)
+        private FileSelect window { get; set; }
+        
+        public MainViewModel(SimpleKeyCRUDService<DataSet> dataSetCrudService, DataSetService dataSetService,
+            IServiceProvider serviceProvider, MessengerService messengerService, NavigationService navigationService)
         {
             // for Dependency injection
             _dataSetCrudService = dataSetCrudService;
             _dataSetService = dataSetService;
+            _messengerService = messengerService;
             _serviceProvider = serviceProvider;
+            _navigationService = navigationService;
+
+            _messengerService.FileUploaded += FileHasBeenUploaded;
+            _navigationService.Navigate = NavigateToPage;
             
             // Set viewmodels
             GraphViewModel = _serviceProvider.GetService<GraphViewModel>();
-            
-            // Set variables
-            DataSet = _dataSetCrudService.GetWithChildren(1);
+            FileSelectViewModel = _serviceProvider.GetService<FileSelectViewModel>();
             
             // Button Commands
-            UploadFileCommand = ReactiveCommand.CreateFromTask<string>(UploadFileAsync);
             NavigateCommand = ReactiveCommand.Create<object>(NavigateToPage);
+            SelectFileCommand = ReactiveCommand.Create<string>(SelectFile);
             
             // Set default page to home
             CurrentPage = _serviceProvider.GetRequiredService<HomeWindow>();
         }
 
-        private async Task UploadFileAsync(string dataSetType)
+        private void SelectFile(string dataSetType)
         {
-            var topLevel =
-                TopLevel.GetTopLevel(
-                    Avalonia.Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
-                        ? desktop.MainWindow
-                        : null);
-            if (topLevel == null) return;
+            FileSelectViewModel.ActiveDataSetType = dataSetType;
+            window = new FileSelect(FileSelectViewModel);
+            window.Show();
+        }
 
-            var documentsFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
-            var suggestedStartLocation = await topLevel.StorageProvider.TryGetFolderFromPathAsync(documentsFolderPath);
-
-            var files = await topLevel.StorageProvider.OpenFilePickerAsync(new FilePickerOpenOptions
-            {
-                SuggestedStartLocation = suggestedStartLocation,
-                Title = "Open Text File",
-                AllowMultiple = false,
-                FileTypeFilter = new[] { FileTypes },
-            });
-
-            var file = files.FirstOrDefault();
-            if (file == null) return;
-
-            await using var stream = await file.OpenReadAsync();
-            using var streamReader = new StreamReader(stream);
-
-            var fileContent = await streamReader.ReadToEndAsync();
-            
-            _dataSetService.ReadFile(file.Name,fileContent);
+        private void FileHasBeenUploaded(string dataSetType)
+        {
             switch (dataSetType)
             {
                 case "reference":
                 {
-                    ReferenceDataSet = _dataSetCrudService.GetWithChildren(_dataSetCrudService.Get().ToList().Count());
+                    // Change to last insert
+                    ReferenceDataSet = _dataSetCrudService.GetWithChildren(_dataSetService.GetLastInsertId());
                     break;
                 }
                 case "main":
                 {
-                    DataSet = _dataSetCrudService.GetWithChildren(_dataSetCrudService.Get().ToList().Count());
+                    DataSet = _dataSetCrudService.GetWithChildren(_dataSetService.GetLastInsertId());
                     break;
                 }
             }
@@ -140,8 +128,10 @@ namespace HPLC.ViewModels
                 CurrentPage = null;
                 CurrentPage = _serviceProvider.GetRequiredService<GraphWindow>();
             }
+            
+            window.Close();
         }
-
+        
         private void NavigateToPage(object page)
         {
             if (page is string pageName)
@@ -152,6 +142,12 @@ namespace HPLC.ViewModels
                     "Graph" => _serviceProvider.GetRequiredService<GraphWindow>(),
                     _ => CurrentPage
                 };
+
+                if (window != null)
+                {
+                    if (window.IsVisible)
+                        window.Close();
+                }
             }
         }
         
