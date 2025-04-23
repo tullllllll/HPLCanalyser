@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
@@ -20,6 +22,7 @@ namespace HPLC.ViewModels
         
         // Variables
         private UserControl _currentPage;
+        
         public UserControl CurrentPage 
         { 
             get => _currentPage; 
@@ -29,6 +32,9 @@ namespace HPLC.ViewModels
                 OnPropertyChanged(nameof(CurrentPage));
             } 
         }
+
+        private DataSet _dataSet;
+        
         public DataSet DataSet
         {
             get => _dataSetService.SelectedDataSet;

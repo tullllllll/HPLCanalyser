@@ -4,10 +4,8 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
-using System.Threading.Tasks;
 using HPLC.Data;
 using HPLC.Models;
-using HPLC.ViewModels;
 using Path = System.IO.Path;
 
 namespace HPLC.Services;
@@ -78,39 +76,6 @@ public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService, HPLCD
             }
         }
         
-        return ConvertToHalfSeconds(dataPoints);
-    }
-    
-    private List<DataPoint> ConvertToHalfSeconds(List<DataPoint> dataPoints)
-    {
-        var groupedDataPoints = ApplyBaselineCorrection(dataPoints)
-            .GroupBy(dp => Math.Floor(dp.Time / 0.5))
-            .Select(group => new DataPoint
-            {
-                Time = group.Key * 0.5,
-                Value = group.Average(dp => dp.Value)
-            })
-            .ToList();
-
-        return groupedDataPoints;
-    }
-    
-    private List<DataPoint> ApplyBaselineCorrection(List<DataPoint> dataPoints)
-    {
-        // Find the minimum value in the dataset
-        var minValue = dataPoints.Min(dp => dp.Value);
-
-        // If the minimum value is below 0, apply a correction
-        if (minValue < 0)
-        {
-            var correctionFactor = Math.Abs(minValue);
-            dataPoints = dataPoints.Select(dp => new DataPoint
-            {
-                Time = dp.Time,
-                Value = dp.Value + correctionFactor // Shift values upwards
-            }).ToList();
-        }
-
         return dataPoints;
     }
 

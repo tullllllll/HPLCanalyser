@@ -13,7 +13,7 @@
                     Lijn data
                 </Expander.Header>
                 <TabControl>
-                    <TabItem Header="Hoofdlijn">
+                    <TabItem Header="MainDataset">
                         <StackPanel>
                             <Button Command="{Binding SelectFileCommand}"
                                     CommandParameter="main"
@@ -25,15 +25,19 @@
                                     HorizontalAlignment="Center"
                                     Margin="10 20"
                                     Cursor="Hand"/>
-                            <DataGrid ItemsSource="{Binding DataSet.DataPoints}"
+                            <DataGrid ItemsSource="{Binding GraphViewModel.Peaks}"
                                       IsReadOnly="True"
                                       CanUserReorderColumns="True"
                                       CanUserResizeColumns="True"
-                                      GridLinesVisibility="All" 
+                                      GridLinesVisibility="All"
                                       BorderThickness="1" BorderBrush="Gray">
                                 <DataGrid.Columns>
-                                    <DataGridTextColumn Header="Time"  Binding="{Binding Time}"/>
-                                    <DataGridTextColumn Header="Value" Binding="{Binding Value, StringFormat=F2}" />
+                                    <DataGridTextColumn Header="Start Time" Binding="{Binding StartTime}" />
+                                    <DataGridTextColumn Header="Peak Time" Binding="{Binding PeakTime}" />
+                                    <DataGridTextColumn Header="End Time" Binding="{Binding EndTime}" />
+                                    <DataGridTextColumn Header="Peak Height" Binding="{Binding PeakHeight}" />
+                                    <DataGridTextColumn Header="Area" Binding="{Binding Area}" />
+                                    <DataGridTextColumn Header="Width at Half Height" Binding="{Binding WidthAtHalfHeight}" />
                                 </DataGrid.Columns>
                             </DataGrid>
                         </StackPanel>

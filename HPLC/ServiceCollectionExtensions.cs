@@ -32,5 +32,6 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton<MessengerService>();
         collection.AddScoped<FileService>();
         collection.AddSingleton<NavigationService>();
+        collection.AddScoped<MathService>();
     } 
 }
