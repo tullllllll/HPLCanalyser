@@ -30,7 +30,7 @@ public class MathService
         return smoothed;
     }
     
-    public List<Peak> DetectPeaks(List<DataPoint> dataPoints, double threshold, double minPeakWidth = 0.5)
+    public List<Peak> DetectPeaks(List<DataPoint> dataPoints, double threshold, double minPeakWidth = 0.0)
     {
         var peaks = new List<Peak>();
 

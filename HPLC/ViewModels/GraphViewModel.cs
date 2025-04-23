@@ -19,6 +19,7 @@ public class GraphViewModel : INotifyPropertyChanged
 {
     // Services
     private readonly DataSetService _dataSetService;
+    private readonly MathService _mathService;
     
     // Variables
     public DataSet DataSet => _dataSetService.SelectedDataSet;
@@ -54,9 +55,10 @@ public class GraphViewModel : INotifyPropertyChanged
         }
     };
     
-    public GraphViewModel(DataSetService DataSetService)
+    public GraphViewModel(DataSetService DataSetService, MathService MathService)
     {
         _dataSetService = DataSetService;
+        _mathService = MathService;
 
         _dataSetService.PropertyChanged += (s, e) =>
         {
@@ -101,8 +103,14 @@ public class GraphViewModel : INotifyPropertyChanged
         };
         
         OnPropertyChanged(nameof(SeriesCollection));
+        DrawThemPeaks();
     }
-    
+
+    private void DrawThemPeaks()
+    {
+        var listoPeaks = _mathService.DetectPeaks(DataSet.DataPoints.ToList(),0,0);
+    }
+
     public void UpdateReference()
     {
         if (SeriesCollection.Count > 1)
