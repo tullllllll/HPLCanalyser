@@ -18,13 +18,6 @@ public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService, HPLCD
     {
         get => _selectedDataSet;
         set => this.RaiseAndSetIfChanged(ref _selectedDataSet, value);
-        // {
-        //     if (_selectedDataSet != value)
-        //     {
-        //         _selectedDataSet = value;
-        //         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedDataSet)));
-        //     }
-        // }
     }
 
     private DataSet _selectedReferenceDataSet;
@@ -32,13 +25,6 @@ public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService, HPLCD
     {
         get => _selectedReferenceDataSet;
         set => this.RaiseAndSetIfChanged(ref _selectedReferenceDataSet, value);
-        // {
-        //     if (_selectedReferenceDataSet != value)
-        //     {
-        //         _selectedReferenceDataSet = value;
-        //         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedReferenceDataSet)));
-        //     }
-        // }
     }
     
     public void ReadFile(string fileName, string fileContent)

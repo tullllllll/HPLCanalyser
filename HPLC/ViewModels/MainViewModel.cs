@@ -106,8 +106,12 @@ namespace HPLC.ViewModels
                 this.RaisePropertyChanged(nameof(ToggleButtonContent));
             });
             
+            // Subscribe for property changes inside dataset service
             _dataSetService.WhenAnyValue(x => x.SelectedDataSet)
                 .Subscribe(_ => this.RaisePropertyChanged(nameof(DataSet)));
+            
+            _dataSetService.WhenAnyValue(x => x.SelectedReferenceDataSet)
+                .Subscribe(_ => this.RaisePropertyChanged(nameof(ReferenceDataSet)));
             
             // Set default page to home
             CurrentPage = _serviceProvider.GetRequiredService<HomeWindow>();

@@ -48,35 +48,67 @@
         <!-- Settings Tab -->
         <TabItem Header="Settings" Cursor="Hand">
             <StackPanel Orientation="Vertical">
-                <!-- Main Data Set -->
+                <!-- Data Set Settings -->
                 <StackPanel Orientation="Horizontal">
-                    <Expander>
+                    <!-- Main data set -->
+                    <Expander MinWidth="300" VerticalAlignment="Top" Margin="5,0">
                         <Expander.Header>
                             <TextBlock>
-                                <Run Text="Main Data Set:"/>
+                                <Run Text="Main Dataset"/>
                                 <Run Text="{Binding DataSet.Name}"/>
                             </TextBlock>
                         </Expander.Header>
                         <StackPanel Orientation="Vertical">
+                            <Grid RowDefinitions="*,*" ColumnDefinitions="150,*">
+                                <!-- Data Set Name -->
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DataSet.Name}"/>
+                            
+                                <!-- Data Point Count -->
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Data Points:"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DataSet.DataPoints.Count}"/>
+                            </Grid>
                             <Button Command="{Binding SelectFileCommand}"
                                     CommandParameter="main"
-                                    Content="Select Different Data Set"
-                                    FontSize="25"
+                                    Content="Select Main Dataset"
+                                    FontSize="16"
                                     Background="Purple"
                                     Foreground="White"
                                     FontWeight="UltraLight"
                                     HorizontalAlignment="Center"
-                                    Margin="10 20"
+                                    Margin="0, 5,0,0"
                                     Cursor="Hand"/>
+                        </StackPanel>
+                    </Expander>
+                    
+                    <!-- Reference data set -->
+                    <Expander MinWidth="300" VerticalAlignment="Top" Margin="5,0">
+                        <Expander.Header>
+                            <TextBlock>
+                                <Run Text="Reference Dataset"/>
+                                <Run Text="{Binding ReferenceDataSet.Name}"/>
+                            </TextBlock>
+                        </Expander.Header>
+                        <StackPanel Orientation="Vertical">
                             <Grid RowDefinitions="*,*" ColumnDefinitions="150,*">
                                 <!-- Data Set Name -->
-                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Data Set Name:"/>
-                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DataSet.Name}"/>
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ReferenceDataSet.Name}"/>
                             
                                 <!-- Data Point Count -->
-                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Data Point Count:"/>
-                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DataSet.DataPoints.Count}"/>
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Data Points:"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ReferenceDataSet.DataPoints.Count}"/>
                             </Grid>
+                            <Button Command="{Binding SelectFileCommand}"
+                                    CommandParameter="reference"
+                                    Content="Select Reference Dataset"
+                                    FontSize="16"
+                                    Background="Purple"
+                                    Foreground="White"
+                                    FontWeight="UltraLight"
+                                    HorizontalAlignment="Center"
+                                    Margin="0,5,0,0"
+                                    Cursor="Hand"/>
                         </StackPanel>
                     </Expander>
                 </StackPanel>
