@@ -46,7 +46,7 @@ public class GraphViewModel : INotifyPropertyChanged
     public Axis[] XAxes { get; set; } = {
         new Axis
         {
-            Name = "Tijd in: ",
+            Name = "Time: ",
             TextSize = 14,
             MinLimit = null,
             MaxLimit = null,
@@ -59,15 +59,13 @@ public class GraphViewModel : INotifyPropertyChanged
     public Axis[] YAxes { get; set; } = {
         new Axis
         {
-            Name = "Variabele: ",
+            Name = "Variable: ",
             MinLimit = null,
             MaxLimit = null,
             SeparatorsPaint = new SolidColorPaint
             {
                 Color = SKColors.White
-            },
-            
-            
+            }
         }
     };
     
@@ -94,6 +92,7 @@ public class GraphViewModel : INotifyPropertyChanged
                 }
             }
         };
+        
         UpdateChartData();
     }
 
@@ -111,11 +110,17 @@ public class GraphViewModel : INotifyPropertyChanged
             new LineSeries<ObservablePoint> (ObservablePoints)
             {
                 Fill = null,
+                ZIndex = 2,
                 GeometryFill = null,
                 GeometryStroke = null,
                 Name = DataSet.Name
             },
         };
+        
+        XAxes.First().MinLimit = null;
+        XAxes.First().MaxLimit = null;
+        YAxes.First().MinLimit = null;
+        YAxes.First().MaxLimit = null;
         
         OnPropertyChanged(nameof(SeriesCollection));
         DrawThemPeaks();
@@ -162,6 +167,7 @@ public class GraphViewModel : INotifyPropertyChanged
         var newLine = new LineSeries<ObservablePoint>(ReferenceObservablePoints)
         {
             Fill = null,
+            ZIndex = 1,
             GeometryFill = null,
             GeometryStroke = null,
             Name = DataSet.Name

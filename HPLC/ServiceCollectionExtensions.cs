@@ -12,8 +12,9 @@ public static class ServiceCollectionExtensions
     public static void AddCommonServices(this IServiceCollection collection)
     {
         // ViewModels
-        collection.AddTransient<MainViewModel>();
+        collection.AddSingleton<MainViewModel>();
         collection.AddSingleton<GraphViewModel>();
+        collection.AddSingleton<FileSelectViewModel>();
         
         // Views
         collection.AddSingleton<HomeWindow>();
@@ -28,6 +29,9 @@ public static class ServiceCollectionExtensions
         
         // Services
         collection.AddScoped<DataSetService>();
+        collection.AddSingleton<MessengerService>();
+        collection.AddScoped<FileService>();
+        collection.AddSingleton<NavigationService>();
         collection.AddScoped<MathService>();
     } 
 }

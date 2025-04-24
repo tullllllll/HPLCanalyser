@@ -5,45 +5,114 @@
              x:Class="HPLC.Views.GraphWindow"
              x:DataType="vm:MainViewModel">
         
-        <Grid>
-            <views:GraphUserControl Grid.Row="0" DataContext="{Binding GraphViewModel}" Margin="0,0,0,50"/>
-            
-            <Expander Grid.Row="0" VerticalAlignment="Bottom" HorizontalAlignment="Stretch" MinHeight="50" MaxHeight="500" ZIndex="10">
-                <Expander.Header>
-                    Lijn data
-                </Expander.Header>
-                <TabControl>
-                    <TabItem Header="MainDataset">
-                        <DataGrid ItemsSource="{Binding GraphViewModel.Peaks}"
-                                  IsReadOnly="True"
-                                  CanUserReorderColumns="True"
-                                  CanUserResizeColumns="True"
-                                  GridLinesVisibility="All"
-                                  BorderThickness="1" BorderBrush="Gray">
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Start Time" Binding="{Binding StartTime}" />
-                                <DataGridTextColumn Header="Peak Time" Binding="{Binding PeakTime}" />
-                                <DataGridTextColumn Header="End Time" Binding="{Binding EndTime}" />
-                                <DataGridTextColumn Header="Peak Height" Binding="{Binding PeakHeight}" />
-                                <DataGridTextColumn Header="Area" Binding="{Binding Area}" />
-                                <DataGridTextColumn Header="Width at Half Height" Binding="{Binding WidthAtHalfHeight}" />
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </TabItem>
-  
-                    <TabItem>
-                        <Button Command="{Binding UploadFileCommand}"
-                                CommandParameter="reference"
-                                Content="Upload File"
-                                FontSize="16"
-                                Background="Purple"
-                                Foreground="White"
-                                FontWeight="UltraLight"
-                                HorizontalAlignment="Center"
-                                Margin="5 10"
-                                Cursor="Hand"/>
-                    </TabItem>
-                </TabControl>
-            </Expander>
-        </Grid>
+    <TabControl>
+        <!-- Graph Tab -->
+        <TabItem Header="Graph" Cursor="Hand">
+            <views:GraphUserControl DataContext="{Binding GraphViewModel}" Margin="50"/>
+        </TabItem>
+        
+        <!-- Graph Peak Data -->
+        <TabItem Header="Peak Data" Cursor="Hand">
+            <DataGrid ItemsSource="{Binding GraphViewModel.Peaks}"
+                      IsReadOnly="True"
+                      CanUserReorderColumns="True"
+                      CanUserResizeColumns="True"
+                      GridLinesVisibility="All"
+                      BorderThickness="1" BorderBrush="Gray">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Start Time" Binding="{Binding StartTime}" />
+                    <DataGridTextColumn Header="Peak Time" Binding="{Binding PeakTime}" />
+                    <DataGridTextColumn Header="End Time" Binding="{Binding EndTime}" />
+                    <DataGridTextColumn Header="Peak Height" Binding="{Binding PeakHeight}" />
+                    <DataGridTextColumn Header="Area" Binding="{Binding Area}" />
+                    <DataGridTextColumn Header="Width at Half Height" Binding="{Binding WidthAtHalfHeight}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </TabItem>
+        
+        <!-- Reference Line Data -->
+        <TabItem Header="Reference Line" Cursor="Hand">
+            <DataGrid ItemsSource="{Binding ReferenceDataSet.DataPoints}"
+                      IsReadOnly="True"
+                      CanUserReorderColumns="True"
+                      CanUserResizeColumns="True"
+                      GridLinesVisibility="All" 
+                      BorderThickness="1" BorderBrush="Gray">
+                <DataGrid.Columns>
+                    <DataGridTextColumn Header="Time"  Binding="{Binding Time}"/>
+                    <DataGridTextColumn Header="Value" Binding="{Binding Value, StringFormat=F2}" />
+                </DataGrid.Columns>
+            </DataGrid>
+        </TabItem>
+        
+        <!-- Settings Tab -->
+        <TabItem Header="Settings" Cursor="Hand">
+            <StackPanel Orientation="Vertical">
+                <!-- Data Set Settings -->
+                <StackPanel Orientation="Horizontal">
+                    <!-- Main data set -->
+                    <Expander MinWidth="300" VerticalAlignment="Top" Margin="5,0">
+                        <Expander.Header>
+                            <TextBlock>
+                                <Run Text="Main Dataset"/>
+                                <Run Text="{Binding DataSet.Name}"/>
+                            </TextBlock>
+                        </Expander.Header>
+                        <StackPanel Orientation="Vertical">
+                            <Grid RowDefinitions="*,*" ColumnDefinitions="150,*">
+                                <!-- Data Set Name -->
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DataSet.Name}"/>
+                            
+                                <!-- Data Point Count -->
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Data Points:"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DataSet.DataPoints.Count}"/>
+                            </Grid>
+                            <Button Command="{Binding SelectFileCommand}"
+                                    CommandParameter="main"
+                                    Content="Select Main Dataset"
+                                    FontSize="16"
+                                    Background="Purple"
+                                    Foreground="White"
+                                    FontWeight="UltraLight"
+                                    HorizontalAlignment="Center"
+                                    Margin="0, 5,0,0"
+                                    Cursor="Hand"/>
+                        </StackPanel>
+                    </Expander>
+                    
+                    <!-- Reference data set -->
+                    <Expander MinWidth="300" VerticalAlignment="Top" Margin="5,0">
+                        <Expander.Header>
+                            <TextBlock>
+                                <Run Text="Reference Dataset"/>
+                                <Run Text="{Binding ReferenceDataSet.Name}"/>
+                            </TextBlock>
+                        </Expander.Header>
+                        <StackPanel Orientation="Vertical">
+                            <Grid RowDefinitions="*,*" ColumnDefinitions="150,*">
+                                <!-- Data Set Name -->
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:"/>
+                                <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ReferenceDataSet.Name}"/>
+                            
+                                <!-- Data Point Count -->
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="Data Points:"/>
+                                <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ReferenceDataSet.DataPoints.Count}"/>
+                            </Grid>
+                            <Button Command="{Binding SelectFileCommand}"
+                                    CommandParameter="reference"
+                                    Content="Select Reference Dataset"
+                                    FontSize="16"
+                                    Background="Purple"
+                                    Foreground="White"
+                                    FontWeight="UltraLight"
+                                    HorizontalAlignment="Center"
+                                    Margin="0,5,0,0"
+                                    Cursor="Hand"/>
+                        </StackPanel>
+                    </Expander>
+                </StackPanel>
+            </StackPanel>
+        </TabItem>
+    </TabControl>
 </UserControl>

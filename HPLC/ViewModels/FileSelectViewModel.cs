@@ -1,0 +1,91 @@
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.ComponentModel;
+using System.Linq;
+using System.Reactive;
+using System.Threading.Tasks;
+using System.Windows.Input;
+using CommunityToolkit.Mvvm.Input;
+using HPLC.Models;
+using HPLC.Services;
+using ReactiveUI;
+
+namespace HPLC.ViewModels;
+
+public class FileSelectViewModel
+{
+    public event PropertyChangedEventHandler PropertyChanged;
+
+    private ObservableCollection<DataSet> _dataSets;
+    public ObservableCollection<DataSet> dataSets 
+    {
+        get => _dataSets;
+        set
+        {
+            _dataSets = value;
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(dataSets)));
+        }
+    }
+
+    private string _activeDataSetType;
+    public string ActiveDataSetType
+    {
+        get => _activeDataSetType;
+        set
+        {
+            _activeDataSetType = value;
+            ChangeActiveDataSetType(value);
+        }
+    }
+
+    public ICommand UploadFileCommand {get; set;}
+    public ICommand SelectDatasetCommand {get; set;}
+    public ICommand DeleteCommand {get; set;}
+    
+    // Services
+    private readonly SimpleKeyCRUDService<DataSet> _dataSetCrudService;
+    private readonly DataSetService _dataSetService;
+    private readonly FileService _fileService;
+
+    public FileSelectViewModel(SimpleKeyCRUDService<DataSet> dataSetCrudService, DataSetService dataSetService, FileService fileService)
+    {
+        _dataSetCrudService = dataSetCrudService;
+        _dataSetService = dataSetService;
+        _fileService = fileService;
+        
+        dataSets = new ObservableCollection<DataSet>(_dataSetCrudService.Get().ToList());
+
+        UploadFileCommand = ReactiveCommand.CreateFromTask<string>(UploadFileAsync);
+        ChangeActiveDataSetType("main");
+        DeleteCommand = ReactiveCommand.Create<int>(DeleteDataSet);
+    }
+
+    private void ChangeActiveDataSetType(string type)
+    {
+        switch (type)
+        {
+            case "main": 
+                SelectDatasetCommand = ReactiveCommand.Create<int>(_dataSetService.SetActiveDataSet);
+                break;
+            case "reference":
+                SelectDatasetCommand = ReactiveCommand.Create<int>(_dataSetService.SetReferenceDataSet);
+                break;
+        }
+    }
+
+    private async Task UploadFileAsync(string dataSetType)
+    {
+        await _fileService.UploadFileAsync(dataSetType);
+        dataSets.Add(_dataSetCrudService.Get(_dataSetService.GetLastInsertId()));
+    }
+
+    private void DeleteDataSet(int id)
+    {
+        var item = dataSets.FirstOrDefault(x => x.ID == id);
+        if (item != null)
+        {
+            dataSets.Remove(item); // will trigger UI update
+            _dataSetService.DeleteDataSet(id);
+        }
+    }
+}

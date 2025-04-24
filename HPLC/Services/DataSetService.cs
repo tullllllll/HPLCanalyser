@@ -4,41 +4,27 @@ using System.ComponentModel;
 using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
+using HPLC.Data;
 using HPLC.Models;
+using ReactiveUI;
 using Path = System.IO.Path;
 
 namespace HPLC.Services;
 
-public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService)
+public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService, HPLCDbContext context, NavigationService navigationService) : ReactiveObject
 {
-    public event PropertyChangedEventHandler PropertyChanged;
-
     private DataSet _selectedDataSet;
     public DataSet SelectedDataSet
     {
         get => _selectedDataSet;
-        set
-        {
-            if (_selectedDataSet != value)
-            {
-                _selectedDataSet = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedDataSet)));
-            }
-        }
+        set => this.RaiseAndSetIfChanged(ref _selectedDataSet, value);
     }
 
     private DataSet _selectedReferenceDataSet;
     public DataSet SelectedReferenceDataSet
     {
         get => _selectedReferenceDataSet;
-        set
-        {
-            if (_selectedReferenceDataSet != value)
-            {
-                _selectedReferenceDataSet = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedReferenceDataSet)));
-            }
-        }
+        set => this.RaiseAndSetIfChanged(ref _selectedReferenceDataSet, value);
     }
     
     public void ReadFile(string fileName, string fileContent)
@@ -51,7 +37,8 @@ public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService)
         {
             Name = Path.GetFileNameWithoutExtension(fileName),
             Date_Added = DateTime.Now,
-            DataPoints = dataPoints
+            DataPoints = dataPoints,
+            Last_Used = DateTime.Now,
         });
     }
     
@@ -76,10 +63,32 @@ public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService)
         
         return dataPoints;
     }
-    
-    private List<DataPoint> ApplyBaselineCorrection(List<DataPoint> dataPoints)
+
+    public int GetLastInsertId()
     {
-    ///Loop threw half a second worth of datapoint.values. take the average of points that are below zero
-    return null;
+        return context.DataSet.OrderByDescending(e => e.ID)
+            .Select(e => e.ID)
+            .FirstOrDefault();
+    }
+
+    public void DeleteDataSet(int datasetId)
+    {
+        dataSetService.Delete(datasetId);
+    }
+    
+    public void SetActiveDataSet(int dataSetId)
+    {
+        SelectedDataSet = dataSetService.GetWithChildren(dataSetId);
+        SelectedDataSet.Last_Used = DateTime.Now;
+        context.SaveChanges();
+        navigationService.Navigate("Graph");
+    }
+
+    public void SetReferenceDataSet(int dataSetId)
+    {
+        SelectedReferenceDataSet = dataSetService.GetWithChildren(dataSetId);
+        SelectedReferenceDataSet.Last_Used = DateTime.Now;
+        context.SaveChanges();
+        navigationService.Navigate("Graph");
     }
 }

@@ -6,44 +6,64 @@
         mc:Ignorable="d"
         d:DesignWidth="1920" d:DesignHeight="1080"
         x:Class="HPLC.Views.MainWindow"
-        Title="HLPC"
-        x:DataType="vm:MainViewModel">
-    <Grid>
-        <Grid.ColumnDefinitions>
-            <ColumnDefinition Width="200" />
-            <ColumnDefinition Width="*" />
-        </Grid.ColumnDefinitions>
-        
-        <Border Background="Transparent" BorderBrush="Black" BorderThickness="0,0,2,0" CornerRadius="0">
-            <StackPanel Grid.Column="0">
-                <Button Command="{Binding NavigateCommand}" 
-                        CommandParameter="Home"
-                        Width="200"
-                        Content="Home"
-                        FontSize="25"
-                        Foreground="Black"
-                        Background="LightGray"
-                        FontWeight="UltraLight"
-                        HorizontalAlignment="Center"
-                        HorizontalContentAlignment="Center"
-                        CornerRadius="0"
-                        Cursor="Hand"/>
+        Title="Chromalyse"
+        x:DataType="vm:MainViewModel"
+        Icon="/Assets/logo.png">
+       
+        <SplitView
+                   IsPaneOpen="{Binding IsNavOpen}"
+                   CompactPaneLength="32"
+                   OpenPaneLength="250"
+                   DisplayMode="CompactInline"
+                   HorizontalAlignment="Stretch"
+                   VerticalAlignment="Stretch">
+                <SplitView.Pane>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"></ColumnDefinition>
+                            <ColumnDefinition Width="32"></ColumnDefinition>
+                        </Grid.ColumnDefinitions>
+                        
+                        <!-- Navigation Content -->
+                        <StackPanel Grid.Column="0">
+                            <TextBlock Text="Navigation" TextAlignment="Center" FontSize="28" FontWeight="Bold" Margin="10"/>
+                            <Button Command="{Binding NavigateCommand}" 
+                                    CommandParameter="Home"
+                                    Content="Home"
+                                    FontSize="25"
+                                    Foreground="Black"
+                                    Background="LightGray"
+                                    FontWeight="UltraLight"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"
+                                    CornerRadius="0"
+                                    Cursor="Hand"/>
                 
-                    <Button Command="{Binding NavigateCommand}" 
-                            CommandParameter="Graph"
-                            Width="200"
-                            Content="Graph"
-                            FontSize="25"
-                            Foreground="Black"
-                            Background="LightGray"
-                            FontWeight="UltraLight"
-                            HorizontalAlignment="Center"
-                            HorizontalContentAlignment="Center"
-                            CornerRadius="0"
-                            Cursor="Hand"/>
-            </StackPanel>
-        </Border>
-        
-        <ContentControl Grid.Column="1" Content="{Binding CurrentPage}" />
-    </Grid>
+                            <Button Command="{Binding NavigateCommand}" 
+                                    CommandParameter="Graph"
+                                    Content="Graph"
+                                    FontSize="25"
+                                    Foreground="Black"
+                                    Background="LightGray"
+                                    FontWeight="UltraLight"
+                                    HorizontalAlignment="Stretch"
+                                    HorizontalContentAlignment="Center"
+                                    CornerRadius="0"
+                                    Cursor="Hand"/>
+                        </StackPanel>
+                        
+                        <!-- Toggle Button -->
+                        <Button Grid.Column="1" Content="{Binding ToggleButtonContent}"
+                                Command="{Binding ToggleNavCommand}"
+                                HorizontalAlignment="Stretch"
+                                VerticalAlignment="Stretch" 
+                                HorizontalContentAlignment="Center"
+                                VerticalContentAlignment="Center"/>
+                    </Grid>
+                </SplitView.Pane>
+            
+                <SplitView.Content>
+                    <ContentControl Grid.Column="1" Content="{Binding CurrentPage}" />
+                </SplitView.Content>
+        </SplitView>
 </Window>
