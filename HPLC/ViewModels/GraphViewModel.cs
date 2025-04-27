@@ -27,21 +27,12 @@ public class GraphViewModel : INotifyPropertyChanged
     public ObservableCollection<ObservablePoint> ObservablePoints { get; set; }
     public ObservableCollection<ObservablePoint> ReferenceObservablePoints { get; set; }
     public ObservableCollection<ISeries> SeriesCollection { get; set; }
+
     public ObservableCollection<Peak> Peaks { get; set; } = new ObservableCollection<Peak>();
+    public ObservableCollection<Peak> ReferencePeaks { get; set; } = new ObservableCollection<Peak>();
+
     public double Threshold { get; set; } = 60; // Standaardwaarde 
     public double MinPeakWidth { get; set; } = 0.1; // Standaardwaarde
-    public void LoadPeaks()
-    {
-        if (DataSet == null || DataSet.DataPoints == null) return;
-
-        var detectedPeaks = _mathService.DetectPeaks(DataSet.DataPoints.ToList(), Threshold, MinPeakWidth);
-        Peaks.Clear();
-        foreach (var peak in detectedPeaks)
-        {
-            Peaks.Add(peak);
-        }
-        DrawThemPeaks();
-    }
     
     public Axis[] XAxes { get; set; } = {
         new Axis
