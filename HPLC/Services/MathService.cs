@@ -44,48 +44,41 @@ public class MathService
         for (int i = 0; i < dataPoints.Count; i++)
         {
             var dp = dataPoints[i];
-
-            if (dp.Value > threshold)
-            {
-                if (!inPeak)
-                {
-                    inPeak = true;
-                    peakStartIndex = i;
-                    peakMaxIndex = i;
-                    peakMaxValue = dp.Value;
-                    peakStartValue = dp.Value;
-                }
-                else
-                {
-                    if (dp.Value > peakMaxValue)
-                    {
-                        peakMaxValue = dp.Value;
-                        peakMaxIndex = i;
-                    }
-
-                    //Als startwaarde * treshhold groter is dan datapoint waarde dan eindig piek
-                    if (peakStartValue * 1.45 > dp.Value)
-                    {
-                        // End the current peak
-                        peaks.Add(CreatePeak(dataPoints, peakStartIndex, i - 1, peakMaxIndex));
-                        inPeak = false;                    
-                    }
-                }
-            }
-            else
+            
+            if (dp.Value <= threshold)
             {
                 if (inPeak)
                 {
-                    inPeak = false;
                     peaks.Add(CreatePeak(dataPoints, peakStartIndex, i - 1, peakMaxIndex));
+                    inPeak = false;
                 }
+                continue;
+            }
+            
+            if (!inPeak)
+            {
+                inPeak = true;
+                peakStartIndex = i;
+                peakMaxIndex = i;
+                peakMaxValue = dp.Value;
+                peakStartValue = dp.Value;
+                continue;
+            }
+            
+            if (dp.Value > peakMaxValue)
+            {
+                peakMaxValue = dp.Value;
+                peakMaxIndex = i;
+            }
+
+            if (peakStartValue * 1.45 > dp.Value)
+            {
+                peaks.Add(CreatePeak(dataPoints, peakStartIndex, i - 1, peakMaxIndex));
+                inPeak = false;
             }
         }
 
-        if (inPeak)
-        {
-            peaks.Add(CreatePeak(dataPoints, peakStartIndex, dataPoints.Count - 1, peakMaxIndex));
-        }
+        if (inPeak) peaks.Add(CreatePeak(dataPoints, peakStartIndex, dataPoints.Count - 1, peakMaxIndex));
 
         return peaks.Where(p => (p.EndTime - p.StartTime) >= minPeakWidth).ToList();
     }
@@ -127,7 +120,8 @@ public class MathService
         {
             var dp1 = dataPoints[i - 1];
             var dp2 = dataPoints[i];
-            area += (dp2.Time - dp1.Time) * (dp1.Value + dp2.Value) / 2;
+            var time = (dp2.Time - dp1.Time);
+            area += time * (dp1.Value + dp2.Value) / 2;
         }
         return area;
     }

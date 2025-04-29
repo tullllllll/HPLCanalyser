@@ -12,11 +12,7 @@ public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService, HPLCD
     public DataSet SelectedDataSet
     {
         get => _selectedDataSet;
-        set
-        {
-            SelectedReferenceDataSet = null;
-            this.RaiseAndSetIfChanged(ref _selectedDataSet, value);
-        }
+        set => this.RaiseAndSetIfChanged(ref _selectedDataSet, value);
     }
 
     private DataSet _selectedReferenceDataSet;
