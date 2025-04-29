@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Reactive;
 using System.Windows.Input;
 using Avalonia.Controls;
 using ReactiveUI;
@@ -14,7 +15,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace HPLC.ViewModels
 {
-    public class MainViewModel : INotifyPropertyChanged
+    public class MainViewModel : ReactiveObject
     {
         // ViewModels
         public GraphViewModel GraphViewModel { get; set; }
@@ -22,19 +23,22 @@ namespace HPLC.ViewModels
         
         // Variables
         private UserControl _currentPage;
+        private bool _isNavOpen;
+
+        public bool IsNavOpen
+        {
+            get => _isNavOpen;
+            set => this.RaiseAndSetIfChanged(ref _isNavOpen, value);
+        }
+        
+        public string ToggleButtonContent => IsNavOpen ? "<" : ">";
         
         public UserControl CurrentPage 
         { 
             get => _currentPage; 
-            set 
-            { 
-                _currentPage = value; 
-                OnPropertyChanged(nameof(CurrentPage));
-            } 
+            set => this.RaiseAndSetIfChanged(ref _currentPage, value);
         }
-
-        private DataSet _dataSet;
-        
+       
         public DataSet DataSet
         {
             get => _dataSetService.SelectedDataSet;
@@ -43,7 +47,7 @@ namespace HPLC.ViewModels
                 if (_dataSetService.SelectedDataSet != value)
                 {
                     _dataSetService.SelectedDataSet = value;
-                    OnPropertyChanged(nameof(DataSet));
+                    this.RaisePropertyChanged(nameof(DataSet));
                 }
             }
         }
@@ -56,7 +60,7 @@ namespace HPLC.ViewModels
                 if (_dataSetService.SelectedReferenceDataSet != value)
                 {
                     _dataSetService.SelectedReferenceDataSet = value;
-                    OnPropertyChanged(nameof(ReferenceDataSet));
+                    this.RaisePropertyChanged(nameof(ReferenceDataSet));
                 }
             }
         }
@@ -64,6 +68,7 @@ namespace HPLC.ViewModels
         // Button Commands
         public ICommand NavigateCommand { get; set;  }
         public ICommand SelectFileCommand { get; set; }
+        public ReactiveCommand<Unit, Unit> ToggleNavCommand { get; }
         
         // Services
         private readonly SimpleKeyCRUDService<DataSet> _dataSetCrudService;
@@ -84,6 +89,7 @@ namespace HPLC.ViewModels
             _serviceProvider = serviceProvider;
             _navigationService = navigationService;
 
+            // Delegate commands
             _messengerService.FileUploaded += FileHasBeenUploaded;
             _navigationService.Navigate = NavigateToPage;
             
@@ -94,6 +100,18 @@ namespace HPLC.ViewModels
             // Button Commands
             NavigateCommand = ReactiveCommand.Create<object>(NavigateToPage);
             SelectFileCommand = ReactiveCommand.Create<string>(SelectFile);
+            ToggleNavCommand = ReactiveCommand.Create(() =>
+            {
+                IsNavOpen = !IsNavOpen;
+                this.RaisePropertyChanged(nameof(ToggleButtonContent));
+            });
+            
+            // Subscribe for property changes inside dataset service
+            _dataSetService.WhenAnyValue(x => x.SelectedDataSet)
+                .Subscribe(_ => this.RaisePropertyChanged(nameof(DataSet)));
+            
+            _dataSetService.WhenAnyValue(x => x.SelectedReferenceDataSet)
+                .Subscribe(_ => this.RaisePropertyChanged(nameof(ReferenceDataSet)));
             
             // Set default page to home
             CurrentPage = _serviceProvider.GetRequiredService<HomeWindow>();
@@ -151,8 +169,8 @@ namespace HPLC.ViewModels
             }
         }
         
-        public event PropertyChangedEventHandler PropertyChanged;
-        protected void OnPropertyChanged(string propertyName) => 
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        // public event PropertyChangedEventHandler PropertyChanged;
+        // protected void OnPropertyChanged(string propertyName) => 
+        //     PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
     }
 }

@@ -6,40 +6,25 @@ using System.Linq;
 using System.Text.RegularExpressions;
 using HPLC.Data;
 using HPLC.Models;
+using ReactiveUI;
 using Path = System.IO.Path;
 
 namespace HPLC.Services;
 
-public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService, HPLCDbContext context, NavigationService navigationService)
+public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService, HPLCDbContext context, NavigationService navigationService) : ReactiveObject
 {
-    public event PropertyChangedEventHandler PropertyChanged;
-
     private DataSet _selectedDataSet;
     public DataSet SelectedDataSet
     {
         get => _selectedDataSet;
-        set
-        {
-            if (_selectedDataSet != value)
-            {
-                _selectedDataSet = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedDataSet)));
-            }
-        }
+        set => this.RaiseAndSetIfChanged(ref _selectedDataSet, value);
     }
 
     private DataSet _selectedReferenceDataSet;
     public DataSet SelectedReferenceDataSet
     {
         get => _selectedReferenceDataSet;
-        set
-        {
-            if (_selectedReferenceDataSet != value)
-            {
-                _selectedReferenceDataSet = value;
-                PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(SelectedReferenceDataSet)));
-            }
-        }
+        set => this.RaiseAndSetIfChanged(ref _selectedReferenceDataSet, value);
     }
     
     public void ReadFile(string fileName, string fileContent)
@@ -104,5 +89,6 @@ public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService, HPLCD
         SelectedReferenceDataSet = dataSetService.GetWithChildren(dataSetId);
         SelectedReferenceDataSet.Last_Used = DateTime.Now;
         context.SaveChanges();
+        navigationService.Navigate("Graph");
     }
 }
