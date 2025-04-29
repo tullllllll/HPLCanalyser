@@ -1,0 +1,15 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:HPLC.ViewModels"
+        x:Class="HPLC.Views.ErrorWindow"
+        Title="Error"
+        Icon="/Assets/logo.png"
+        WindowStartupLocation="CenterOwner"
+        x:DataType="vm:ErrorViewModel"
+        SizeToContent="WidthAndHeight"
+        MinWidth="200">
+    <StackPanel Margin="10" Spacing="10">
+        <TextBlock Text="{Binding ErrorMessage}" TextWrapping="Wrap" />
+        <Button Content="OK" HorizontalAlignment="Center" Width="80" Click="Ok_Click"/>
+    </StackPanel>
+</Window>

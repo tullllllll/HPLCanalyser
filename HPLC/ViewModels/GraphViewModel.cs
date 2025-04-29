@@ -104,7 +104,9 @@ public class GraphViewModel : INotifyPropertyChanged
                 ZIndex = 2,
                 GeometryFill = null,
                 GeometryStroke = null,
-                Name = DataSet.Name
+                Name = DataSet.Name,
+                Tag = "Main",
+                Stroke = new SolidColorPaint(SKColors.Blue) { StrokeThickness = 3}
             },
         };
         
@@ -147,8 +149,14 @@ public class GraphViewModel : INotifyPropertyChanged
 
     public void UpdateReference()
     {
-        if (SeriesCollection.Count > 1)
-            SeriesCollection.RemoveAt(1);
+        var existingReference = SeriesCollection
+            .OfType<LineSeries<ObservablePoint>>()
+            .FirstOrDefault(series => series.Tag?.ToString() == "Reference");
+
+        if (existingReference != null)
+        {
+            SeriesCollection.Remove(existingReference);
+        }
         
         ReferenceObservablePoints = new ObservableCollection<ObservablePoint>();
         
@@ -161,10 +169,26 @@ public class GraphViewModel : INotifyPropertyChanged
             ZIndex = 1,
             GeometryFill = null,
             GeometryStroke = null,
-            Name = DataSet.Name
+            Name = ReferenceDataSet.Name,
+            Tag = "Reference",
+            Stroke = new SolidColorPaint(SKColors.Red) {StrokeThickness = 3}
         };
         
         SeriesCollection.Add(newLine);
+    }
+
+    public void UpdateLineColor(string line_name, SKColor color)
+    {
+        if (SeriesCollection == null || SeriesCollection.Count == 0) return;
+        
+        var line = SeriesCollection
+            .OfType<LineSeries<ObservablePoint>>()
+            .FirstOrDefault(series => series.Tag?.ToString() == line_name);
+
+        if (line != null)
+        {
+            line.Stroke = new SolidColorPaint(color) {StrokeThickness = 3};
+        }
     }
     
     public event PropertyChangedEventHandler PropertyChanged;

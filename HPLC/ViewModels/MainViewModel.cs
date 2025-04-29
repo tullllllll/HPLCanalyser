@@ -79,14 +79,13 @@ namespace HPLC.ViewModels
         
         private FileSelect window { get; set; }
         
-        public MainViewModel(SimpleKeyCRUDService<DataSet> dataSetCrudService, DataSetService dataSetService,
-            IServiceProvider serviceProvider, MessengerService messengerService, NavigationService navigationService)
+        public MainViewModel(SimpleKeyCRUDService<DataSet> dataSetCrudService, DataSetService dataSetService, MessengerService messengerService, NavigationService navigationService)
         {
             // for Dependency injection
             _dataSetCrudService = dataSetCrudService;
             _dataSetService = dataSetService;
             _messengerService = messengerService;
-            _serviceProvider = serviceProvider;
+            _serviceProvider = App.ServiceProvider;
             _navigationService = navigationService;
 
             // Delegate commands
@@ -141,7 +140,7 @@ namespace HPLC.ViewModels
                 }
             }
 
-            if (CurrentPage is not GraphWindow)
+            if (CurrentPage is not GraphWindow && dataSetType != "nee")
             {
                 CurrentPage = null;
                 CurrentPage = _serviceProvider.GetRequiredService<GraphWindow>();
