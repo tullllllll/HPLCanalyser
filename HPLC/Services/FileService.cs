@@ -1,6 +1,9 @@
 using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
@@ -8,6 +11,7 @@ using Avalonia.Platform.Storage;
 using HPLC.Models;
 using HPLC.ViewModels;
 using HPLC.Views;
+using LiveChartsCore.Kernel;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HPLC.Services;
@@ -18,13 +22,15 @@ public class FileService
         Patterns = ["*.txt", "*.csv"]
     };
     
-    private readonly DataSetService _dataSetService;
+    private readonly SimpleKeyCRUDService<DataSet> _dataSetService;
     private readonly MessengerService _messengerService;
+    private readonly ErrorService _errorSerice;
 
-    public FileService(DataSetService dataSetService, MessengerService messenger)
+    public FileService(SimpleKeyCRUDService<DataSet> dataSetService, MessengerService messenger, ErrorService errorService)
     {
         _dataSetService = dataSetService;
         _messengerService = messenger;
+        _errorSerice = errorService;
     }
     
     public async Task UploadFileAsync(string dataSetType)
@@ -55,8 +61,57 @@ public class FileService
 
         var fileContent = await streamReader.ReadToEndAsync();
         
-        _dataSetService.ReadFile(file.Name,fileContent);
+        if (ReadFile(file.Name,fileContent))
+            _messengerService.SendMessage(dataSetType);
+        else
+            _messengerService.SendMessage("nee");
+    }
+    
+    public bool ReadFile(string fileName, string fileContent)
+    {
+        try
+        {
+            string datapointString =
+                fileContent.Substring(fileContent.ToLower().LastIndexOf("intensity", StringComparison.Ordinal) + 9);
+
+            var dataPoints = FormatFileContent(datapointString);
+
+            _dataSetService.Add(new DataSet()
+            {
+                Name = Path.GetFileNameWithoutExtension(fileName),
+                Date_Added = DateTime.Now,
+                DataPoints = dataPoints,
+                Last_Used = DateTime.Now,
+            });
+
+            return true;
+        }
+        catch
+        {
+            _errorSerice.CreateWindow("Invalid file content");
+            return false;
+        }
+    }
+    
+    private List<DataPoint> FormatFileContent (string fileContent)
+    {
+        var dataPoints = new List<DataPoint>();
+        var lines = fileContent.ReplaceLineEndings("\n").Split('\n');
+
+        foreach (var line in lines)
+        {
+            var formattedLine = (Regex.Replace(line.Trim(), @"[\t; ]+", " ").Replace(",", ".")).Split(' ');
+
+            if (formattedLine.Length == 2)
+            {
+                dataPoints.Add(new DataPoint()
+                {
+                    Time = double.Parse(formattedLine[0], CultureInfo.InvariantCulture),
+                    Value = double.Parse(formattedLine[1], CultureInfo.InvariantCulture),
+                });
+            }
+        }
         
-        _messengerService.SendMessage(dataSetType);
+        return dataPoints;
     }
 }

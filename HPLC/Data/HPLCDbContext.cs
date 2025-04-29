@@ -11,9 +11,8 @@ namespace HPLC.Data
         
         protected override void OnConfiguring(DbContextOptionsBuilder options)
         {
-            // Potential issue when compiling: Routes outside of the debug folder
-            var projectRoot = Directory.GetParent(AppContext.BaseDirectory).Parent.Parent.Parent.FullName;
-            var dbPath = Path.Combine(projectRoot, "HPLC.db");
+            string dbPath = Path.Combine(Directory.GetCurrentDirectory(), "HPLC.db");
+            File.AppendAllText("app_log.txt", $"Database path: {dbPath}{Environment.NewLine}");
 
             options.UseSqlite($"Data Source={dbPath}");
         }

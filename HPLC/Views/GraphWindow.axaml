@@ -59,7 +59,7 @@
                             </TextBlock>
                         </Expander.Header>
                         <StackPanel Orientation="Vertical">
-                            <Grid RowDefinitions="*,*" ColumnDefinitions="150,*">
+                            <Grid RowDefinitions="*,*,*" ColumnDefinitions="150,*">
                                 <!-- Data Set Name -->
                                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:"/>
                                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DataSet.Name}"/>
@@ -67,6 +67,10 @@
                                 <!-- Data Point Count -->
                                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Data Points:"/>
                                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DataSet.DataPoints.Count}"/>
+                                
+                                <!-- Color Picker -->
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Line Color:" VerticalAlignment="Center"/>
+                                <ColorPicker Grid.Row="2" Grid.Column="1" Tag="Main" ColorChanged="ColorView_OnColorChanged" HorizontalAlignment="Left" Color="Blue"/>
                             </Grid>
                             <Button Command="{Binding SelectFileCommand}"
                                     CommandParameter="main"
@@ -90,7 +94,7 @@
                             </TextBlock>
                         </Expander.Header>
                         <StackPanel Orientation="Vertical">
-                            <Grid RowDefinitions="*,*" ColumnDefinitions="150,*">
+                            <Grid RowDefinitions="*,*,*" ColumnDefinitions="150,*">
                                 <!-- Data Set Name -->
                                 <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:"/>
                                 <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ReferenceDataSet.Name}"/>
@@ -98,6 +102,10 @@
                                 <!-- Data Point Count -->
                                 <TextBlock Grid.Row="1" Grid.Column="0" Text="Data Points:"/>
                                 <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ReferenceDataSet.DataPoints.Count}"/>
+                                
+                                <!-- Color Picker -->
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="Line Color:" VerticalAlignment="Center"/>
+                                <ColorPicker Grid.Row="2" Grid.Column="1" Tag="Reference" ColorChanged="ColorView_OnColorChanged" HorizontalAlignment="Left" Color="Red"/>
                             </Grid>
                             <Button Command="{Binding SelectFileCommand}"
                                     CommandParameter="reference"
