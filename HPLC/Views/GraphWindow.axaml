@@ -63,7 +63,7 @@
         <Border Grid.Row="0" Background="#FFF0F0F0" CornerRadius="5">
             <StackPanel Orientation="Vertical" Margin="10">
                 <TextBlock FontWeight="Bold" FontSize="16">
-                    <Run Text="Main Dataset: " />
+                    <Run Text="Main: " />
                     <Run Text="{Binding DataSet.Name}" />
                 </TextBlock>
 
@@ -81,7 +81,7 @@
                         CommandParameter="main"
                         Content="Switch"
                         FontSize="16"
-                        Background="#5B8DEF"
+                        Background="#4DB6AC" 
                         Foreground="White"
                         FontWeight="SemiBold"
                         HorizontalAlignment="Left"
@@ -97,7 +97,7 @@
         <Border Grid.Row="2" Background="#FFF0F0F0" CornerRadius="5">
             <StackPanel Orientation="Vertical" Margin="10">
                 <TextBlock FontWeight="Bold" FontSize="16">
-                    <Run Text="Reference Dataset: " />
+                    <Run Text="Reference: " />
                     <Run Text="{Binding ReferenceDataSet.Name}" />
                 </TextBlock>
 
@@ -115,7 +115,7 @@
                         CommandParameter="reference"
                         Content="Switch"
                         FontSize="16"
-                        Background="#4DB6AC"
+                        Background="#4DB6AC" 
                         Foreground="White"
                         FontWeight="SemiBold"
                         HorizontalAlignment="Left"
@@ -125,6 +125,7 @@
         </Border>
     </Grid>
 </TabItem>
+
 
 
                 
