@@ -6,16 +6,17 @@
     <StackPanel>
         <StackPanel>
             <Image Margin="20 100 20 0" Height="250" Width="250" Source="avares://HPLC/Assets/logo.png" />
-            <TextBlock Text="Chromalyse" TextAlignment="Center" FontSize="50"></TextBlock>
+            <TextBlock Text="ChromatoFlow" TextAlignment="Center" FontSize="50" FontWeight="Bold" Foreground="#003051" />
         </StackPanel>
+
             <StackPanel HorizontalAlignment="Center" Orientation="Horizontal" Margin="60 30">
                 <Button Command="{Binding SelectFileCommand}"
                         CommandParameter="main"
                         Content="Select File"
                         FontSize="25"
-                        Background="Purple"
+                        Background="#64B5F6"
                         Foreground="White"
-                        FontWeight="UltraLight"
+                        FontWeight="SemiBold"
                         HorizontalAlignment="Center"
                         Margin="10 20"
                         Cursor="Hand"/>

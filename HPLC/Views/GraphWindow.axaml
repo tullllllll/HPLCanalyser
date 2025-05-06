@@ -55,11 +55,80 @@
                     </DataGrid>
                 </StackPanel>
             </TabItem>
-            <TabItem Header="Select reference">
             
+<TabItem Header="Settings" Cursor="Hand">
+    <Grid RowDefinitions="Auto,10,Auto" Margin="10">
+        
+        <!-- Main data set -->
+        <Border Grid.Row="0" Background="#FFF0F0F0" CornerRadius="5">
+            <StackPanel Orientation="Vertical" Margin="10">
+                <TextBlock FontWeight="Bold" FontSize="16">
+                    <Run Text="Main Dataset: " />
+                    <Run Text="{Binding DataSet.Name}" />
+                </TextBlock>
+
+                <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="150,*" Margin="0,5">
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding DataSet.Name}"/>
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Data Points:"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding DataSet.DataPoints.Count}"/>
+                    
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Line Color:" VerticalAlignment="Center"/>
+                </Grid>
+
+                <Button Command="{Binding SelectFileCommand}"
+                        CommandParameter="main"
+                        Content="Switch"
+                        FontSize="16"
+                        Background="#5B8DEF"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        HorizontalAlignment="Left"
+                        Margin="0,10,0,0"
+                        Cursor="Hand"/>
+            </StackPanel>
+        </Border>
+
+        <!-- Spacing between panels -->
+        <Rectangle Grid.Row="1" Height="10" Fill="Transparent"/>
+
+        <!-- Reference data set -->
+        <Border Grid.Row="2" Background="#FFF0F0F0" CornerRadius="5">
+            <StackPanel Orientation="Vertical" Margin="10">
+                <TextBlock FontWeight="Bold" FontSize="16">
+                    <Run Text="Reference Dataset: " />
+                    <Run Text="{Binding ReferenceDataSet.Name}" />
+                </TextBlock>
+
+                <Grid RowDefinitions="Auto,Auto,Auto" ColumnDefinitions="150,*" Margin="0,5">
+                    <TextBlock Grid.Row="0" Grid.Column="0" Text="Name:"/>
+                    <TextBlock Grid.Row="0" Grid.Column="1" Text="{Binding ReferenceDataSet.Name}"/>
+                    
+                    <TextBlock Grid.Row="1" Grid.Column="0" Text="Data Points:"/>
+                    <TextBlock Grid.Row="1" Grid.Column="1" Text="{Binding ReferenceDataSet.DataPoints.Count}"/>
+                    
+                    <TextBlock Grid.Row="2" Grid.Column="0" Text="Line Color:" VerticalAlignment="Center"/>
+                </Grid>
+
+                <Button Command="{Binding SelectFileCommand}"
+                        CommandParameter="reference"
+                        Content="Switch"
+                        FontSize="16"
+                        Background="#4DB6AC"
+                        Foreground="White"
+                        FontWeight="SemiBold"
+                        HorizontalAlignment="Left"
+                        Margin="0,10,0,0"
+                        Cursor="Hand"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</TabItem>
+
+
                 
-                
-            </TabItem>
+            
             <TabItem Header="Home">
                 
                 
