@@ -7,10 +7,35 @@
         
     <TabControl>
         <!-- Graph Tab -->
-        <TabItem Header="Graph" Cursor="Hand">
-            <views:GraphUserControl DataContext="{Binding GraphViewModel}" Margin="50"/>
+        <TabItem Header="Graph">
+            <Grid>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="*" /> 
+                    <RowDefinition Height="200" />
+                </Grid.RowDefinitions>
+
+                <!-- Fills all space except the 200px below -->
+                <views:GraphUserControl DataContext="{Binding GraphViewModel}" Grid.Row="0" />
+
+                <!-- Fixed-height DataGrid -->
+                <DataGrid ItemsSource="{Binding GraphViewModel.Peaks}"
+                          AutoGenerateColumns="False"
+                          IsReadOnly="True"
+                          GridLinesVisibility="All"
+                          BorderBrush="Gray"
+                          BorderThickness="1"
+                          Grid.Row="1">
+                    <DataGrid.Columns>
+                        <DataGridTextColumn Header="Start Time" Binding="{Binding StartTime}" />
+                        <DataGridTextColumn Header="Peak Time" Binding="{Binding PeakTime}" />
+                        <DataGridTextColumn Header="End Time" Binding="{Binding EndTime}" />
+                        <DataGridTextColumn Header="Peak Height" Binding="{Binding PeakHeight}" />
+                        <DataGridTextColumn Header="Area" Binding="{Binding Area}" />
+                        <DataGridTextColumn Header="Width at Half Height" Binding="{Binding WidthAtHalfHeight}" />
+                    </DataGrid.Columns>
+                </DataGrid>
+            </Grid>
         </TabItem>
-        
         <!-- Graph Peak Data -->
         <TabItem Header="Peak Data" Cursor="Hand">
             <DataGrid ItemsSource="{Binding GraphViewModel.Peaks}"
@@ -82,6 +107,15 @@
                                     HorizontalAlignment="Center"
                                     Margin="0, 5,0,0"
                                     Cursor="Hand"/>
+                            <Button Command="{Binding DeselectFileCommand}"
+                                    CommandParameter="main"
+                                    Content="Deselect Main Dataset"
+                                    FontSize="16"
+                                    Background="Red"
+                                    Foreground="White"
+                                    HorizontalAlignment="Center"
+                                    Margin="0,5,0,0"
+                                    Cursor="Hand"/>
                         </StackPanel>
                     </Expander>
                     
@@ -114,6 +148,15 @@
                                     Background="Purple"
                                     Foreground="White"
                                     FontWeight="UltraLight"
+                                    HorizontalAlignment="Center"
+                                    Margin="0,5,0,0"
+                                    Cursor="Hand"/>
+                            <Button Command="{Binding DeselectFileCommand}"
+                                    CommandParameter="reference"
+                                    Content="Deselect Reference Dataset"
+                                    FontSize="16"
+                                    Background="Red"
+                                    Foreground="White"
                                     HorizontalAlignment="Center"
                                     Margin="0,5,0,0"
                                     Cursor="Hand"/>

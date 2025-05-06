@@ -68,6 +68,7 @@ namespace HPLC.ViewModels
         // Button Commands
         public ICommand NavigateCommand { get; set;  }
         public ICommand SelectFileCommand { get; set; }
+        public ICommand DeselectFileCommand { get; set; }
         public ReactiveCommand<Unit, Unit> ToggleNavCommand { get; }
         
         // Services
@@ -99,6 +100,7 @@ namespace HPLC.ViewModels
             // Button Commands
             NavigateCommand = ReactiveCommand.Create<object>(NavigateToPage);
             SelectFileCommand = ReactiveCommand.Create<string>(SelectFile);
+            DeselectFileCommand = ReactiveCommand.Create<string>(DeselectFile);
             ToggleNavCommand = ReactiveCommand.Create(() =>
             {
                 IsNavOpen = !IsNavOpen;
@@ -121,6 +123,11 @@ namespace HPLC.ViewModels
             FileSelectViewModel.ActiveDataSetType = dataSetType;
             window = new FileSelect(FileSelectViewModel);
             window.Show();
+        }
+        private void DeselectFile(string dataSetType)
+        {
+            if (dataSetType=="reference") ReferenceDataSet = null;
+            if (dataSetType=="main") DataSet = null;
         }
 
         private void FileHasBeenUploaded(string dataSetType)

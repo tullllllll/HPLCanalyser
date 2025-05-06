@@ -60,70 +60,77 @@ public class GraphViewModel : INotifyPropertyChanged
         }
     };
     
-    public GraphViewModel(DataSetService DataSetService, MathService MathService)
+    public GraphViewModel(DataSetService dataSetService, MathService mathService)
     {
-        _dataSetService = DataSetService;
-        _mathService = MathService;
-
-        _dataSetService.PropertyChanged += (s, e) =>
-        {
-            switch (e.PropertyName)
-            {
-                case nameof(DataSetService.SelectedDataSet):
-                {
-                    OnPropertyChanged(nameof(DataSet));
-                    UpdateChartData();
-                    break;
-                }
-                case nameof(DataSetService.SelectedReferenceDataSet):
-                {
-                    OnPropertyChanged(nameof(ReferenceDataSet));
-                    UpdateReference();
-                    break;
-                }
-            }
-        };
+        _dataSetService = dataSetService;
+        _mathService = mathService;
+        
+        _dataSetService.PropertyChanged += HandlePropertyChanged;
         
         UpdateChartData();
     }
-
-    private void UpdateChartData()
+    
+    private void HandlePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
-        if (DataSet == null || DataSet.DataPoints == null) return;
-        
-        ObservablePoints = new ObservableCollection<ObservablePoint>();
-        
-        foreach (var dp in DataSet.DataPoints)
-            ObservablePoints.Add(new ObservablePoint(dp.Time, dp.Value));
-        
-        SeriesCollection = new ObservableCollection<ISeries>
+        switch (e.PropertyName)
         {
-            new LineSeries<ObservablePoint> (ObservablePoints)
-            {
-                Fill = null,
-                ZIndex = 2,
-                GeometryFill = null,
-                GeometryStroke = null,
-                Name = DataSet.Name,
-                Tag = "Main",
-                Stroke = new SolidColorPaint(SKColors.Blue) { StrokeThickness = 3}
-            },
-        };
-        
-        XAxes.First().MinLimit = null;
-        XAxes.First().MaxLimit = null;
-        YAxes.First().MinLimit = null;
-        YAxes.First().MaxLimit = null;
-        
-        OnPropertyChanged(nameof(SeriesCollection));
-        DrawThemPeaks();
+            case nameof(DataSetService.SelectedDataSet):
+                OnPropertyChanged(nameof(DataSet));
+                UpdateChartData();
+                break;
+
+            case nameof(DataSetService.SelectedReferenceDataSet):
+                OnPropertyChanged(nameof(ReferenceDataSet));
+                UpdateReference();
+                break;
+        }
     }
+
+private void UpdateChartData()
+{
+    ObservablePoints = new ObservableCollection<ObservablePoint>();
+    
+    if (DataSet == null || DataSet.DataPoints == null)
+    {
+        SeriesCollection = new ObservableCollection<ISeries>();
+        OnPropertyChanged(nameof(SeriesCollection));
+        return; 
+    }
+
+    foreach (var dp in DataSet.DataPoints)
+    {
+        ObservablePoints.Add(new ObservablePoint(dp.Time, dp.Value));
+    }
+    
+    SeriesCollection = new ObservableCollection<ISeries>
+    {
+        new LineSeries<ObservablePoint>(ObservablePoints)
+        {
+            Fill = null,
+            ZIndex = 2,
+            GeometryFill = null,
+            GeometryStroke = null,
+            Name = DataSet.Name,
+            Tag = "Main",
+            Stroke = new SolidColorPaint(SKColors.Blue) { StrokeThickness = 3}
+        },
+    };
+    
+    XAxes.First().MinLimit = null;
+    XAxes.First().MaxLimit = null;
+    YAxes.First().MinLimit = null;
+    YAxes.First().MaxLimit = null;
+    
+    OnPropertyChanged(nameof(SeriesCollection));
+
+    DrawThemPeaks();
+}
 
     private void DrawThemPeaks()
     {
         if (DataSet == null || DataSet.DataPoints == null) return;
 
-        var detectedPeaks = _mathService.DetectPeaks(DataSet.DataPoints.ToList(), 60, 0.1);
+        var detectedPeaks = _mathService.DetectPeaks(DataSet.DataPoints.ToList(), 100, 0.2);
 
         foreach (var peak in detectedPeaks)
         {
@@ -159,6 +166,7 @@ public class GraphViewModel : INotifyPropertyChanged
         }
         
         ReferenceObservablePoints = new ObservableCollection<ObservablePoint>();
+        if (ReferenceDataSet == null) return;
         
         foreach (var dp in ReferenceDataSet.DataPoints)
             ReferenceObservablePoints.Add(new ObservablePoint(dp.Time, dp.Value));
@@ -176,7 +184,7 @@ public class GraphViewModel : INotifyPropertyChanged
         
         SeriesCollection.Add(newLine);
     }
-
+    
     public void UpdateLineColor(string line_name, SKColor color)
     {
         if (SeriesCollection == null || SeriesCollection.Count == 0) return;
