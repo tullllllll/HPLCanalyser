@@ -1,7 +1,7 @@
 <Window xmlns="https://github.com/avaloniaui"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:vm="clr-namespace:HPLC.ViewModels"
-        Width="700" Height="450"
+        Width="800" Height="450"
         x:Class="HPLC.Views.FileSelect"
         x:DataType="vm:FileSelectViewModel"
         Title="File Selector"
@@ -64,7 +64,7 @@
                         <DataTemplate >
                             <Button Command="{Binding $parent[DataGrid].((vm:FileSelectViewModel)DataContext).SelectDatasetCommand}"
                                     CommandParameter="{Binding ID}"
-                                    Background="DarkBlue"
+                                    Background="DodgerBlue"
                                     Foreground="White"
                                     FontWeight="UltraLight"
                                     VerticalAlignment="Stretch"

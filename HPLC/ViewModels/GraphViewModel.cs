@@ -89,6 +89,8 @@ public class GraphViewModel : INotifyPropertyChanged
 private void UpdateChartData()
 {
     ObservablePoints = new ObservableCollection<ObservablePoint>();
+    Peaks = new ObservableCollection<Peak>();
+    OnPropertyChanged(nameof(Peaks));
     
     if (DataSet == null || DataSet.DataPoints == null)
     {
@@ -145,7 +147,7 @@ private void UpdateChartData()
                 GeometryFill = null,
                 GeometryStroke = null,
                 LineSmoothness = 0,
-                Name = $"Peak at {peak.PeakTime}"
+                Name = peak.Name
             };
             
             SeriesCollection.Add(peakLine);

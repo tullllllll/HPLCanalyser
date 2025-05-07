@@ -108,7 +108,8 @@ public class MathService
             EndTime = dataPoints[endIdx].Time,
             PeakHeight = dataPoints[maxIdx].Value - baseline,
             Area = area,
-            WidthAtHalfHeight = widthAtHalfHeight
+            WidthAtHalfHeight = widthAtHalfHeight,
+            Name = "Peak at " + dataPoints[maxIdx].Time.ToString("0.00")
         };
     }
     
