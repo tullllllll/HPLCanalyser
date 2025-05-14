@@ -1,0 +1,26 @@
+name: Build voor macOS
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+    - name: Repository klonen
+      uses: actions/checkout@v3
+
+    - name: Installeer dependencies (voorbeeld met Homebrew)
+      run: |
+        brew install cmake
+
+    - name: Build uitvoeren
+      run: |
+        mkdir build
+        cd build
+        cmake ..
+        make
