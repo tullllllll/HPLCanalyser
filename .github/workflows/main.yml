@@ -1,0 +1,29 @@
+name: Build Avalonia App (macOS)
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Installeer .NET SDK
+        uses: actions/setup-dotnet@v3
+        with:
+          dotnet-version: '8.0.x'  # of je versie: 6.0.x, 7.0.x, ...
+
+      - name: Herstel NuGet packages
+        run: dotnet restore
+
+      - name: Build Avalonia app
+        run: dotnet build --configuration Release
+
+      - name: Toon output
+        run: ls -R ./bin
