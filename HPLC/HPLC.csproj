@@ -6,6 +6,8 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
+    <RuntimeIdentifiers>osx-arm64</RuntimeIdentifiers>
+    <PublishTrimmed>False</PublishTrimmed>
   </PropertyGroup>
     <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.2.5" />

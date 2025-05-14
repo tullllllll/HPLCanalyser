@@ -20,12 +20,12 @@
                       GridLinesVisibility="All"
                       BorderThickness="1" BorderBrush="Gray">
                 <DataGrid.Columns>
-                    <DataGridTextColumn Header="Start Time" Binding="{Binding StartTime}" />
-                    <DataGridTextColumn Header="Peak Time" Binding="{Binding PeakTime}" />
-                    <DataGridTextColumn Header="End Time" Binding="{Binding EndTime}" />
-                    <DataGridTextColumn Header="Peak Height" Binding="{Binding PeakHeight}" />
-                    <DataGridTextColumn Header="Area" Binding="{Binding Area}" />
-                    <DataGridTextColumn Header="Width at Half Height" Binding="{Binding WidthAtHalfHeight}" />
+                    <DataGridTextColumn Header="Start Time" Binding="{Binding StartTime, StringFormat=F3}" />
+                    <DataGridTextColumn Header="Peak Time" Binding="{Binding PeakTime, StringFormat=F3}" />
+                    <DataGridTextColumn Header="End Time" Binding="{Binding EndTime, StringFormat=F3}" />
+                    <DataGridTextColumn Header="Peak Height" Binding="{Binding PeakHeight, StringFormat=F2}" />
+                    <DataGridTextColumn Header="Area" Binding="{Binding Area, StringFormat=F1}" />
+                    <DataGridTextColumn Header="Width at Half Height" Binding="{Binding WidthAtHalfHeight, StringFormat=F6}" />
                 </DataGrid.Columns>
             </DataGrid>
         </TabItem>
