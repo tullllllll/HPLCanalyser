@@ -115,8 +115,8 @@
                                     <TextBlock Grid.Row="2" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Text="Points:" Margin="0,0,10,5"/>
                                     <TextBlock Grid.Row="2" Grid.Column="1" FontSize="16" VerticalAlignment="Center" Text="{Binding DataSet.DataPoints.Count}" Margin="0,0,0,5"/>
                                     
-                                    <TextBlock Grid.Row="3" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Text="Dataset Added:" Margin="0,0,10,5"/>
-                                    <TextBlock Grid.Row="3" Grid.Column="1" FontSize="16" VerticalAlignment="Center" Text="{Binding DataSet.Date_Added}" Margin="0,0,0,5"/>
+                                    <TextBlock Grid.Row="3" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Text="Sample Date:" Margin="0,0,10,5"/>
+                                    <CalendarDatePicker Grid.Row="3" Grid.Column="1" FontSize="16" VerticalAlignment="Center" SelectedDate="{Binding DataSet.Sample_Date, Mode=TwoWay}" Margin="0,0,0,5"/>
 
                                     <TextBlock Grid.Row="4" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Text="Color:" Margin="0,0,10,5"/>
                                     <ColorPicker Grid.Row="4" Grid.Column="1" Tag="Main" Color="Blue" ColorChanged="ColorView_OnColorChanged" Margin="0,5" HorizontalAlignment="Stretch" MaxWidth="350"/>
@@ -151,7 +151,7 @@
                                     <TextBlock Grid.Row="2" Grid.Column="1" FontSize="16" VerticalAlignment="Center" Text="{Binding ReferenceDataSet.DataPoints.Count}" Margin="0,0,0,5"/>
                                     
                                     <TextBlock Grid.Row="3" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Text="Dataset Added:" Margin="0,0,10,5"/>
-                                    <TextBlock Grid.Row="3" Grid.Column="1" FontSize="16" VerticalAlignment="Center" Text="{Binding ReferenceDataSet.Date_Added}" Margin="0,0,0,5"/>
+                                    <CalendarDatePicker Grid.Row="3" Grid.Column="1" FontSize="16" VerticalAlignment="Center" SelectedDate="{Binding ReferenceDataSet.Sample_Date, Mode=TwoWay}" Margin="0,0,0,5"/>
 
                                     <TextBlock Grid.Row="4" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Text="Color:" Margin="0,0,10,5"/>
                                     <ColorPicker Grid.Row="4" Grid.Column="1" Tag="Reference" Color="Red" ColorChanged="ColorView_OnColorChanged" Margin="0,5" HorizontalAlignment="Stretch" MaxWidth="350"/>

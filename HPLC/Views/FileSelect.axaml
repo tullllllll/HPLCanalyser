@@ -57,6 +57,7 @@
                   HorizontalAlignment="Stretch">
             <DataGrid.Columns>
                 <DataGridTextColumn Header="File Name"  Binding="{Binding Name}" Width="*"/>
+                <DataGridTextColumn Header="Sampled at" Binding="{Binding Sample_Date,StringFormat='{}{0:dd-MM-yyyy}'}" Width="*"/>
                 <DataGridTextColumn Header="Last Used" Binding="{Binding Last_Used}" Width="*"/>
                 <DataGridTextColumn Header="Uploaded at" Binding="{Binding Date_Added}" Width="*"/>
                 <DataGridTemplateColumn Header="Select" Width="125">
