@@ -26,4 +26,4 @@ jobs:
         run: dotnet build --configuration Release
 
       - name: Toon output
-        run: ls -R ./bin
+        run: ls -R /bin
