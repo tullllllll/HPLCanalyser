@@ -6,8 +6,8 @@
     <BuiltInComInteropSupport>true</BuiltInComInteropSupport>
     <ApplicationManifest>app.manifest</ApplicationManifest>
     <AvaloniaUseCompiledBindingsByDefault>true</AvaloniaUseCompiledBindingsByDefault>
-    <SelfContained>true</SelfContained>
     <RuntimeIdentifiers>win-x64;linux-x64;osx-arm64;osx-x64</RuntimeIdentifiers>
+    <SelfContained>true</SelfContained>
   </PropertyGroup>
     <ItemGroup>
     <PackageReference Include="Avalonia" Version="11.2.5" />
@@ -44,6 +44,11 @@
     <Folder Include="Controls\" />
     <Folder Include="Migrations\" />
     <Folder Include="Resources\" />
+    <None Update="HPLC.db">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <PackageReference Include="Avalonia.Controls.ColorPicker" Version="11.2.5" />
+    <Folder Include="Migrations\" />
     <None Update="HPLC.db">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

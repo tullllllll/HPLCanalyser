@@ -108,9 +108,7 @@ public class GraphViewModel : INotifyPropertyChanged
         }
         
         foreach (var dp in DataSet.DataPoints)
-        {
             ObservablePoints.Add(new ObservablePoint(dp.Time, dp.Value));
-        }
         
         SeriesCollection = new ObservableCollection<ISeries>
         {
@@ -132,7 +130,6 @@ public class GraphViewModel : INotifyPropertyChanged
         YAxes.First().MaxLimit = null;
         
         OnPropertyChanged(nameof(SeriesCollection));
-
         DrawThemPeaks();
     }
 
