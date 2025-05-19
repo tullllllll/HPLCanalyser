@@ -66,8 +66,16 @@ public class GraphViewModel : INotifyPropertyChanged
         _mathService = mathService;
         
         _dataSetService.PropertyChanged += HandlePropertyChanged;
-        
+
         UpdateChartData();
+    }
+
+    private void Peak_PropertyChanged(object? sender, PropertyChangedEventArgs e)
+    {
+        if (sender is Peak peak)
+        {
+            SeriesCollection.FirstOrDefault(el => el.Tag?.ToString() == peak.Tag).Name = peak.Name;
+        }
     }
     
     private void HandlePropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -86,56 +94,58 @@ public class GraphViewModel : INotifyPropertyChanged
         }
     }
 
-private void UpdateChartData()
-{
-    ObservablePoints = new ObservableCollection<ObservablePoint>();
-    Peaks = new ObservableCollection<Peak>();
-    OnPropertyChanged(nameof(Peaks));
-    
-    if (DataSet == null || DataSet.DataPoints == null)
+    private void UpdateChartData()
     {
-        SeriesCollection = new ObservableCollection<ISeries>();
-        OnPropertyChanged(nameof(SeriesCollection));
-        return; 
-    }
-
-    foreach (var dp in DataSet.DataPoints)
-    {
-        ObservablePoints.Add(new ObservablePoint(dp.Time, dp.Value));
-    }
-    
-    SeriesCollection = new ObservableCollection<ISeries>
-    {
-        new LineSeries<ObservablePoint>(ObservablePoints)
+        ObservablePoints = new ObservableCollection<ObservablePoint>();
+        Peaks = new ObservableCollection<Peak>();
+        OnPropertyChanged(nameof(Peaks));
+        
+        if (DataSet == null || DataSet.DataPoints == null)
         {
-            Fill = null,
-            ZIndex = 2,
-            GeometryFill = null,
-            GeometryStroke = null,
-            Name = DataSet.Name,
-            Tag = "Main",
-            Stroke = new SolidColorPaint(SKColors.Blue) { StrokeThickness = 3}
-        },
-    };
-    
-    XAxes.First().MinLimit = null;
-    XAxes.First().MaxLimit = null;
-    YAxes.First().MinLimit = null;
-    YAxes.First().MaxLimit = null;
-    
-    OnPropertyChanged(nameof(SeriesCollection));
+            SeriesCollection = new ObservableCollection<ISeries>();
+            OnPropertyChanged(nameof(SeriesCollection));
+            return; 
+        }
+        
+        foreach (var dp in DataSet.DataPoints)
+        {
+            ObservablePoints.Add(new ObservablePoint(dp.Time, dp.Value));
+        }
+        
+        SeriesCollection = new ObservableCollection<ISeries>
+        {
+            new LineSeries<ObservablePoint>(ObservablePoints)
+            {
+                Fill = null,
+                ZIndex = 2,
+                GeometryFill = null,
+                GeometryStroke = null,
+                Name = DataSet.Name,
+                Tag = "Main",
+                Stroke = new SolidColorPaint(SKColors.Blue) { StrokeThickness = 3},
+            },
+        };
+        
+        XAxes.First().MinLimit = null;
+        XAxes.First().MaxLimit = null;
+        YAxes.First().MinLimit = null;
+        YAxes.First().MaxLimit = null;
+        
+        OnPropertyChanged(nameof(SeriesCollection));
 
-    DrawThemPeaks();
-}
+        DrawThemPeaks();
+    }
 
     private void DrawThemPeaks()
     {
         if (DataSet == null || DataSet.DataPoints == null) return;
-
+        
         var detectedPeaks = _mathService.DetectPeaks(DataSet.DataPoints.ToList(), 100, 0.2);
 
-        foreach (var peak in detectedPeaks)
+        for (int i = 0; i < detectedPeaks.Count; i++)
         {
+            var peak = detectedPeaks[i];
+            peak.Tag = i.ToString();
             var peakLine = new LineSeries<ObservablePoint>
             {
                 Values = new ObservableCollection<ObservablePoint>(
@@ -147,11 +157,13 @@ private void UpdateChartData()
                 GeometryFill = null,
                 GeometryStroke = null,
                 LineSmoothness = 0,
-                Name = peak.Name
+                Name = peak.Name,
+                Tag = i.ToString(),
             };
             
             SeriesCollection.Add(peakLine);
             Peaks.Add(peak);
+            peak.PropertyChanged += Peak_PropertyChanged;
         }
         OnPropertyChanged(nameof(SeriesCollection));
     }

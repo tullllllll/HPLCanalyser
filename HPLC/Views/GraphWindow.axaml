@@ -21,7 +21,8 @@
                     <Expander Header="Peak Data" IsExpanded="True" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <DataGrid ItemsSource="{Binding GraphViewModel.Peaks}"
                                   AutoGenerateColumns="False"
-                                  IsReadOnly="True"
+                                  IsReadOnly="False"
+                                  
                                   GridLinesVisibility="All"
                                   BorderThickness="1"
                                   BorderBrush="Gray"
