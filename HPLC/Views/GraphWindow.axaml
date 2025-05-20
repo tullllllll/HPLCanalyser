@@ -13,12 +13,21 @@
                     <Grid.RowDefinitions>
                         <RowDefinition Height="*" /> 
                         <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
                     </Grid.RowDefinitions>
 
                     <views:GraphUserControl Grid.Row="0" DataContext="{Binding GraphViewModel}" />
 
+                    <StackPanel Orientation="Horizontal" Margin="10" Spacing="10" Grid.Row="1">
+                        <TextBlock Text="Threshold:" VerticalAlignment="Center"/>
+                        <TextBox Width="100" Text="{Binding GraphViewModel.Threshold, Mode=TwoWay}" TextChanging="InputElement_OnTextChanging"/>
+
+                        <TextBlock Text="Min Width:" VerticalAlignment="Center"/>
+                        <TextBox Width="100" Text="{Binding GraphViewModel.MinPeakWidth, Mode=TwoWay}" TextChanging="InputElement_OnTextChanging" />
+                    </StackPanel>
+                    
                     <!-- Expander for Peak Data -->
-                    <Expander Header="Peak Data" IsExpanded="True" Grid.Row="1" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                    <Expander Header="Peak Data" IsExpanded="True" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
                         <DataGrid ItemsSource="{Binding GraphViewModel.Peaks}"
                                   AutoGenerateColumns="False"
                                   IsReadOnly="False"
@@ -42,42 +51,8 @@
                     </Expander>
 
                     <!-- GridSplitter to make the Expander draggable -->
-                    <GridSplitter Grid.Row="1" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" ResizeBehavior="PreviousAndNext" />
+                    <GridSplitter Grid.Row="2" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" ResizeBehavior="PreviousAndNext" />
                 </Grid>
-            </TabItem>
-
-            
-            <!-- Peak Data Table -->
-            <TabItem Header="Peak Table">
-                <DataGrid ItemsSource="{Binding GraphViewModel.Peaks}"
-                          IsReadOnly="True"
-                          CanUserReorderColumns="True"
-                          CanUserResizeColumns="True"
-                          GridLinesVisibility="All"
-                          BorderBrush="Gray"
-                          BorderThickness="1"
-                          Margin="10">
-                    <DataGrid.Columns>
-                        <!-- First column with double width -->
-                        <DataGridTextColumn Header="Name" Binding="{Binding Name}" Width="1.25*" />
-                        <DataGridTextColumn Header="Start Time" Binding="{Binding StartTime}" Width="*" />
-                        <DataGridTextColumn Header="Peak Time" Binding="{Binding PeakTime}" Width="*" />
-                        <DataGridTextColumn Header="End Time" Binding="{Binding EndTime}" Width="*" />
-                        <DataGridTextColumn Header="Peak Height" Binding="{Binding PeakHeight}" Width="0.8*" />
-                        <DataGridTextColumn Header="Area" Binding="{Binding Area}" Width="*" />
-                        <DataGridTextColumn Header="Width ½ Height" Binding="{Binding WidthAtHalfHeight}" Width="*" />
-                    </DataGrid.Columns>
-
-                    <!-- Add a style for alternating row background -->
-                    <DataGrid.Styles>
-                        <Style Selector="DataGridRow:nth-child(odd)">
-                            <Setter Property="Background" Value="#EEE"/>
-                        </Style>
-                        <Style Selector="DataGridRow:nth-child(even)">
-                            <Setter Property="Background" Value="White"/>
-                        </Style>
-                    </DataGrid.Styles>
-                </DataGrid>
             </TabItem>
 
             <!-- Settings -->

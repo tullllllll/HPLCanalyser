@@ -27,12 +27,53 @@ public class GraphViewModel : INotifyPropertyChanged
     public ObservableCollection<ObservablePoint> ObservablePoints { get; set; }
     public ObservableCollection<ObservablePoint> ReferenceObservablePoints { get; set; }
     public ObservableCollection<ISeries> SeriesCollection { get; set; }
-
     public ObservableCollection<Peak> Peaks { get; set; } = new ObservableCollection<Peak>();
     public ObservableCollection<Peak> ReferencePeaks { get; set; } = new ObservableCollection<Peak>();
 
-    public double Threshold { get; set; } = 60; // Standaardwaarde 
-    public double MinPeakWidth { get; set; } = 0.1; // Standaardwaarde
+    private double _threshold = 60; // Default value
+    public double Threshold
+    {
+        get => _threshold;
+        set
+        {
+            if (_threshold != value)
+            {
+                if (value == null)
+                {
+                    _threshold = 0;
+                }
+                else
+                {
+                    _threshold = value;
+                }
+                OnPropertyChanged(nameof(Threshold));
+                DrawThemPeaks(_threshold, MinPeakWidth); // Update peaks when threshold changes
+            }
+
+        }
+    }    
+    public double _minPeakWidth { get; set; } = 0.1; // Standaardwaarde
+    public double MinPeakWidth
+    {
+        get => _minPeakWidth;
+        set
+        {
+            if (_minPeakWidth != value)
+            {
+                if (value == null)
+                {
+                    _minPeakWidth = 0;
+                }
+                else
+                {
+                    _minPeakWidth = value;
+                }
+                OnPropertyChanged(nameof(MinPeakWidth));
+                DrawThemPeaks(_threshold, _minPeakWidth); 
+            }
+
+        }
+    }  
     
     public Axis[] XAxes { get; set; } = {
         new Axis
@@ -122,6 +163,7 @@ public class GraphViewModel : INotifyPropertyChanged
                 Tag = "Main",
                 Stroke = new SolidColorPaint(SKColors.Blue) { StrokeThickness = 3},
             },
+            
         };
         
         XAxes.First().MinLimit = null;
@@ -130,15 +172,29 @@ public class GraphViewModel : INotifyPropertyChanged
         YAxes.First().MaxLimit = null;
         
         OnPropertyChanged(nameof(SeriesCollection));
-        DrawThemPeaks();
+        DrawThemPeaks(Threshold, MinPeakWidth);
     }
 
-    private void DrawThemPeaks()
+    private void DrawThemPeaks(double treshhold, double minPeakWidth)
     {
         if (DataSet == null || DataSet.DataPoints == null) return;
         
-        var detectedPeaks = _mathService.DetectPeaks(DataSet.DataPoints.ToList(), 100, 0.2);
+        var detectedPeaks = _mathService.DetectPeaks(DataSet.DataPoints.ToList(), treshhold, minPeakWidth);
 
+        var linesToRemove = SeriesCollection
+            .Where(line => line.Tag?.ToString() != "Main" && line.Tag?.ToString() != "Reference")
+            .ToList();
+
+        if (Peaks.Count > 0)
+        {
+            Peaks.Clear();
+        }
+        foreach (var line in linesToRemove)
+        {
+            SeriesCollection.Remove(line);
+        }
+
+        
         for (int i = 0; i < detectedPeaks.Count; i++)
         {
             var peak = detectedPeaks[i];
