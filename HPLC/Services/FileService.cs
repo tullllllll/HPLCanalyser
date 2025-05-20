@@ -70,11 +70,16 @@ public class FileService
     public bool ReadFile(string fileName, string fileContent)
     {
         try
-        {
-            string datapointString =
-                fileContent.Substring(fileContent.ToLower().LastIndexOf("intensity", StringComparison.Ordinal) + 9);
+        {   
+            var acquiredData = fileContent.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
+                .FirstOrDefault(line => line.TrimStart().StartsWith("Acquired", StringComparison.OrdinalIgnoreCase));
 
-            var dataPoints = FormatFileContent(datapointString);
+            string result = acquiredData?.Split('\t').Last().Trim();
+            string type = (!string.IsNullOrEmpty(result)) ? "Shimadzu" : "Jasco";
+            DateTime sampleDate = (type=="Shimadzu")? DateTime.ParseExact(result, "d-M-yyyy HH:mm:ss", CultureInfo.InvariantCulture):new DateTime(2000, 1, 1);
+            string datapointString = fileContent.Substring(fileContent.ToLower().LastIndexOf("intensity", StringComparison.Ordinal) + 9);
+
+            var dataPoints = FormatFileContent(datapointString,type);
 
             _dataSetService.Add(new DataSet()
             {
@@ -82,6 +87,7 @@ public class FileService
                 Date_Added = DateTime.Now,
                 DataPoints = dataPoints,
                 Last_Used = DateTime.Now,
+                Sample_Date = sampleDate
             });
 
             return true;
@@ -93,11 +99,11 @@ public class FileService
         }
     }
     
-    private List<DataPoint> FormatFileContent (string fileContent)
+    private List<DataPoint> FormatFileContent (string fileContent, string type)
     {
         var dataPoints = new List<DataPoint>();
         var lines = fileContent.ReplaceLineEndings("\n").Split('\n');
-
+        var valueDivider = (type=="Shimadzu")?1:1000;
         foreach (var line in lines)
         {
             var formattedLine = (Regex.Replace(line.Trim(), @"[\t; ]+", " ").Replace(",", ".")).Split(' ');
@@ -107,7 +113,7 @@ public class FileService
                 dataPoints.Add(new DataPoint()
                 {
                     Time = double.Parse(formattedLine[0], CultureInfo.InvariantCulture),
-                    Value = double.Parse(formattedLine[1], CultureInfo.InvariantCulture),
+                    Value = double.Parse(formattedLine[1], CultureInfo.InvariantCulture)/valueDivider
                 });
             }
         }

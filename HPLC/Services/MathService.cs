@@ -86,13 +86,13 @@ public class MathService
     private Peak CreatePeak(List<DataPoint> dataPoints, int startIdx, int endIdx, int maxIdx)
     {
         var peakData = dataPoints.GetRange(startIdx, endIdx - startIdx + 1);
-        double baseline = Math.Min(dataPoints[startIdx].Value, dataPoints[endIdx].Value);
+        double baseline = CalculateBaseline(dataPoints);
 
         // Correctie voor baseline
         var correctedData = peakData.Select(dp => new DataPoint
         {
             Time = dp.Time,
-            Value = Math.Max(0, dp.Value - baseline)
+            Value = dp.Value - baseline
         }).ToList();
 
         // Area onder de piek berekenen
@@ -108,24 +108,31 @@ public class MathService
             EndTime = dataPoints[endIdx].Time,
             PeakHeight = dataPoints[maxIdx].Value - baseline,
             Area = area,
-            WidthAtHalfHeight = widthAtHalfHeight
+            WidthAtHalfHeight = widthAtHalfHeight,
+            Name = "Peak at " + dataPoints[maxIdx].Time.ToString("0.00")
         };
     }
     
-     // --- Area onder piek met Trapeziumregel ---
+     // --- Area onder piek ---
     private double CalculateArea(List<DataPoint> dataPoints)
     {
+        //double baseline = CalculateBaseline(dataPoints);
         double area = 0;
         for (int i = 1; i < dataPoints.Count; i++)
         {
             var dp1 = dataPoints[i - 1];
             var dp2 = dataPoints[i];
             var time = (dp2.Time - dp1.Time);
-            area += time * (dp1.Value + dp2.Value) / 2;
+            area += ((dp1.Value + dp2.Value) / 2) * time;
         }
         return area;
     }
 
+    private double CalculateBaseline(List<DataPoint> dataPoints)
+    {
+        return dataPoints.Take(30).Average(p => p.Value);   
+    }
+    
     // --- Breedte bij halve hoogte ---
     private double CalculateWidthAtHalfHeight(List<DataPoint> dataPoints)
     {
