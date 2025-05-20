@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows.Input;
 using HPLC.Models;
 using HPLC.Services;
 using LiveChartsCore;
@@ -100,15 +101,34 @@ public class GraphViewModel : INotifyPropertyChanged
             }
         }
     };
-    
+    public ICommand DeletePeakCommand { get; }
     public GraphViewModel(DataSetService dataSetService, MathService mathService)
     {
         _dataSetService = dataSetService;
         _mathService = mathService;
         
         _dataSetService.PropertyChanged += HandlePropertyChanged;
+        DeletePeakCommand = ReactiveCommand.Create<Peak>(DeletePeak);
 
         UpdateChartData();
+    }
+    private void DeletePeak(Peak peak)
+    {
+        if (peak == null) return;
+
+        Peaks.Remove(peak);
+
+        var lineToRemove = SeriesCollection
+            .OfType<LineSeries<ObservablePoint>>()
+            .FirstOrDefault(series => series.Tag?.ToString() == peak.Tag);
+
+        if (lineToRemove != null)
+        {
+            SeriesCollection.Remove(lineToRemove);
+        }
+
+        OnPropertyChanged(nameof(Peaks));
+        OnPropertyChanged(nameof(SeriesCollection));
     }
 
     private void Peak_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -118,6 +138,8 @@ public class GraphViewModel : INotifyPropertyChanged
             SeriesCollection.FirstOrDefault(el => el.Tag?.ToString() == peak.Tag).Name = peak.Name;
         }
     }
+    
+    
     
     private void HandlePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {

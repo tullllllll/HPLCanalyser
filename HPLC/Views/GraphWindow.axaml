@@ -46,6 +46,19 @@
                                 <DataGridTextColumn Header="Height" Binding="{Binding PeakHeight}" />
                                 <DataGridTextColumn Header="Area" Binding="{Binding Area}" />
                                 <DataGridTextColumn Header="Width ½ Height" Binding="{Binding WidthAtHalfHeight}" />
+                                
+                                <DataGridTemplateColumn Header="Actions">
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Content="Delete"
+                                                    Command="{Binding $parent[DataGrid].((vm:MainViewModel)DataContext).GraphViewModel.DeletePeakCommand}"  
+                                                    CommandParameter="{Binding .}"
+                                                    Background="Red"
+                                                    Foreground="White"
+                                                    HorizontalAlignment="Center" />
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
                             </DataGrid.Columns>
                         </DataGrid>
                     </Expander>
