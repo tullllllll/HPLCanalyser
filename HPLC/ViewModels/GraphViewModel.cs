@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
+using System.Windows.Input;
 using HPLC.Models;
 using HPLC.Services;
 using LiveChartsCore;
@@ -26,14 +27,45 @@ public class GraphViewModel : INotifyPropertyChanged
     public DataSet ReferenceDataSet => _dataSetService.SelectedReferenceDataSet;
     public ObservableCollection<ObservablePoint> ObservablePoints { get; set; }
     public ObservableCollection<ObservablePoint> ReferenceObservablePoints { get; set; }
-    public ObservableCollection<ISeries> SeriesCollection { get; set; }
+    
+    private double _threshold = 60; 
+    public double Threshold
+    {
+        get => _threshold;
+        set
+        {
+            if (_threshold != value)
+            {
+                _threshold = value;
+                OnPropertyChanged(nameof(Threshold));
+                DrawThemPeaks(_threshold, MinPeakWidth); // Update peaks when threshold changes
+            }
 
+        }
+    }    
+    private double _minPeakWidth { get; set; } = 0.1; 
+    public double MinPeakWidth
+    {
+        get => _minPeakWidth;
+        set
+        {
+            if (_minPeakWidth != value)
+            {
+                _minPeakWidth = value;
+                OnPropertyChanged(nameof(MinPeakWidth));
+                DrawThemPeaks(_threshold, _minPeakWidth); 
+            }
+
+        }
+    }  
+    
+    //Lines
+    public ObservableCollection<ISeries> SeriesCollection { get; set; }
     public ObservableCollection<Peak> Peaks { get; set; } = new ObservableCollection<Peak>();
     public ObservableCollection<Peak> ReferencePeaks { get; set; } = new ObservableCollection<Peak>();
 
-    public double Threshold { get; set; } = 60; // Standaardwaarde 
-    public double MinPeakWidth { get; set; } = 0.1; // Standaardwaarde
-    
+
+    // X and Y axis
     public Axis[] XAxes { get; set; } = {
         new Axis
         {
@@ -60,14 +92,40 @@ public class GraphViewModel : INotifyPropertyChanged
         }
     };
     
+    //Command
+    public ICommand DeletePeakCommand { get; }
+    
+    //Event
+    public event PropertyChangedEventHandler PropertyChanged;
+
     public GraphViewModel(DataSetService dataSetService, MathService mathService)
     {
         _dataSetService = dataSetService;
         _mathService = mathService;
         
         _dataSetService.PropertyChanged += HandlePropertyChanged;
+        DeletePeakCommand = ReactiveCommand.Create<Peak>(DeletePeak);
 
         UpdateChartData();
+    }
+    
+    private void DeletePeak(Peak peak)
+    {
+        if (peak == null) return;
+
+        Peaks.Remove(peak);
+
+        var lineToRemove = SeriesCollection
+            .OfType<LineSeries<ObservablePoint>>()
+            .FirstOrDefault(series => series.Tag?.ToString() == peak.Tag);
+
+        if (lineToRemove != null)
+        {
+            SeriesCollection.Remove(lineToRemove);
+        }
+
+        OnPropertyChanged(nameof(Peaks));
+        OnPropertyChanged(nameof(SeriesCollection));
     }
 
     private void Peak_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -122,6 +180,7 @@ public class GraphViewModel : INotifyPropertyChanged
                 Tag = "Main",
                 Stroke = new SolidColorPaint(SKColors.Blue) { StrokeThickness = 3},
             },
+            
         };
         
         XAxes.First().MinLimit = null;
@@ -130,15 +189,29 @@ public class GraphViewModel : INotifyPropertyChanged
         YAxes.First().MaxLimit = null;
         
         OnPropertyChanged(nameof(SeriesCollection));
-        DrawThemPeaks();
+        DrawThemPeaks(Threshold, MinPeakWidth);
     }
 
-    private void DrawThemPeaks()
+    private void DrawThemPeaks(double threshold, double minPeakWidth)
     {
         if (DataSet == null || DataSet.DataPoints == null) return;
         
-        var detectedPeaks = _mathService.DetectPeaks(DataSet.DataPoints.ToList(), 100, 0.2);
+        var detectedPeaks = _mathService.DetectPeaks(DataSet.DataPoints.ToList(), threshold, minPeakWidth);
 
+        var linesToRemove = SeriesCollection
+            .Where(line => line.Tag?.ToString() != "Main" && line.Tag?.ToString() != "Reference")
+            .ToList();
+
+        if (Peaks.Count > 0)
+        {
+            Peaks.Clear();
+        }
+        foreach (var line in linesToRemove)
+        {
+            SeriesCollection.Remove(line);
+        }
+
+        
         for (int i = 0; i < detectedPeaks.Count; i++)
         {
             var peak = detectedPeaks[i];
@@ -165,7 +238,7 @@ public class GraphViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(SeriesCollection));
     }
 
-    public void UpdateReference()
+    private void UpdateReference()
     {
         var existingReference = SeriesCollection
             .OfType<LineSeries<ObservablePoint>>()
@@ -196,6 +269,9 @@ public class GraphViewModel : INotifyPropertyChanged
         SeriesCollection.Add(newLine);
     }
     
+    private void OnPropertyChanged(string propertyName) => 
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    
     public void UpdateLineColor(string line_name, SKColor color)
     {
         if (SeriesCollection == null || SeriesCollection.Count == 0) return;
@@ -209,8 +285,4 @@ public class GraphViewModel : INotifyPropertyChanged
             line.Stroke = new SolidColorPaint(color) {StrokeThickness = 3};
         }
     }
-    
-    public event PropertyChangedEventHandler PropertyChanged;
-    protected void OnPropertyChanged(string propertyName) => 
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }

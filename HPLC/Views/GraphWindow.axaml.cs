@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Input;
 using HPLC.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using SkiaSharp;
@@ -23,6 +24,20 @@ public partial class GraphWindow : UserControl
             var selectedColor = e.NewColor;
             var SkColor = new SKColor(selectedColor.R, selectedColor.G, selectedColor.B);
             _graphViewModel.UpdateLineColor(Target, SkColor);
+        }
+    }
+
+    private void InputElement_OnTextChanging(object? sender, TextChangingEventArgs e)
+    {
+        if (sender is TextBox textBox)
+        {
+            textBox.Text = textBox.Text.Replace('.', ',');
+
+            if (!double.TryParse(textBox.Text, out _))
+            {
+                textBox.Text = "0";
+                e.Handled = true; 
+            }
         }
     }
 }
