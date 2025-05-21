@@ -108,13 +108,18 @@ public class GraphViewModel : INotifyPropertyChanged
 
         UpdateChartData();
     }
-    
+    private void UnsubscribeFromPeak(Peak peak)
+    {
+        peak.PropertyChanged -= Peak_PropertyChanged;
+    }
     private void DeletePeak(Peak peak)
     {
         if (peak == null) return;
 
+        UnsubscribeFromPeak(peak);
         Peaks.Remove(peak);
 
+        
         var lineToRemove = SeriesCollection
             .OfType<LineSeries<ObservablePoint>>()
             .FirstOrDefault(series => series.Tag?.ToString() == peak.Tag);
