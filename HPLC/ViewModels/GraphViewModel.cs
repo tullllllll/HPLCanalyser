@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
@@ -9,7 +7,6 @@ using HPLC.Services;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView.Avalonia;
 using LiveChartsCore.SkiaSharpView.Painting;
 using ReactiveUI;
 using SkiaSharp;
@@ -27,8 +24,11 @@ public class GraphViewModel : INotifyPropertyChanged
     public DataSet ReferenceDataSet => _dataSetService.SelectedReferenceDataSet;
     public ObservableCollection<ObservablePoint> ObservablePoints { get; set; }
     public ObservableCollection<ObservablePoint> ReferenceObservablePoints { get; set; }
-    
-    private double _threshold = 60; 
+    public ObservableCollection<ISeries> SeriesCollection { get; set; }
+    public ObservableCollection<Peak> Peaks { get; set; } = new ObservableCollection<Peak>();
+    public ObservableCollection<Peak> ReferencePeaks { get; set; } = new ObservableCollection<Peak>();
+
+    private double _threshold = 60; // Default value
     public double Threshold
     {
         get => _threshold;
@@ -43,7 +43,7 @@ public class GraphViewModel : INotifyPropertyChanged
 
         }
     }    
-    private double _minPeakWidth { get; set; } = 0.1; 
+    public double _minPeakWidth { get; set; } = 0.1; // Standaardwaarde
     public double MinPeakWidth
     {
         get => _minPeakWidth;
@@ -59,44 +59,31 @@ public class GraphViewModel : INotifyPropertyChanged
         }
     }  
     
-    //Lines
-    public ObservableCollection<ISeries> SeriesCollection { get; set; }
-    public ObservableCollection<Peak> Peaks { get; set; } = new ObservableCollection<Peak>();
-    public ObservableCollection<Peak> ReferencePeaks { get; set; } = new ObservableCollection<Peak>();
-
-
     // X and Y axis
     public Axis[] XAxes { get; set; } = {
         new Axis
         {
-            Name = "Time: ",
+            Name = "Time (min): ",
             TextSize = 14,
-            MinLimit = null,
+            MinLimit = 0,
             MaxLimit = null,
-            SeparatorsPaint = new SolidColorPaint
-            {
-                Color = SKColors.White
-            }
+            ShowSeparatorLines = false
         }
     };
     public Axis[] YAxes { get; set; } = {
         new Axis
         {
-            Name = "Variable: ",
+            Name = "Variable (mV):",
+            TextSize = 14,
             MinLimit = null,
             MaxLimit = null,
-            SeparatorsPaint = new SolidColorPaint
-            {
-                Color = SKColors.White
-            }
+            ShowSeparatorLines = false,
+            TicksPaint = new SolidColorPaint{Color = SKColors.Black}
         }
     };
     
     //Command
     public ICommand DeletePeakCommand { get; }
-    
-    //Event
-    public event PropertyChangedEventHandler PropertyChanged;
 
     public GraphViewModel(DataSetService dataSetService, MathService mathService)
     {
@@ -197,11 +184,11 @@ public class GraphViewModel : INotifyPropertyChanged
         DrawThemPeaks(Threshold, MinPeakWidth);
     }
 
-    private void DrawThemPeaks(double threshold, double minPeakWidth)
+    private void DrawThemPeaks(double treshhold, double minPeakWidth)
     {
         if (DataSet == null || DataSet.DataPoints == null) return;
         
-        var detectedPeaks = _mathService.DetectPeaks(DataSet.DataPoints.ToList(), threshold, minPeakWidth);
+        var detectedPeaks = _mathService.DetectPeaks(DataSet.DataPoints.ToList(), treshhold, minPeakWidth);
 
         var linesToRemove = SeriesCollection
             .Where(line => line.Tag?.ToString() != "Main" && line.Tag?.ToString() != "Reference")
@@ -215,7 +202,6 @@ public class GraphViewModel : INotifyPropertyChanged
         {
             SeriesCollection.Remove(line);
         }
-
         
         for (int i = 0; i < detectedPeaks.Count; i++)
         {
@@ -274,9 +260,6 @@ public class GraphViewModel : INotifyPropertyChanged
         SeriesCollection.Add(newLine);
     }
     
-    private void OnPropertyChanged(string propertyName) => 
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    
     public void UpdateLineColor(string line_name, SKColor color)
     {
         if (SeriesCollection == null || SeriesCollection.Count == 0) return;
@@ -290,4 +273,8 @@ public class GraphViewModel : INotifyPropertyChanged
             line.Stroke = new SolidColorPaint(color) {StrokeThickness = 3};
         }
     }
+    
+    public event PropertyChangedEventHandler PropertyChanged;
+    protected void OnPropertyChanged(string propertyName) => 
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }

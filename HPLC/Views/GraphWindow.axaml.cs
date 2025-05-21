@@ -1,4 +1,5 @@
 ﻿using Avalonia.Controls;
+using Avalonia.Input;
 using HPLC.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
 using SkiaSharp;

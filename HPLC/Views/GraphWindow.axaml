@@ -152,8 +152,6 @@
                                     <Button Grid.Row="6" Grid.ColumnSpan="2" Content="Deselect" Command="{Binding DeselectFileCommand}" CommandParameter="reference" Background="Red" Foreground="White" Margin="0,5" HorizontalAlignment="Stretch" MaxWidth="250"/>
                                 </Grid>
                             </Border>
-
-                            
                         </Grid>
                     </StackPanel>
                 </ScrollViewer>

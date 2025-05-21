@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using HPLC.Models;
 
@@ -38,61 +39,60 @@ public class MathService
         int peakStartIndex = -1;
         int peakMaxIndex = -1;
         double peakMaxValue = double.MinValue;
-        double peakStartValue = 0; // To store the starting value of the peak
-
+        (double a, double b) = CalculateBaseline(dataPoints);
+        double Baseline(double time) => a * time * 2 * 60 + b;
 
         for (int i = 0; i < dataPoints.Count; i++)
         {
             var dp = dataPoints[i];
-            
-            if (dp.Value <= threshold)
-            {
-                if (inPeak)
-                {
-                    peaks.Add(CreatePeak(dataPoints, peakStartIndex, i - 1, peakMaxIndex));
-                    inPeak = false;
-                }
-                continue;
-            }
-            
+            var baseline = Baseline(dp.Time);
+
             if (!inPeak)
             {
-                inPeak = true;
-                peakStartIndex = i;
-                peakMaxIndex = i;
-                peakMaxValue = dp.Value;
-                peakStartValue = dp.Value;
-                continue;
+                // Start peak if current value significantly above baseline
+                if (dp.Value > baseline + threshold)
+                {
+                    inPeak = true;
+                    peakStartIndex = i;
+                    peakMaxIndex = i;
+                    peakMaxValue = dp.Value;
+                }
             }
-            
-            if (dp.Value > peakMaxValue)
+            else
             {
-                peakMaxValue = dp.Value;
-                peakMaxIndex = i;
-            }
+                if (dp.Value > peakMaxValue)
+                {
+                    peakMaxValue = dp.Value;
+                    peakMaxIndex = i;
+                }
 
-            if (peakStartValue * 1.45 > dp.Value)
-            {
-                peaks.Add(CreatePeak(dataPoints, peakStartIndex, i - 1, peakMaxIndex));
-                inPeak = false;
+                // End peak as soon as value drops near baseline
+                if (dp.Value <= baseline + threshold)
+                {
+                    peaks.Add(CreatePeak(dataPoints, peakStartIndex, i, peakMaxIndex));
+                    inPeak = false;
+                }
             }
         }
 
-        if (inPeak) peaks.Add(CreatePeak(dataPoints, peakStartIndex, dataPoints.Count - 1, peakMaxIndex));
+        // Close last peak if still open
+        if (inPeak)
+        {
+            peaks.Add(CreatePeak(dataPoints, peakStartIndex, dataPoints.Count - 1, peakMaxIndex));
+        }
 
         return peaks.Where(p => (p.EndTime - p.StartTime) >= minPeakWidth).ToList();
+        
     }
     
     private Peak CreatePeak(List<DataPoint> dataPoints, int startIdx, int endIdx, int maxIdx)
     {
         var peakData = dataPoints.GetRange(startIdx, endIdx - startIdx + 1);
-        double baseline = CalculateBaseline(dataPoints);
-
         // Correctie voor baseline
         var correctedData = peakData.Select(dp => new DataPoint
         {
             Time = dp.Time,
-            Value = dp.Value - baseline
+            Value = dp.Value
         }).ToList();
 
         // Area onder de piek berekenen
@@ -106,7 +106,7 @@ public class MathService
             StartTime = dataPoints[startIdx].Time,
             PeakTime = dataPoints[maxIdx].Time,
             EndTime = dataPoints[endIdx].Time,
-            PeakHeight = dataPoints[maxIdx].Value - baseline,
+            PeakHeight = dataPoints[maxIdx].Value,
             Area = area,
             WidthAtHalfHeight = widthAtHalfHeight,
             Name = "Peak at " + dataPoints[maxIdx].Time.ToString("0.00")
@@ -128,9 +128,43 @@ public class MathService
         return area;
     }
 
-    private double CalculateBaseline(List<DataPoint> dataPoints)
+    private (double,double) CalculateBaseline(List<DataPoint> dataPoints)
     {
-        return dataPoints.Take(30).Average(p => p.Value);   
+        if (dataPoints.Count < 60)
+            throw new ArgumentException("At least 60 data points are required.");
+
+        // Helper to get average point from a slice
+        (double avgTime, double avgValue) Avg(int start)
+        {
+            var slice = dataPoints.Skip(start).Take(20).ToList();
+            double avgTime = slice.Average(dp => dp.Time*60*2);
+            double avgValue = slice.Average(dp => dp.Value);
+            return (avgTime, avgValue);
+        }
+
+        // Get the three average points
+        var (x1, y1) = Avg(0);    // First 20
+        var (x2, y2) = Avg(30);   // Second 20
+        var (x3, y3) = Avg(60);   // Third 20
+
+        // Fit a line using linear regression on the three points
+        double[] xs = { x1, x2, x3 };
+        double[] ys = { y1, y2, y3 };
+
+        double sumX = xs.Sum();
+        double sumY = ys.Sum();
+        double sumXY = xs.Zip(ys, (x, y) => x * y).Sum();
+        double sumX2 = xs.Sum(x => x * x);
+        int n = 3;
+
+        double denominator = n * sumX2 - sumX * sumX;
+        if (Math.Abs(denominator) < 1e-8)
+            return (0, ys.Average()); // fallback: flat line
+
+        double a = (n * sumXY - sumX * sumY) / denominator;
+        double b = (sumY - a * sumX) / n;
+
+        return (a, b);
     }
     
     // --- Breedte bij halve hoogte ---
