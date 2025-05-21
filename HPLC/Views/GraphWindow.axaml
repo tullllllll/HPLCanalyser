@@ -3,7 +3,11 @@
              xmlns:vm="clr-namespace:HPLC.ViewModels"
              xmlns:views="clr-namespace:HPLC.Views"
              x:Class="HPLC.Views.GraphWindow"
-             x:DataType="vm:MainViewModel">
+             x:DataType="vm:MainViewModel"
+             xmlns:local="clr-namespace:HPLC.Helpers">
+    <UserControl.Resources>
+        <local:InputConverterHelper x:Key="InputConverterHelper"/>
+    </UserControl.Resources>
 
     <DockPanel>
         <TabControl DockPanel.Dock="Top" Margin="10">
@@ -20,10 +24,10 @@
 
                     <StackPanel Orientation="Horizontal" Margin="10" Spacing="10" Grid.Row="1">
                         <TextBlock Text="Threshold:" VerticalAlignment="Center"/>
-                        <TextBox Width="100" Text="{Binding GraphViewModel.Threshold, Mode=TwoWay}" TextChanging="InputElement_OnTextChanging"/>
+                        <TextBox Width="100" Text="{Binding GraphViewModel.Threshold, Converter={StaticResource InputConverterHelper}, Mode=TwoWay}" />
 
                         <TextBlock Text="Min Width:" VerticalAlignment="Center"/>
-                        <TextBox Width="100" Text="{Binding GraphViewModel.MinPeakWidth, Mode=TwoWay}" TextChanging="InputElement_OnTextChanging" />
+                        <TextBox Width="100" Text="{Binding GraphViewModel.MinPeakWidth, Converter={StaticResource InputConverterHelper}, Mode=TwoWay, StringFormat='0.0'}" />
                     </StackPanel>
                     
                     <!-- Expander for Peak Data -->
@@ -31,7 +35,6 @@
                         <DataGrid ItemsSource="{Binding GraphViewModel.Peaks}"
                                   AutoGenerateColumns="False"
                                   IsReadOnly="False"
-                                  
                                   GridLinesVisibility="All"
                                   BorderThickness="1"
                                   BorderBrush="Gray"
