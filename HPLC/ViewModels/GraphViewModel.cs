@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
+using Avalonia.Media;
 using HPLC.Models;
 using HPLC.Services;
 using LiveChartsCore;
@@ -79,26 +80,22 @@ public class GraphViewModel : INotifyPropertyChanged
     public Axis[] XAxes { get; set; } = {
         new Axis
         {
-            Name = "Time: ",
+            Name = "Time (min): ",
             TextSize = 14,
-            MinLimit = null,
+            MinLimit = 0,
             MaxLimit = null,
-            SeparatorsPaint = new SolidColorPaint
-            {
-                Color = SKColors.White
-            }
+            ShowSeparatorLines = false
         }
     };
     public Axis[] YAxes { get; set; } = {
         new Axis
         {
-            Name = "Variable: ",
+            Name = "Variable (mV):",
+            TextSize = 14,
             MinLimit = null,
             MaxLimit = null,
-            SeparatorsPaint = new SolidColorPaint
-            {
-                Color = SKColors.White
-            }
+            ShowSeparatorLines = false,
+            TicksPaint = new SolidColorPaint{Color = SKColors.Black}
         }
     };
     public ICommand DeletePeakCommand { get; }

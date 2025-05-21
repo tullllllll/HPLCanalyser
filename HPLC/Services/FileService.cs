@@ -103,7 +103,7 @@ public class FileService
     {
         var dataPoints = new List<DataPoint>();
         var lines = fileContent.ReplaceLineEndings("\n").Split('\n');
-        var valueDivider = (type=="Shimadzu")?1:1000;
+        var valueDivider = (type=="Shimadzu")?1000:1;
         foreach (var line in lines)
         {
             var formattedLine = (Regex.Replace(line.Trim(), @"[\t; ]+", " ").Replace(",", ".")).Split(' ');
