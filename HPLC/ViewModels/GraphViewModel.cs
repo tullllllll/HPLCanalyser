@@ -27,11 +27,8 @@ public class GraphViewModel : INotifyPropertyChanged
     public DataSet ReferenceDataSet => _dataSetService.SelectedReferenceDataSet;
     public ObservableCollection<ObservablePoint> ObservablePoints { get; set; }
     public ObservableCollection<ObservablePoint> ReferenceObservablePoints { get; set; }
-    public ObservableCollection<ISeries> SeriesCollection { get; set; }
-    public ObservableCollection<Peak> Peaks { get; set; } = new ObservableCollection<Peak>();
-    public ObservableCollection<Peak> ReferencePeaks { get; set; } = new ObservableCollection<Peak>();
-
-    private double _threshold = 60; // Default value
+    
+    private double _threshold = 60; 
     public double Threshold
     {
         get => _threshold;
@@ -39,21 +36,14 @@ public class GraphViewModel : INotifyPropertyChanged
         {
             if (_threshold != value)
             {
-                if (value == null)
-                {
-                    _threshold = 0;
-                }
-                else
-                {
-                    _threshold = value;
-                }
+                _threshold = value;
                 OnPropertyChanged(nameof(Threshold));
                 DrawThemPeaks(_threshold, MinPeakWidth); // Update peaks when threshold changes
             }
 
         }
     }    
-    public double _minPeakWidth { get; set; } = 0.1; // Standaardwaarde
+    private double _minPeakWidth { get; set; } = 0.1; 
     public double MinPeakWidth
     {
         get => _minPeakWidth;
@@ -61,14 +51,7 @@ public class GraphViewModel : INotifyPropertyChanged
         {
             if (_minPeakWidth != value)
             {
-                if (value == null)
-                {
-                    _minPeakWidth = 0;
-                }
-                else
-                {
-                    _minPeakWidth = value;
-                }
+                _minPeakWidth = value;
                 OnPropertyChanged(nameof(MinPeakWidth));
                 DrawThemPeaks(_threshold, _minPeakWidth); 
             }
@@ -76,6 +59,13 @@ public class GraphViewModel : INotifyPropertyChanged
         }
     }  
     
+    //Lines
+    public ObservableCollection<ISeries> SeriesCollection { get; set; }
+    public ObservableCollection<Peak> Peaks { get; set; } = new ObservableCollection<Peak>();
+    public ObservableCollection<Peak> ReferencePeaks { get; set; } = new ObservableCollection<Peak>();
+
+
+    // X and Y axis
     public Axis[] XAxes { get; set; } = {
         new Axis
         {
@@ -101,7 +91,13 @@ public class GraphViewModel : INotifyPropertyChanged
             }
         }
     };
+    
+    //Command
     public ICommand DeletePeakCommand { get; }
+    
+    //Event
+    public event PropertyChangedEventHandler PropertyChanged;
+
     public GraphViewModel(DataSetService dataSetService, MathService mathService)
     {
         _dataSetService = dataSetService;
@@ -112,6 +108,7 @@ public class GraphViewModel : INotifyPropertyChanged
 
         UpdateChartData();
     }
+    
     private void DeletePeak(Peak peak)
     {
         if (peak == null) return;
@@ -138,8 +135,6 @@ public class GraphViewModel : INotifyPropertyChanged
             SeriesCollection.FirstOrDefault(el => el.Tag?.ToString() == peak.Tag).Name = peak.Name;
         }
     }
-    
-    
     
     private void HandlePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
@@ -197,11 +192,11 @@ public class GraphViewModel : INotifyPropertyChanged
         DrawThemPeaks(Threshold, MinPeakWidth);
     }
 
-    private void DrawThemPeaks(double treshhold, double minPeakWidth)
+    private void DrawThemPeaks(double threshold, double minPeakWidth)
     {
         if (DataSet == null || DataSet.DataPoints == null) return;
         
-        var detectedPeaks = _mathService.DetectPeaks(DataSet.DataPoints.ToList(), treshhold, minPeakWidth);
+        var detectedPeaks = _mathService.DetectPeaks(DataSet.DataPoints.ToList(), threshold, minPeakWidth);
 
         var linesToRemove = SeriesCollection
             .Where(line => line.Tag?.ToString() != "Main" && line.Tag?.ToString() != "Reference")
@@ -243,7 +238,7 @@ public class GraphViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(SeriesCollection));
     }
 
-    public void UpdateReference()
+    private void UpdateReference()
     {
         var existingReference = SeriesCollection
             .OfType<LineSeries<ObservablePoint>>()
@@ -274,6 +269,9 @@ public class GraphViewModel : INotifyPropertyChanged
         SeriesCollection.Add(newLine);
     }
     
+    private void OnPropertyChanged(string propertyName) => 
+        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    
     public void UpdateLineColor(string line_name, SKColor color)
     {
         if (SeriesCollection == null || SeriesCollection.Count == 0) return;
@@ -287,8 +285,4 @@ public class GraphViewModel : INotifyPropertyChanged
             line.Stroke = new SolidColorPaint(color) {StrokeThickness = 3};
         }
     }
-    
-    public event PropertyChangedEventHandler PropertyChanged;
-    protected void OnPropertyChanged(string propertyName) => 
-        PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }

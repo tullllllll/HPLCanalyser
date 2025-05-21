@@ -31,10 +31,12 @@ public partial class GraphWindow : UserControl
     {
         if (sender is TextBox textBox)
         {
-            if (!float.TryParse(textBox.Text, out _))
+            textBox.Text = textBox.Text.Replace('.', ',');
+
+            if (!double.TryParse(textBox.Text, out _))
             {
                 textBox.Text = "0";
-                e.Handled = true; // Prevent invalid input from being processed further
+                e.Handled = true; 
             }
         }
     }
