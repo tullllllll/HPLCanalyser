@@ -1,16 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Collections.ObjectModel;
+﻿using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 using System.Windows.Input;
-using Avalonia.Media;
 using HPLC.Models;
 using HPLC.Services;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView.Avalonia;
 using LiveChartsCore.SkiaSharpView.Painting;
 using ReactiveUI;
 using SkiaSharp;
@@ -29,7 +25,6 @@ public class GraphViewModel : INotifyPropertyChanged
     public ObservableCollection<ObservablePoint> ObservablePoints { get; set; }
     public ObservableCollection<ObservablePoint> ReferenceObservablePoints { get; set; }
     public ObservableCollection<ISeries> SeriesCollection { get; set; }
-
     public ObservableCollection<Peak> Peaks { get; set; } = new ObservableCollection<Peak>();
     public ObservableCollection<Peak> ReferencePeaks { get; set; } = new ObservableCollection<Peak>();
 
@@ -41,14 +36,7 @@ public class GraphViewModel : INotifyPropertyChanged
         {
             if (_threshold != value)
             {
-                if (value == null)
-                {
-                    _threshold = 0;
-                }
-                else
-                {
-                    _threshold = value;
-                }
+                _threshold = value;
                 OnPropertyChanged(nameof(Threshold));
                 DrawThemPeaks(_threshold, MinPeakWidth); // Update peaks when threshold changes
             }
@@ -63,14 +51,7 @@ public class GraphViewModel : INotifyPropertyChanged
         {
             if (_minPeakWidth != value)
             {
-                if (value == null)
-                {
-                    _minPeakWidth = 0;
-                }
-                else
-                {
-                    _minPeakWidth = value;
-                }
+                _minPeakWidth = value;
                 OnPropertyChanged(nameof(MinPeakWidth));
                 DrawThemPeaks(_threshold, _minPeakWidth); 
             }
@@ -78,7 +59,6 @@ public class GraphViewModel : INotifyPropertyChanged
         }
     }  
     
-
     // X and Y axis
     public Axis[] XAxes { get; set; } = {
         new Axis
@@ -217,7 +197,6 @@ public class GraphViewModel : INotifyPropertyChanged
         {
             SeriesCollection.Remove(line);
         }
-
         
         for (int i = 0; i < detectedPeaks.Count; i++)
         {
