@@ -75,8 +75,10 @@ public class FileSelectViewModel
 
     private async Task UploadFileAsync(string dataSetType)
     {
-        await _fileService.UploadFileAsync(dataSetType);
-        dataSets.Add(_dataSetCrudService.Get(_dataSetService.GetLastInsertId()));
+        var result = await _fileService.UploadFileAsync(dataSetType);
+        
+        if (result)
+            dataSets.Add(_dataSetCrudService.Get(_dataSetService.GetLastInsertId()));
     }
 
     private void DeleteDataSet(int id)

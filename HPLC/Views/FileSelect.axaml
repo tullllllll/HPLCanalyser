@@ -87,14 +87,14 @@
                                     CommandParameter="{Binding ID}"
                                     Background="Red"
                                     Foreground="White"
-                                    FontWeight="UltraLight"
+                                    FontWeight="ExtraBold"
                                     VerticalAlignment="Stretch"
                                     HorizontalAlignment="Stretch"
                                     HorizontalContentAlignment="Center"
                                     Classes="effect"
                                     CornerRadius="0"
                                     Cursor="Hand">
-                                <TextBlock FontWeight="Bold">Delete</TextBlock>
+                                <TextBlock FontWeight="Bold">X</TextBlock>
                             </Button>
                         </DataTemplate>
                     </DataGridTemplateColumn.CellTemplate>

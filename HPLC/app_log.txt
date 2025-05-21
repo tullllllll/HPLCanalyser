@@ -1,0 +1,1 @@
+Database path: C:\Users\tvdve\source\repos\HLPCanalyser\HPLC\HPLC.db

@@ -27,7 +27,7 @@
                         <TextBox Width="100" Text="{Binding GraphViewModel.Threshold, Converter={StaticResource InputConverterHelper}, Mode=TwoWay}" />
 
                         <TextBlock Text="Min Width:" VerticalAlignment="Center"/>
-                        <TextBox Width="100" Text="{Binding GraphViewModel.MinPeakWidth, Converter={StaticResource InputConverterHelper}, Mode=TwoWay, StringFormat='0.0'}" />
+                        <TextBox Width="100" Text="{Binding GraphViewModel.MinPeakWidth, Converter={StaticResource InputConverterHelper}, Mode=TwoWay, StringFormat='F1'}" />
                     </StackPanel>
                     
                     <!-- Expander for Peak Data -->
@@ -43,22 +43,25 @@
                                   MaxHeight="300"> <!-- Set a max height to show 5 items -->
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
-                                <DataGridTextColumn Header="Start" Binding="{Binding StartTime}" />
-                                <DataGridTextColumn Header="Peak" Binding="{Binding PeakTime}" />
-                                <DataGridTextColumn Header="End" Binding="{Binding EndTime}" />
-                                <DataGridTextColumn Header="Height" Binding="{Binding PeakHeight}" />
-                                <DataGridTextColumn Header="Area" Binding="{Binding Area}" />
-                                <DataGridTextColumn Header="Width ½ Height" Binding="{Binding WidthAtHalfHeight}" />
+                                <DataGridTextColumn Header="Start" Binding="{Binding StartTime, StringFormat='F3'}" />
+                                <DataGridTextColumn Header="Peak" Binding="{Binding PeakTime, StringFormat='F3'}" />
+                                <DataGridTextColumn Header="End" Binding="{Binding EndTime, StringFormat='F3'}" />
+                                <DataGridTextColumn Header="Height" Binding="{Binding PeakHeight, StringFormat='F2'}" />
+                                <DataGridTextColumn Header="Area" Binding="{Binding Area, StringFormat='F1'}" />
+                                <DataGridTextColumn Header="Width ½ Height" Binding="{Binding WidthAtHalfHeight, StringFormat='F6'}" />
                                 
                                 <DataGridTemplateColumn Header="Actions">
                                     <DataGridTemplateColumn.CellTemplate>
                                         <DataTemplate>
-                                            <Button Content="Delete"
-                                                    Command="{Binding $parent[DataGrid].((vm:MainViewModel)DataContext).GraphViewModel.DeletePeakCommand}"  
+                                            <Button Command="{Binding $parent[DataGrid].((vm:MainViewModel)DataContext).GraphViewModel.DeletePeakCommand}"  
                                                     CommandParameter="{Binding .}"
-                                                    Background="Red"
+                                                    Background="Transparent"
                                                     Foreground="White"
-                                                    HorizontalAlignment="Center" />
+                                                    HorizontalAlignment="Center"
+                                                    BorderBrush="Black"
+                                                    BorderThickness="2">
+                                                <TextBlock>👩‍🦽</TextBlock>
+                                            </Button>
                                         </DataTemplate>
                                     </DataGridTemplateColumn.CellTemplate>
                                 </DataGridTemplateColumn>

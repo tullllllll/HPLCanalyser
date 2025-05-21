@@ -33,14 +33,14 @@ public class FileService
         _errorSerice = errorService;
     }
     
-    public async Task UploadFileAsync(string dataSetType)
+    public async Task<bool> UploadFileAsync(string dataSetType)
     {
         var topLevel =
             TopLevel.GetTopLevel(
                 Avalonia.Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
                     ? desktop.MainWindow
                     : null);
-        if (topLevel == null) return;
+        if (topLevel == null) return false;
 
         var documentsFolderPath = Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments);
         var suggestedStartLocation = await topLevel.StorageProvider.TryGetFolderFromPathAsync(documentsFolderPath);
@@ -54,17 +54,21 @@ public class FileService
         });
 
         var file = files.FirstOrDefault();
-        if (file == null) return;
+        if (file == null) return false;
 
         await using var stream = await file.OpenReadAsync();
         using var streamReader = new StreamReader(stream);
 
         var fileContent = await streamReader.ReadToEndAsync();
-        
-        if (ReadFile(file.Name,fileContent))
+
+        if (ReadFile(file.Name, fileContent))
+        {
             _messengerService.SendMessage(dataSetType);
-        else
-            _messengerService.SendMessage("nee");
+            return true;
+        }
+        
+        _messengerService.SendMessage("nee");
+        return false;
     }
     
     public bool ReadFile(string fileName, string fileContent)
