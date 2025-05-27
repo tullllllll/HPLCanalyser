@@ -108,7 +108,7 @@ public class MathService
     }
     
      // --- Area onder piek ---
-    private double CalculateArea(List<DataPoint> dataPoints, Baseline baseline)
+    public double CalculateArea(List<DataPoint> dataPoints, Baseline baseline)
     {
         double area = 0;
         for (int i = 1; i < dataPoints.Count; i++)
@@ -144,10 +144,10 @@ public class MathService
         for (int i = maxIndex; i > 0; i--)
         {
             double baselineValuePoint = baseline.GetBaseline(dataPoints[i].Time, dTime);
-            double halfheightLeft = halfHeight + (baselineValuePoint - baselineValueMaxPoint);
-            if (dataPoints[i].Value >= halfheightLeft && dataPoints[i - 1].Value <= halfheightLeft)
+            double adjustedHalfHeight = baselineValuePoint + halfHeight;
+            if (dataPoints[i].Value >= adjustedHalfHeight && dataPoints[i - 1].Value <= adjustedHalfHeight)
             {
-                left = Interpolate(dataPoints[i], dataPoints[i - 1], halfheightLeft);
+                left = Interpolate(dataPoints[i], dataPoints[i - 1], adjustedHalfHeight);
                 break;
             }
         }
@@ -157,10 +157,10 @@ public class MathService
         for (int i = maxIndex; i < dataPoints.Count - 1; i++)
         {
             double baselineValuePoint = baseline.GetBaseline(dataPoints[i].Time, dTime);
-            double halfheightRight = halfHeight - (baselineValuePoint - baselineValueMaxPoint);
-            if (dataPoints[i].Value >= halfheightRight && dataPoints[i + 1].Value <= halfheightRight)
+            double adjustedHalfHeight = baselineValuePoint + halfHeight;
+            if (dataPoints[i].Value >= adjustedHalfHeight && dataPoints[i + 1].Value <= adjustedHalfHeight)
             {
-                right = Interpolate(dataPoints[i], dataPoints[i + 1], halfheightRight);
+                right = Interpolate(dataPoints[i], dataPoints[i + 1], adjustedHalfHeight);
                 break;
             }
         }

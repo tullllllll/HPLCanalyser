@@ -10,6 +10,10 @@ public class Peak : ReactiveObject
     public double PeakTime { get; set; }
     public double EndTime { get; set; }
     public double PeakHeight { get; set; }
+    public double Time
+    {
+        get => (EndTime - StartTime);
+    }
     public double Area { get; set; }
     [NotMapped]
     public string Tag { get; set; }
