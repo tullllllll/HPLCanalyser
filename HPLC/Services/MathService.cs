@@ -144,7 +144,7 @@ public class MathService
         for (int i = maxIndex; i > 0; i--)
         {
             double baselineValuePoint = baseline.GetBaseline(dataPoints[i].Time, dTime);
-            double halfheightLeft = halfHeight + baselineValuePoint - baselineValueMaxPoint;
+            double halfheightLeft = halfHeight + (baselineValuePoint - baselineValueMaxPoint);
             if (dataPoints[i].Value >= halfheightLeft && dataPoints[i - 1].Value <= halfheightLeft)
             {
                 left = Interpolate(dataPoints[i], dataPoints[i - 1], halfheightLeft);
@@ -157,7 +157,7 @@ public class MathService
         for (int i = maxIndex; i < dataPoints.Count - 1; i++)
         {
             double baselineValuePoint = baseline.GetBaseline(dataPoints[i].Time, dTime);
-            double halfheightRight = halfHeight - baselineValuePoint + baselineValueMaxPoint;
+            double halfheightRight = halfHeight - (baselineValuePoint - baselineValueMaxPoint);
             if (dataPoints[i].Value >= halfheightRight && dataPoints[i + 1].Value <= halfheightRight)
             {
                 right = Interpolate(dataPoints[i], dataPoints[i + 1], halfheightRight);
@@ -166,8 +166,10 @@ public class MathService
         }
         
         if (left == null || right == null) return 0;
-        Console.WriteLine("Baseline"+baseline);
-        Console.WriteLine(halfHeight+" "+left.Value+" "+ right.Value);
+        Console.WriteLine("Baseline: "+baseline);
+        Console.WriteLine(halfHeight+", "+maxPoint.Time);
+        Console.WriteLine(left.Value+", "+left.Time);
+        Console.WriteLine(right.Value+", "+right.Time);
         Console.WriteLine("");
         return right.Time - left.Time;
     }

@@ -49,7 +49,7 @@ public struct Baseline
         double a = (n * sumXY - sumX * sumY) / denominator;
         double b = (sumY - a * sumX) / n;
         
-        if (Math.Abs(denominator) < 1e-2 || Math.Abs(a) < 1) return new Baseline(0, ys.Average()); // fallback: flat line
+        if (Math.Abs(denominator) < 1e-2 || Math.Abs(a) < 1e-2) return new Baseline(0, ys.Average()); // fallback: flat line
         
         return new Baseline(a, b);
     }
@@ -57,5 +57,10 @@ public struct Baseline
     public double GetBaseline(double time, double dTime)
     {
         return A * time * 1/dTime + B;
+    }
+
+    public override string ToString()
+    {
+        return A + " " + B;
     }
 }
