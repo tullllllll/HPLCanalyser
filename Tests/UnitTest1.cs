@@ -2,7 +2,7 @@
 using HPLC.Models;
 using HPLC.Services;
 
-namespace TestsHPLC;
+namespace Tests;
 
 public class MathServiceTests
 {
