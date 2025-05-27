@@ -8,29 +8,6 @@ namespace HPLC.Services;
 
 public class MathService
 {
-
-    ///bespreken met Christiaan
-    /// <param name="windowSize">The size of the moving window used for averaging</param>
-    public List<DataPoint> SmoothData(List<DataPoint> dataPoints, int windowSize = 5)
-    {
-        var smoothed = new List<DataPoint>();
-
-        for (int i = 0; i < dataPoints.Count; i++)
-        {
-            int start = Math.Max(0, i - windowSize / 2);
-            int end = Math.Min(dataPoints.Count - 1, i + windowSize / 2);
-
-            double avgValue = dataPoints.Skip(start).Take(end - start + 1).Average(dp => dp.Value);
-            
-            smoothed.Add(new DataPoint
-            {
-                Time = dataPoints[i].Time,
-                Value = avgValue
-            });
-        }
-        return smoothed;
-    }
-    
     public List<Peak> DetectPeaks(List<DataPoint> dataPoints, double threshold, double minPeakWidth)
     {
         var peaks = new List<Peak>();
@@ -131,7 +108,9 @@ public class MathService
     private (double,double) CalculateBaseline(List<DataPoint> dataPoints)
     {
         if (dataPoints.Count < 60)
-            throw new ArgumentException("At least 60 data points are required.");
+        {
+            ErrorService.CreateWindow("womp womp");
+        }
 
         // Helper to get average point from a slice
         (double avgTime, double avgValue) Avg(int start)

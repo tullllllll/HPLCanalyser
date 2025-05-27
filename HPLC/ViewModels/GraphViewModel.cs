@@ -45,7 +45,7 @@ public class GraphViewModel : INotifyPropertyChanged
     public ObservableCollection<Peak> Peaks { get; set; } = new ObservableCollection<Peak>();
     public ObservableCollection<Peak> ReferencePeaks { get; set; } = new ObservableCollection<Peak>();
 
-    private double _threshold = 60; // Default value
+    private double _threshold = 60; 
     public double Threshold
     {
         get => _threshold;
@@ -55,12 +55,12 @@ public class GraphViewModel : INotifyPropertyChanged
             {
                 _threshold = value;
                 OnPropertyChanged(nameof(Threshold));
-                DrawThemPeaks(_threshold, MinPeakWidth); // Update peaks when threshold changes
+                DrawThemPeaks(_threshold, MinPeakWidth); 
             }
 
         }
     }    
-    public double _minPeakWidth { get; set; } = 0.1; // Standaardwaarde
+    private double _minPeakWidth { get; set; } = 0.1; 
     public double MinPeakWidth
     {
         get => _minPeakWidth;
@@ -76,7 +76,6 @@ public class GraphViewModel : INotifyPropertyChanged
         }
     }  
     
-    // X and Y axis
     public Axis[] XAxes { get; set; } = {
         new Axis
         {

@@ -120,7 +120,7 @@
             <TabItem Header="Settings">
                 <ScrollViewer>
                     <StackPanel Margin="10">
-                        <TextBlock Text="Dataset Configuration" FontSize="26" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Datasets" FontSize="26" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Center"/>
                         
                         <Grid HorizontalAlignment="Center" Width="700">
                             <Grid.ColumnDefinitions>
@@ -145,7 +145,7 @@
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
-                                    <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold" FontSize="22" Margin="0,0,0,15" HorizontalAlignment="Center" Text="Main Dataset" />
+                                    <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold" FontSize="22" Margin="0,0,0,15" HorizontalAlignment="Center" Text="Main" />
                                     <TextBlock Grid.Row="1" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Text="Name:" Margin="0,0,10,5"/>
                                     <TextBlock Grid.Row="1" Grid.Column="1" FontSize="16" VerticalAlignment="Center" Text="{Binding DataSet.Name}" Margin="0,0,0,5"/>
                                     
@@ -180,7 +180,7 @@
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
-                                    <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold" FontSize="22" Margin="0,0,0,15" HorizontalAlignment="Center" Text="Reference Dataset" />
+                                    <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold" FontSize="22" Margin="0,0,0,15" HorizontalAlignment="Center" Text="Reference" />
                                     <TextBlock Grid.Row="1" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Text="Name:" Margin="0,0,10,5"/>
                                     <TextBlock Grid.Row="1" Grid.Column="1" FontSize="16" VerticalAlignment="Center" Text="{Binding ReferenceDataSet.Name}" Margin="0,0,0,5"/>
                                     
@@ -201,6 +201,71 @@
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
+<TabItem Header="Info">
+    <ScrollViewer>
+        <StackPanel Margin="10">
+            <TextBlock FontWeight="Bold" FontSize="16" Text="Uitleg van de piekdetectie" Margin="0,0,0,10"/>
+            
+            <TextBlock TextWrapping="Wrap">
+                Deze pagina legt uit hoe pieken in een dataset automatisch worden gedetecteerd met behulp van de MathService-klasse. 
+                Het algoritme bestaat uit drie belangrijke stappen:
+            </TextBlock>
+            
+            <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                1. Baselinebepaling: Er wordt een lineaire baseline berekend op basis van drie gemiddelde meetpunten uit het begin van de dataset 
+                (de eerste 20, daarna 30-50, en 60-80 datapunten). Met deze drie punten wordt via lineaire regressie een rechte lijn gefit, die 
+                de verwachte nulwaarde van het signaal vertegenwoordigt.
+            </TextBlock>
+            
+            <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                2. Piekdetectie: Het algoritme doorloopt de datapunten en controleert of een punt boven de baseline plus een ingestelde drempel 
+                (threshold) ligt. Zodra dit gebeurt, wordt een piek gestart. Een piek eindigt wanneer het signaal weer daalt tot op of onder 
+                de drempel. Alleen pieken die breder zijn dan de opgegeven minimumduur (minPeakWidth) worden als geldig beschouwd.
+            </TextBlock>
+            
+            <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                3. Piekanalyse: Voor elke geldige piek worden twee zaken berekend. Eerst de oppervlakte onder de piek, dit gebeurt via numerieke 
+                integratie (trapeziumregel). Vervolgens wordt de breedte op halve hoogte bepaald door aan beide zijden van de piek de punten 
+                te interpoleren waar het signaal exact de helft van de piekhoogte bereikt.
+            </TextBlock>
+            
+            <TextBlock TextWrapping="Wrap" Margin="0,10,0,20">
+                Dit algoritme is geschikt voor het analyseren van gegevensreeksen met meerdere pieken, zoals bij chromatografie. De 
+                resultaten kunnen gebruikt worden voor verdere kwantitatieve of kwalitatieve analyse.
+            </TextBlock>
+
+            <!-- NIEUW GEDEELTE OVER BESTANDSVERWERKING -->
+            <TextBlock FontWeight="Bold" FontSize="16" Text="Uitleg over bestandsverwerking" Margin="0,0,0,10"/>
+            
+            <TextBlock TextWrapping="Wrap">
+                Deze applicatie laat je toe om .txt of .csv bestanden te importeren met meetgegevens uit een HPLC-analyse.
+                Het systeem herkent automatisch of het bestand afkomstig is van een Shimadzu- of Jasco-apparaat.
+            </TextBlock>
+
+            <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                Bij het openen van een bestand:
+                - Wordt gezocht naar een regel die begint met "Acquired" om te bepalen of het om een Shimadzu-bestand gaat.
+                - Bij Shimadzu wordt de bijbehorende datum uitgelezen en opgeslagen als analysetijd.
+                - Bij Jasco wordt een standaarddatum (1-1-2000) ingesteld.
+            </TextBlock>
+
+            <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                Vervolgens zoekt het systeem naar de regel waarin "Intensity" voorkomt. Vanaf dat punt worden de gegevens 
+                geïnterpreteerd als datapunten (tijd en waarde). Deze worden automatisch geschaald en opgeslagen in een dataset.
+            </TextBlock>
+
+            <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                Let op: Alleen bestanden met twee kolommen worden geaccepteerd. Indien het bestand foutief opgebouwd is, krijg je een foutmelding.
+            </TextBlock>
+
+            <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                Ondersteunde bestandsformaten: .txt en .csv
+            </TextBlock>
+
+        </StackPanel>
+    </ScrollViewer>
+</TabItem>
+
         </TabControl>
     </DockPanel>
 </UserControl>
