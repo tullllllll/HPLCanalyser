@@ -75,10 +75,10 @@
             </TabItem>
 
             <!-- Settings -->
-            <TabItem Header="Datasets">
+            <TabItem Header="Settings">
                 <ScrollViewer>
                     <StackPanel Margin="10">
-                        <TextBlock Text="Dataset Configuration" FontSize="26" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Center"/>
+                        <TextBlock Text="Datasets" FontSize="26" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Center"/>
                         
                         <Grid HorizontalAlignment="Center" Width="700">
                             <Grid.ColumnDefinitions>
@@ -103,7 +103,7 @@
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
-                                    <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold" FontSize="22" Margin="0,0,0,15" HorizontalAlignment="Center" Text="Main Dataset" />
+                                    <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold" FontSize="22" Margin="0,0,0,15" HorizontalAlignment="Center" Text="Main" />
                                     <TextBlock Grid.Row="1" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Text="Name:" Margin="0,0,10,5"/>
                                     <TextBlock Grid.Row="1" Grid.Column="1" FontSize="16" VerticalAlignment="Center" Text="{Binding DataSet.Name}" Margin="0,0,0,5"/>
                                     
@@ -138,7 +138,7 @@
                                         <RowDefinition Height="Auto" />
                                     </Grid.RowDefinitions>
 
-                                    <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold" FontSize="22" Margin="0,0,0,15" HorizontalAlignment="Center" Text="Reference Dataset" />
+                                    <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold" FontSize="22" Margin="0,0,0,15" HorizontalAlignment="Center" Text="Reference" />
                                     <TextBlock Grid.Row="1" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Text="Name:" Margin="0,0,10,5"/>
                                     <TextBlock Grid.Row="1" Grid.Column="1" FontSize="16" VerticalAlignment="Center" Text="{Binding ReferenceDataSet.Name}" Margin="0,0,0,5"/>
                                     
