@@ -76,11 +76,23 @@ public class FileService
             var acquiredData = fileContent.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
                 .FirstOrDefault(line => line.TrimStart().StartsWith("Acquired", StringComparison.OrdinalIgnoreCase));
 
-            string result = acquiredData?.Split('\t').Last().Trim();
-            string type = (!string.IsNullOrEmpty(result)) ? "Shimadzu" : "Jasco";
-            DateTime sampleDate = (type=="Shimadzu")? DateTime.ParseExact(result, "d-M-yyyy HH:mm:ss", CultureInfo.InvariantCulture):new DateTime(2000, 1, 1);
+            string? result = acquiredData?.Split('\t').Last().Trim();
+            
+            string type;
+            DateTime sampleDate;
+            
+            if (string.IsNullOrEmpty(result))
+            {
+                type = "Jasco";
+                sampleDate = new DateTime(2000, 1, 1);
+            }
+            else
+            {
+                type = "Shimadzu";
+                sampleDate = DateTime.ParseExact(result, "d-M-yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+            }
+            
             string datapointString = fileContent.Substring(fileContent.ToLower().LastIndexOf("intensity", StringComparison.Ordinal) + 9);
-
             var dataPoints = FormatFileContent(datapointString,type);
 
             _dataSetService.Add(new DataSet()
@@ -105,7 +117,7 @@ public class FileService
     {
         var dataPoints = new List<DataPoint>();
         var lines = fileContent.ReplaceLineEndings("\n").Split('\n');
-        var valueDivider = (type=="Shimadzu")?1000:1;
+        var valueDivider = (type=="Shimadzu")?1:1000;
         foreach (var line in lines)
         {
             var formattedLine = (Regex.Replace(line.Trim(), @"[\t; ]+", " ").Replace(",", ".")).Split(' ');

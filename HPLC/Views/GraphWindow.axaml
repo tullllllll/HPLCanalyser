@@ -43,12 +43,13 @@
                                   MaxHeight="300"> <!-- Set a max height to show 5 items -->
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
-                                <DataGridTextColumn Header="Start" Binding="{Binding StartTime, StringFormat='F3'}" />
-                                <DataGridTextColumn Header="Peak" Binding="{Binding PeakTime, StringFormat='F3'}" />
-                                <DataGridTextColumn Header="End" Binding="{Binding EndTime, StringFormat='F3'}" />
-                                <DataGridTextColumn Header="Height" Binding="{Binding PeakHeight, StringFormat='F2'}" />
-                                <DataGridTextColumn Header="Area" Binding="{Binding Area, StringFormat='F1'}" />
-                                <DataGridTextColumn Header="Width ½ Height" Binding="{Binding WidthAtHalfHeight, StringFormat='F6'}" />
+                                <DataGridTextColumn Header="Start Time (min)" Binding="{Binding StartTime, StringFormat='F3'}" />
+                                <DataGridTextColumn Header="Peak Time (min)" Binding="{Binding PeakTime, StringFormat='F3'}" />
+                                <DataGridTextColumn Header="End Time (min)" Binding="{Binding EndTime, StringFormat='F3'}" />
+                                <DataGridTextColumn Header="Total Time (min)" Binding="{Binding Time, StringFormat='F3'}" />
+                                <DataGridTextColumn Header="Height (mV)" Binding="{Binding PeakHeight, StringFormat='F2'}" />
+                                <DataGridTextColumn Header="Area (mV.min)" Binding="{Binding Area, StringFormat='F1'}" />
+                                <DataGridTextColumn Header="Width ½ Height (min)" Binding="{Binding WidthAtHalfHeight, StringFormat='F6'}" />
                                 
                                 <DataGridTemplateColumn Header="Actions">
                                     <DataGridTemplateColumn.CellTemplate>

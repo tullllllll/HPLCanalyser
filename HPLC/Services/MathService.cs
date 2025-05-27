@@ -8,6 +8,29 @@ namespace HPLC.Services;
 
 public class MathService
 {
+
+    ///bespreken met Christiaan
+    /// <param name="windowSize">The size of the moving window used for averaging</param>
+    public List<DataPoint> SmoothData(List<DataPoint> dataPoints, int windowSize = 5)
+    {
+        var smoothed = new List<DataPoint>();
+
+        for (int i = 0; i < dataPoints.Count; i++)
+        {
+            int start = Math.Max(0, i - windowSize / 2);
+            int end = Math.Min(dataPoints.Count - 1, i + windowSize / 2);
+
+            double avgValue = dataPoints.Skip(start).Take(end - start + 1).Average(dp => dp.Value);
+            
+            smoothed.Add(new DataPoint
+            {
+                Time = dataPoints[i].Time,
+                Value = avgValue
+            });
+        }
+        return smoothed;
+    }
+    
     public List<Peak> DetectPeaks(List<DataPoint> dataPoints, double threshold, double minPeakWidth)
     {
         var peaks = new List<Peak>();
@@ -16,18 +39,18 @@ public class MathService
         int peakStartIndex = -1;
         int peakMaxIndex = -1;
         double peakMaxValue = double.MinValue;
-        (double a, double b) = CalculateBaseline(dataPoints);
-        double Baseline(double time) => a * time * 2 * 60 + b;
+        double dTime = dataPoints[1].Time - dataPoints[0].Time;
+        Baseline baseline = Baseline.CalculateBaseline(dataPoints,dTime);
 
         for (int i = 0; i < dataPoints.Count; i++)
         {
             var dp = dataPoints[i];
-            var baseline = Baseline(dp.Time);
+            var baselineAtPoint = baseline.GetBaseline(dp.Time,dTime);
 
             if (!inPeak)
             {
                 // Start peak if current value significantly above baseline
-                if (dp.Value > baseline + threshold)
+                if (dp.Value > baselineAtPoint + threshold)
                 {
                     inPeak = true;
                     peakStartIndex = i;
@@ -44,9 +67,9 @@ public class MathService
                 }
 
                 // End peak as soon as value drops near baseline
-                if (dp.Value <= baseline + threshold)
+                if (dp.Value <= baselineAtPoint + threshold)
                 {
-                    peaks.Add(CreatePeak(dataPoints, peakStartIndex, i, peakMaxIndex));
+                    peaks.Add(CreatePeak(dataPoints, baseline, peakStartIndex, i, peakMaxIndex));
                     inPeak = false;
                 }
             }
@@ -55,28 +78,22 @@ public class MathService
         // Close last peak if still open
         if (inPeak)
         {
-            peaks.Add(CreatePeak(dataPoints, peakStartIndex, dataPoints.Count - 1, peakMaxIndex));
+            peaks.Add(CreatePeak(dataPoints, baseline, peakStartIndex, dataPoints.Count - 1, peakMaxIndex));
         }
 
         return peaks.Where(p => (p.EndTime - p.StartTime) >= minPeakWidth).ToList();
         
     }
     
-    private Peak CreatePeak(List<DataPoint> dataPoints, int startIdx, int endIdx, int maxIdx)
+    private Peak CreatePeak(List<DataPoint> dataPoints, Baseline baseline, int startIdx, int endIdx, int maxIdx)
     {
         var peakData = dataPoints.GetRange(startIdx, endIdx - startIdx + 1);
-        // Correctie voor baseline
-        var correctedData = peakData.Select(dp => new DataPoint
-        {
-            Time = dp.Time,
-            Value = dp.Value
-        }).ToList();
-
+        
         // Area onder de piek berekenen
-        double area = CalculateArea(correctedData);
+        double area = CalculateArea(peakData,baseline);
 
         // Breedte bij halve hoogte berekenen
-        double widthAtHalfHeight = CalculateWidthAtHalfHeight(correctedData);
+        double widthAtHalfHeight = CalculateWidthAtHalfHeight(peakData, baseline);
 
         return new Peak
         {
@@ -91,77 +108,46 @@ public class MathService
     }
     
      // --- Area onder piek ---
-    private double CalculateArea(List<DataPoint> dataPoints)
+    public double CalculateArea(List<DataPoint> dataPoints, Baseline baseline)
     {
-        //double baseline = CalculateBaseline(dataPoints);
         double area = 0;
         for (int i = 1; i < dataPoints.Count; i++)
         {
             var dp1 = dataPoints[i - 1];
             var dp2 = dataPoints[i];
             var time = (dp2.Time - dp1.Time);
-            area += ((dp1.Value + dp2.Value) / 2) * time;
+            
+            var baselineDp1 = baseline.GetBaseline(dp1.Time,time);
+            var baselineDp2 = baseline.GetBaseline(dp2.Time,time);
+            var heightDp1 = dp1.Value - baselineDp1;
+            var heightDp2 = dp2.Value - baselineDp2;
+            
+            area += ((heightDp1 + heightDp2) / 2) * time;
         }
+       
         return area;
-    }
-
-    private (double,double) CalculateBaseline(List<DataPoint> dataPoints)
-    {
-        if (dataPoints.Count < 60)
-        {
-            ErrorService.CreateWindow("womp womp");
-        }
-
-        // Helper to get average point from a slice
-        (double avgTime, double avgValue) Avg(int start)
-        {
-            var slice = dataPoints.Skip(start).Take(20).ToList();
-            double avgTime = slice.Average(dp => dp.Time*60*2);
-            double avgValue = slice.Average(dp => dp.Value);
-            return (avgTime, avgValue);
-        }
-
-        // Get the three average points
-        var (x1, y1) = Avg(0);    // First 20
-        var (x2, y2) = Avg(30);   // Second 20
-        var (x3, y3) = Avg(60);   // Third 20
-
-        // Fit a line using linear regression on the three points
-        double[] xs = { x1, x2, x3 };
-        double[] ys = { y1, y2, y3 };
-
-        double sumX = xs.Sum();
-        double sumY = ys.Sum();
-        double sumXY = xs.Zip(ys, (x, y) => x * y).Sum();
-        double sumX2 = xs.Sum(x => x * x);
-        int n = 3;
-
-        double denominator = n * sumX2 - sumX * sumX;
-        if (Math.Abs(denominator) < 1e-8)
-            return (0, ys.Average()); // fallback: flat line
-
-        double a = (n * sumXY - sumX * sumY) / denominator;
-        double b = (sumY - a * sumX) / n;
-
-        return (a, b);
     }
     
     // --- Breedte bij halve hoogte ---
-    private double CalculateWidthAtHalfHeight(List<DataPoint> dataPoints)
+    public double CalculateWidthAtHalfHeight(List<DataPoint> dataPoints, Baseline baseline)
     {
         if (dataPoints == null || dataPoints.Count < 2) return 0;
 
         var maxPoint = dataPoints.OrderByDescending(dp => dp.Value).First();
         int maxIndex = GetMaxPointIndex(dataPoints, maxPoint);
-        double halfHeight = maxPoint.Value / 2;
-
+        double dTime = dataPoints[1].Time - dataPoints[0].Time;
+        double baselineValueMaxPoint = baseline.GetBaseline(maxPoint.Time, dTime);
+        double halfHeight = (maxPoint.Value-baselineValueMaxPoint) / 2;
+        
         // Zoek naar links (vanaf de piek naar 0)
         DataPoint left = null;
         for (int i = maxIndex; i > 0; i--)
         {
-            if (dataPoints[i].Value >= halfHeight && dataPoints[i - 1].Value <= halfHeight)
+            double baselineValuePoint = baseline.GetBaseline(dataPoints[i].Time, dTime);
+            double adjustedHalfHeight = baselineValuePoint + halfHeight;
+            if (dataPoints[i].Value >= adjustedHalfHeight && dataPoints[i - 1].Value <= adjustedHalfHeight)
             {
-                left = Interpolate(dataPoints[i], dataPoints[i - 1], halfHeight);
+                left = Interpolate(dataPoints[i], dataPoints[i - 1], adjustedHalfHeight);
                 break;
             }
         }
@@ -170,15 +156,21 @@ public class MathService
         DataPoint right = null;
         for (int i = maxIndex; i < dataPoints.Count - 1; i++)
         {
-            if (dataPoints[i].Value >= halfHeight && dataPoints[i + 1].Value <= halfHeight)
+            double baselineValuePoint = baseline.GetBaseline(dataPoints[i].Time, dTime);
+            double adjustedHalfHeight = baselineValuePoint + halfHeight;
+            if (dataPoints[i].Value >= adjustedHalfHeight && dataPoints[i + 1].Value <= adjustedHalfHeight)
             {
-                right = Interpolate(dataPoints[i], dataPoints[i + 1], halfHeight);
+                right = Interpolate(dataPoints[i], dataPoints[i + 1], adjustedHalfHeight);
                 break;
             }
         }
-
+        
         if (left == null || right == null) return 0;
-
+        Console.WriteLine("Baseline: "+baseline);
+        Console.WriteLine(halfHeight+", "+maxPoint.Time);
+        Console.WriteLine(left.Value+", "+left.Time);
+        Console.WriteLine(right.Value+", "+right.Time);
+        Console.WriteLine("");
         return right.Time - left.Time;
     }
 
