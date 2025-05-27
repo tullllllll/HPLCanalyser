@@ -24,13 +24,11 @@ public class FileService
     
     private readonly SimpleKeyCRUDService<DataSet> _dataSetService;
     private readonly MessengerService _messengerService;
-    private readonly ErrorService _errorSerice;
 
-    public FileService(SimpleKeyCRUDService<DataSet> dataSetService, MessengerService messenger, ErrorService errorService)
+    public FileService(SimpleKeyCRUDService<DataSet> dataSetService, MessengerService messenger)
     {
         _dataSetService = dataSetService;
         _messengerService = messenger;
-        _errorSerice = errorService;
     }
     
     public async Task<bool> UploadFileAsync(string dataSetType)
@@ -98,7 +96,7 @@ public class FileService
         }
         catch
         {
-            _errorSerice.CreateWindow("Invalid file content");
+            ErrorService.CreateWindow("Invalid file content");
             return false;
         }
     }

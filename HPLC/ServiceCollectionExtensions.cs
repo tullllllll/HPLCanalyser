@@ -33,6 +33,5 @@ public static class ServiceCollectionExtensions
         collection.AddScoped<FileService>();
         collection.AddSingleton<NavigationService>();
         collection.AddScoped<MathService>();
-        collection.AddScoped<ErrorService>();
     } 
 }

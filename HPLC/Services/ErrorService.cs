@@ -4,9 +4,9 @@ using HPLC.Views;
 
 namespace HPLC.Services;
 
-public class ErrorService ()
+public static class ErrorService 
 {
-    public async void CreateWindow(string message)
+    public static async void CreateWindow(string message)
     {
         var window = new ErrorWindow(message);
         var lifetime = (IClassicDesktopStyleApplicationLifetime)Application.Current.ApplicationLifetime!;
