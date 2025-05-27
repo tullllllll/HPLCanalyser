@@ -3,7 +3,8 @@
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
-    <RuntimeIdentifiers>linux-x64</RuntimeIdentifiers>
+    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+    <ApplicationIcon>Assets\logo.ico</ApplicationIcon>
   </PropertyGroup>
 
   <ItemGroup>
@@ -76,6 +77,7 @@
     <!-- Logo asset as AvaloniaResource -->
     <None Remove="Assets\logo.png" />
     <AvaloniaResource Include="Assets\logo.png" />
+    <AvaloniaResource Include="Assets\download-image-icon.png" />
   </ItemGroup>
 
 </Project>

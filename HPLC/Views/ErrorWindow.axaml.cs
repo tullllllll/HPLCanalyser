@@ -14,7 +14,7 @@ public partial class ErrorWindow : Window
 
     public ErrorWindow(string message) : this()
     {
-        DataContext = new ErrorViewModel(message + " \n\nwomp womp");
+        DataContext = new ErrorViewModel(message);
     }
 
     private void Ok_Click(object? sender, Avalonia.Interactivity.RoutedEventArgs e)

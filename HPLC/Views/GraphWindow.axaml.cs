@@ -1,12 +1,17 @@
-﻿using Avalonia.Controls;
-using Avalonia.Input;
+﻿using System;
+using System.Reactive.Disposables;
+using System.Threading.Tasks;
+using Avalonia.Controls;
+using Avalonia.ReactiveUI;
+using Avalonia.VisualTree;
 using HPLC.ViewModels;
 using Microsoft.Extensions.DependencyInjection;
+using ReactiveUI;
 using SkiaSharp;
 
 namespace HPLC.Views;
 
-public partial class GraphWindow : UserControl
+public partial class GraphWindow : ReactiveUserControl<GraphViewModel>
 {
     private readonly GraphViewModel _graphViewModel;
     
@@ -15,6 +20,18 @@ public partial class GraphWindow : UserControl
         _graphViewModel = App.ServiceProvider.GetRequiredService<GraphViewModel>();
         
         InitializeComponent();
+        
+        this.WhenActivated((CompositeDisposable disposable) =>
+        {
+            _graphViewModel!.RequestChartExport.RegisterHandler(interaction =>
+            {
+                var chart = graphUserControl.ChartForSave;
+                var window = this.GetVisualRoot() as Window;
+
+                interaction.SetOutput((chart, window));
+                return Task.CompletedTask;
+            }).DisposeWith(disposable);
+        });
     }
 
     private void ColorView_OnColorChanged(object? sender, ColorChangedEventArgs e)

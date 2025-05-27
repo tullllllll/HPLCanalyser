@@ -1,15 +1,32 @@
-﻿using System.Collections.ObjectModel;
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Drawing;
+using System.IO;
 using System.Linq;
+using System.Reactive;
+using System.Reactive.Linq;
+using System.Threading.Tasks;
 using System.Windows.Input;
+using Avalonia;
+using Avalonia.Controls;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
+using Avalonia.Platform.Storage;
+using Avalonia.VisualTree;
 using HPLC.Models;
 using HPLC.Services;
+using HPLC.Views;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.SkiaSharpView;
+using LiveChartsCore.SkiaSharpView.Avalonia;
 using LiveChartsCore.SkiaSharpView.Painting;
 using ReactiveUI;
 using SkiaSharp;
+using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
+using Size = Avalonia.Size;
 
 namespace HPLC.ViewModels;
 
@@ -82,8 +99,12 @@ public class GraphViewModel : INotifyPropertyChanged
         }
     };
     
-    //Command
+    // Command
     public ICommand DeletePeakCommand { get; }
+    public ReactiveCommand<Unit, Unit> SaveImageCommand { get; }
+    
+    // Interaction
+    public Interaction<Unit, (CartesianChart chart, Window parent)> RequestChartExport { get; } = new();
 
     public GraphViewModel(DataSetService dataSetService, MathService mathService)
     {
@@ -92,13 +113,49 @@ public class GraphViewModel : INotifyPropertyChanged
         
         _dataSetService.PropertyChanged += HandlePropertyChanged;
         DeletePeakCommand = ReactiveCommand.Create<Peak>(DeletePeak);
+        SaveImageCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var (chart, window) = await RequestChartExport.Handle(Unit.Default).FirstAsync();
+
+            if (chart != null && window != null)
+            {
+                await SaveChartWithDialogAsync(chart, window);
+            }
+        });
 
         UpdateChartData();
     }
+    
+    private async Task SaveChartWithDialogAsync(CartesianChart chart, Window window)
+    {
+        var storage = window.StorageProvider;
+        
+        var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions()
+        {
+            SuggestedFileName = "output",
+            DefaultExtension = "jpg",
+            Title = "Save Image",
+        });
+        
+        if (file is not null)
+        {
+            int width = (int)chart.Bounds.Width;
+            int height = (int)chart.Bounds.Height;
+            var bitmap = new RenderTargetBitmap(new PixelSize(width, height));
+            
+            chart.Background = new SolidColorBrush(Colors.White);
+            bitmap.Render(chart);
+            
+            using var fileStream = File.OpenWrite(file.Path.LocalPath);
+            bitmap.Save(fileStream);
+        }
+    }
+    
     private void UnsubscribeFromPeak(Peak peak)
     {
         peak.PropertyChanged -= Peak_PropertyChanged;
     }
+    
     private void DeletePeak(Peak peak)
     {
         if (peak == null) return;
@@ -172,7 +229,6 @@ public class GraphViewModel : INotifyPropertyChanged
                 Tag = "Main",
                 Stroke = new SolidColorPaint(SKColors.Blue) { StrokeThickness = 3},
             },
-            
         };
         
         XAxes.First().MinLimit = null;
@@ -207,16 +263,19 @@ public class GraphViewModel : INotifyPropertyChanged
         {
             var peak = detectedPeaks[i];
             peak.Tag = i.ToString();
-            var peakLine = new LineSeries<ObservablePoint>
+            peak.Color = Colors.Coral;
+            SKColor skColor = new SKColor(peak.Color.R, peak.Color.G, peak.Color.B, peak.Color.A);
+            var peakLine = new LineSeries<ObservablePoint, DiamondGeometry>
             {
                 Values = new ObservableCollection<ObservablePoint>(
                     DataSet.DataPoints
                         .Where(dp => dp.Time == peak.StartTime || dp.Time == peak.EndTime)
                         .Select(dp => new ObservablePoint(dp.Time, dp.Value))
                 ),
+                Stroke = new SolidColorPaint(skColor, 3),
+                GeometryStroke = new SolidColorPaint(skColor, 3),
                 Fill = null,
                 GeometryFill = null,
-                GeometryStroke = null,
                 LineSmoothness = 0,
                 Name = peak.Name,
                 Tag = i.ToString(),
@@ -265,16 +324,28 @@ public class GraphViewModel : INotifyPropertyChanged
         if (SeriesCollection == null || SeriesCollection.Count == 0) return;
         
         var line = SeriesCollection
-            .OfType<LineSeries<ObservablePoint>>()
-            .FirstOrDefault(series => series.Tag?.ToString() == line_name);
+            .Cast<object>()
+            .FirstOrDefault(series =>
+                (series is LineSeries<ObservablePoint> obs && obs.Tag?.ToString() == line_name) ||
+                (series is LineSeries<ObservablePoint, DiamondGeometry> other && other.Tag?.ToString() == line_name));
 
-        if (line != null)
+  
+        var c = new SolidColorPaint(color) { StrokeThickness = 3 };
+        if (line is LineSeries<ObservablePoint> obsLine)
         {
-            line.Stroke = new SolidColorPaint(color) {StrokeThickness = 3};
+            obsLine.Stroke = c;
+            obsLine.GeometryStroke = c;
         }
+        else if (line is LineSeries<ObservablePoint, DiamondGeometry> otherLine)
+        {
+            otherLine.Stroke = c;
+            otherLine.GeometryStroke = c;
+        }
+
     }
     
     public event PropertyChangedEventHandler PropertyChanged;
+    
     protected void OnPropertyChanged(string propertyName) => 
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
 }

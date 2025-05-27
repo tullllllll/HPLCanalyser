@@ -24,13 +24,13 @@ public class FileService
     
     private readonly SimpleKeyCRUDService<DataSet> _dataSetService;
     private readonly MessengerService _messengerService;
-    private readonly ErrorService _errorSerice;
+    private readonly ErrorService _errorService;
 
     public FileService(SimpleKeyCRUDService<DataSet> dataSetService, MessengerService messenger, ErrorService errorService)
     {
         _dataSetService = dataSetService;
         _messengerService = messenger;
-        _errorSerice = errorService;
+        _errorService = errorService;
     }
     
     public async Task<bool> UploadFileAsync(string dataSetType)
@@ -98,7 +98,7 @@ public class FileService
         }
         catch
         {
-            _errorSerice.CreateWindow("Invalid file content");
+            _errorService.CreateWindow("Invalid file content");
             return false;
         }
     }
@@ -107,7 +107,7 @@ public class FileService
     {
         var dataPoints = new List<DataPoint>();
         var lines = fileContent.ReplaceLineEndings("\n").Split('\n');
-        var valueDivider = (type=="Shimadzu")?1000:1;
+        var valueDivider = (type=="Shimadzu")?1:1000;
         foreach (var line in lines)
         {
             var formattedLine = (Regex.Replace(line.Trim(), @"[\t; ]+", " ").Replace(",", ".")).Split(' ');

@@ -10,72 +10,114 @@
     </UserControl.Resources>
 
     <DockPanel>
-        <TabControl DockPanel.Dock="Top" Margin="10">
+        <TabControl DockPanel.Dock="Top" Margin="10" SelectedIndex="{Binding SelectedTabIndex}">
             <!-- Graph Viewer -->
             <TabItem Header="Graph View">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="*" /> 
-                        <RowDefinition Height="Auto" />
-                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*"></RowDefinition>
                     </Grid.RowDefinitions>
-
-                    <views:GraphUserControl Grid.Row="0" DataContext="{Binding GraphViewModel}" />
-
-                    <StackPanel Orientation="Horizontal" Margin="10" Spacing="10" Grid.Row="1">
-                        <TextBlock Text="Threshold:" VerticalAlignment="Center"/>
-                        <TextBox Width="100" Text="{Binding GraphViewModel.Threshold, Converter={StaticResource InputConverterHelper}, Mode=TwoWay}" />
-
-                        <TextBlock Text="Min Width:" VerticalAlignment="Center"/>
-                        <TextBox Width="100" Text="{Binding GraphViewModel.MinPeakWidth, Converter={StaticResource InputConverterHelper}, Mode=TwoWay, StringFormat='F1'}" />
-                    </StackPanel>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"></ColumnDefinition>
+                    </Grid.ColumnDefinitions>
                     
-                    <!-- Expander for Peak Data -->
-                    <Expander Header="Peak Data" IsExpanded="True" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
-                        <DataGrid ItemsSource="{Binding GraphViewModel.Peaks}"
-                                  AutoGenerateColumns="False"
-                                  IsReadOnly="False"
-                                  GridLinesVisibility="All"
-                                  BorderThickness="1"
-                                  BorderBrush="Gray"
-                                  HorizontalAlignment="Stretch"
-                                  VerticalScrollBarVisibility="Auto"
-                                  MaxHeight="300"> <!-- Set a max height to show 5 items -->
-                            <DataGrid.Columns>
-                                <DataGridTextColumn Header="Name" Binding="{Binding Name}" />
-                                <DataGridTextColumn Header="Start" Binding="{Binding StartTime, StringFormat='F3'}" />
-                                <DataGridTextColumn Header="Peak" Binding="{Binding PeakTime, StringFormat='F3'}" />
-                                <DataGridTextColumn Header="End" Binding="{Binding EndTime, StringFormat='F3'}" />
-                                <DataGridTextColumn Header="Height" Binding="{Binding PeakHeight, StringFormat='F2'}" />
-                                <DataGridTextColumn Header="Area" Binding="{Binding Area, StringFormat='F1'}" />
-                                <DataGridTextColumn Header="Width ½ Height" Binding="{Binding WidthAtHalfHeight, StringFormat='F6'}" />
-                                
-                                <DataGridTemplateColumn Header="Actions">
-                                    <DataGridTemplateColumn.CellTemplate>
-                                        <DataTemplate>
-                                            <Button Command="{Binding $parent[DataGrid].((vm:MainViewModel)DataContext).GraphViewModel.DeletePeakCommand}"  
-                                                    CommandParameter="{Binding .}"
-                                                    Background="Transparent"
-                                                    Foreground="White"
-                                                    HorizontalAlignment="Center"
-                                                    BorderBrush="Black"
-                                                    BorderThickness="2">
-                                                <TextBlock>👩‍🦽</TextBlock>
-                                            </Button>
-                                        </DataTemplate>
-                                    </DataGridTemplateColumn.CellTemplate>
-                                </DataGridTemplateColumn>
-                            </DataGrid.Columns>
-                        </DataGrid>
-                    </Expander>
+                    <!-- Graph Content -->
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*" /> 
+                            <RowDefinition Height="Auto" />
+                            <RowDefinition Height="Auto" />
+                        </Grid.RowDefinitions>
 
-                    <!-- GridSplitter to make the Expander draggable -->
-                    <GridSplitter Grid.Row="2" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" ResizeBehavior="PreviousAndNext" />
+                        <views:GraphUserControl Grid.Row="0" DataContext="{Binding GraphViewModel}" x:Name="graphUserControl"/>
+
+                        <Grid Grid.Row="1" ColumnDefinitions="Auto Auto *" Margin="10">
+                            <StackPanel Grid.Column="0" Orientation="Horizontal" Margin="5,0" Spacing="10">
+                                <TextBlock Text="Threshold:" VerticalAlignment="Center"/>
+                                <TextBox Width="100" Text="{Binding GraphViewModel.Threshold, Converter={StaticResource InputConverterHelper}, Mode=TwoWay}" />
+                            </StackPanel>
+
+                            <StackPanel Grid.Column="1" Orientation="Horizontal" Margin="5,0" Spacing="10">
+                                <TextBlock Text="Min Width:" VerticalAlignment="Center"/>
+                                <TextBox Width="100" Text="{Binding GraphViewModel.MinPeakWidth, Converter={StaticResource InputConverterHelper}, Mode=TwoWay, StringFormat='F1'}" />
+                            </StackPanel>
+
+                            <Button Grid.Column="2" Command="{Binding GraphViewModel.SaveImageCommand}" 
+                                    Background="DodgerBlue" Foreground="White" 
+                                    Cursor="Hand" HorizontalAlignment="Right">
+                                <Image Height="16" Width="16" Source="avares://HPLC/Assets/download-image-icon.png" />
+                            </Button>
+                        </Grid>
+                        
+                        <!-- Expander for Peak Data -->
+                        <Expander Header="Peak Data" IsExpanded="True" Grid.Row="2" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+                            <DataGrid ItemsSource="{Binding GraphViewModel.Peaks}"
+                                      AutoGenerateColumns="False"
+                                      GridLinesVisibility="All"
+                                      BorderThickness="1"
+                                      BorderBrush="Gray"
+                                      HorizontalAlignment="Stretch"
+                                      VerticalScrollBarVisibility="Auto"
+                                      MaxHeight="300"> <!-- Set a max height to show 5 items -->
+                                <DataGrid.Columns>
+                                    <DataGridTextColumn Header="Name" Binding="{Binding Name}" IsReadOnly="false" />
+                                    <DataGridTextColumn Header="Start" Binding="{Binding StartTime, StringFormat='F3'}" IsReadOnly="true" />
+                                    <DataGridTextColumn Header="Peak" Binding="{Binding PeakTime, StringFormat='F3'}" IsReadOnly="true" />
+                                    <DataGridTextColumn Header="End" Binding="{Binding EndTime, StringFormat='F3'}" IsReadOnly="true" />
+                                    <DataGridTextColumn Header="Height" Binding="{Binding PeakHeight, StringFormat='F2'}" IsReadOnly="true" />
+                                    <DataGridTextColumn Header="Area" Binding="{Binding Area, StringFormat='F1'}" IsReadOnly="true" />
+                                    <DataGridTextColumn Header="Width ½ Height" Binding="{Binding WidthAtHalfHeight, StringFormat='F6'}" IsReadOnly="true" />
+                                    
+                                    <DataGridTemplateColumn Header="Color" IsReadOnly="true">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <ColorPicker Tag="{Binding Tag}" Color="{Binding Color, Mode=TwoWay}" ColorChanged="ColorView_OnColorChanged" HorizontalAlignment="Stretch"/>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                    
+                                    <DataGridTemplateColumn Header="" IsReadOnly="true">
+                                        <DataGridTemplateColumn.CellTemplate>
+                                            <DataTemplate>
+                                                <Button Command="{Binding $parent[DataGrid].((vm:MainViewModel)DataContext).GraphViewModel.DeletePeakCommand}"  
+                                                        CommandParameter="{Binding .}"
+                                                        Background="Red"
+                                                        Foreground="White"
+                                                        HorizontalAlignment="Stretch"
+                                                        HorizontalContentAlignment="Center"
+                                                        FontWeight="Bold"
+                                                        Cursor="Hand">
+                                                    <TextBlock>X</TextBlock>
+                                                </Button>
+                                            </DataTemplate>
+                                        </DataGridTemplateColumn.CellTemplate>
+                                    </DataGridTemplateColumn>
+                                </DataGrid.Columns>
+                            </DataGrid>
+                        </Expander>
+
+                        <!-- GridSplitter to make the Expander draggable -->
+                        <GridSplitter Grid.Row="2" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" ResizeBehavior="PreviousAndNext" />
+                    </Grid>
+                    
+                    <!-- Overlay if dataset is not visible -->
+                    <Panel IsVisible="{Binding IsDatasetNull}">
+                        <Border Background="Black" Opacity="0.4" />
+                        <Button Content="Select DataSet" Command="{Binding SelectFileCommand}" 
+                                CommandParameter="main" Background="DodgerBlue" Foreground="White" 
+                                Margin="0,5" Cursor="Hand"
+                                HorizontalAlignment="Center" FontSize="20"/>
+                    </Panel>
                 </Grid>
             </TabItem>
 
+            <!-- Info tab -->
+            <TabItem Header="Info">
+                <TextBlock>Info tab</TextBlock>
+            </TabItem>
+            
             <!-- Settings -->
-            <TabItem Header="Datasets">
+            <TabItem Header="Settings">
                 <ScrollViewer>
                     <StackPanel Margin="10">
                         <TextBlock Text="Dataset Configuration" FontSize="26" FontWeight="Bold" Margin="0,0,0,10" HorizontalAlignment="Center"/>

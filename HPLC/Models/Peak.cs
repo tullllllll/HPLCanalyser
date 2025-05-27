@@ -1,5 +1,7 @@
 ﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations.Schema;
+using Avalonia.Media;
+using LiveChartsCore.Painting;
 using ReactiveUI;
 
 namespace HPLC.Models;
@@ -13,6 +15,9 @@ public class Peak : ReactiveObject
     public double Area { get; set; }
     [NotMapped]
     public string Tag { get; set; }
+
+    [NotMapped]
+    public Color Color { get; set; }
     public double WidthAtHalfHeight { get; set; }
     private string _name;
 

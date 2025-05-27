@@ -39,6 +39,8 @@ public class App : Application
                 WindowState = WindowState.Maximized,
                 DataContext = viewModel
             };
+            
+            desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
         }
 
         base.OnFrameworkInitializationCompleted();
