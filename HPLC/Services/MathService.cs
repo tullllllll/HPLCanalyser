@@ -129,7 +129,7 @@ public class MathService
     }
     
     // --- Breedte bij halve hoogte ---
-    private double CalculateWidthAtHalfHeight(List<DataPoint> dataPoints, Baseline baseline)
+    public double CalculateWidthAtHalfHeight(List<DataPoint> dataPoints, Baseline baseline)
     {
         if (dataPoints == null || dataPoints.Count < 2) return 0;
 
