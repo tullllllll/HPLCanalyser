@@ -6,7 +6,7 @@ using ReactiveUI;
 
 namespace HPLC.Services;
 
-public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService, HPLCDbContext context, NavigationService navigationService) : ReactiveObject
+public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService, HPLCDbContext context) : ReactiveObject
 {
     private DataSet _selectedDataSet;
     public DataSet SelectedDataSet
@@ -39,7 +39,6 @@ public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService, HPLCD
         SelectedDataSet = dataSetService.GetWithChildren(dataSetId);
         SelectedDataSet.Last_Used = DateTime.Now;
         context.SaveChanges();
-        navigationService.Navigate("Graph");
     }
 
     public void SetReferenceDataSet(int dataSetId)
@@ -47,6 +46,5 @@ public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService, HPLCD
         SelectedReferenceDataSet = dataSetService.GetWithChildren(dataSetId);
         SelectedReferenceDataSet.Last_Used = DateTime.Now;
         context.SaveChanges();
-        navigationService.Navigate("Graph");
     }
 }

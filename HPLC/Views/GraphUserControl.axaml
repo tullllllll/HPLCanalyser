@@ -10,5 +10,6 @@
                         YAxes="{Binding YAxes}"
                         ZoomMode="Both"
                         LegendPosition="Bottom"
-                        TooltipPosition="Hidden"/>
+                        TooltipPosition="Hidden"
+                        x:Name="ChartForSave"/>
 </UserControl>

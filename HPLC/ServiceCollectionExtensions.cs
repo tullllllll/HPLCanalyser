@@ -17,7 +17,6 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton<FileSelectViewModel>();
         
         // Views
-        collection.AddSingleton<HomeWindow>();
         collection.AddSingleton<GraphWindow>();
         collection.AddSingleton<GraphUserControl>();
         
@@ -31,7 +30,6 @@ public static class ServiceCollectionExtensions
         collection.AddScoped<DataSetService>();
         collection.AddSingleton<MessengerService>();
         collection.AddScoped<FileService>();
-        collection.AddSingleton<NavigationService>();
         collection.AddScoped<MathService>();
     } 
 }
