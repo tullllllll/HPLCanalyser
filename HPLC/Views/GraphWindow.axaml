@@ -184,9 +184,9 @@
 
                         <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
                             Bij het openen van een bestand:
-                            - Wordt gezocht naar een regel die begint met "Acquired" om te bepalen of het om een Shimadzu-bestand gaat.
-                            - Bij Shimadzu wordt de bijbehorende datum uitgelezen en opgeslagen als analysetijd.
-                            - Bij Jasco wordt een standaarddatum (1-1-2000) ingesteld.
+                            <LineBreak />- Wordt gezocht naar een regel die begint met "Acquired" om te bepalen of het om een Shimadzu-bestand gaat.
+                            <LineBreak />- Bij Shimadzu wordt de bijbehorende datum uitgelezen en opgeslagen als analysetijd.
+                            <LineBreak />- Bij Jasco wordt een standaarddatum (1-1-2000) ingesteld.
                         </TextBlock>
 
                         <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
