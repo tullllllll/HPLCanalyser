@@ -32,7 +32,6 @@
                         <!-- Tab Content -->
                         <ContentPresenter 
                             Name="PART_SelectedContentHost"
-                            Margin="4"
                             Content="{TemplateBinding SelectedContent}"/>
                     </DockPanel>
                 </ControlTemplate>
@@ -124,14 +123,15 @@
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Expander>
-
-                        <!-- GridSplitter to make the Expander draggable -->
-                        <GridSplitter Grid.Row="2" Height="5" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" ResizeBehavior="PreviousAndNext" />
                     </Grid>
                     
                     <!-- Overlay if dataset is not visible -->
                     <Panel IsVisible="{Binding IsDatasetNull}">
-                        <Border Background="Black" Opacity="0.4" />
+                        <Border Background="Black" Opacity="0.4">
+                            <Border.Effect>
+                                <DropShadowEffect Color="Black" BlurRadius="250"></DropShadowEffect>
+                            </Border.Effect>
+                        </Border>
                         <Button Content="Select DataSet" Command="{Binding SelectFileCommand}" 
                                 CommandParameter="main" Background="DodgerBlue" Foreground="White" 
                                 Margin="0,5" Cursor="Hand"
