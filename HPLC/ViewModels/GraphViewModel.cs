@@ -161,15 +161,20 @@ public class GraphViewModel : INotifyPropertyChanged
 
         UnsubscribeFromPeak(peak);
         Peaks.Remove(peak);
-
         
         var lineToRemove = SeriesCollection
-            .OfType<LineSeries<ObservablePoint>>()
-            .FirstOrDefault(series => series.Tag?.ToString() == peak.Tag);
+            .Cast<object>()
+            .FirstOrDefault(series =>
+                (series is LineSeries<ObservablePoint> obs && obs.Tag?.ToString() == peak.Tag) ||
+                (series is LineSeries<ObservablePoint, DiamondGeometry> other && other.Tag?.ToString() == peak.Tag));
 
         if (lineToRemove != null)
         {
-            SeriesCollection.Remove(lineToRemove);
+            if (lineToRemove is LineSeries<ObservablePoint> lineSeries1)
+                SeriesCollection.Remove(lineSeries1);
+            
+            if (lineToRemove is LineSeries<ObservablePoint, DiamondGeometry> lineSeries2)
+                SeriesCollection.Remove(lineSeries2);
         }
 
         OnPropertyChanged(nameof(Peaks));
