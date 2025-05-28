@@ -89,7 +89,7 @@ public class GraphViewModel : INotifyPropertyChanged
     public Axis[] YAxes { get; set; } = {
         new Axis
         {
-            Name = "Variable (mV):",
+            Name = "Intensity (mV):",
             TextSize = 14,
             MinLimit = null,
             MaxLimit = null,
@@ -333,12 +333,14 @@ public class GraphViewModel : INotifyPropertyChanged
         if (line is LineSeries<ObservablePoint> obsLine)
         {
             obsLine.Stroke = c;
-            obsLine.GeometryStroke = c;
+            if ((string)obsLine.Tag != "Reference" && (string)obsLine.Tag != "Main")
+                obsLine.GeometryStroke = c;
         }
         else if (line is LineSeries<ObservablePoint, DiamondGeometry> otherLine)
         {
             otherLine.Stroke = c;
-            otherLine.GeometryStroke = c;
+            if ((string)otherLine.Tag != "Reference" && (string)otherLine.Tag != "Main")
+                otherLine.GeometryStroke = c;
         }
 
     }

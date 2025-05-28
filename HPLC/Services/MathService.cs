@@ -166,11 +166,6 @@ public class MathService
         }
         
         if (left == null || right == null) return 0;
-        Console.WriteLine("Baseline: "+baseline);
-        Console.WriteLine(halfHeight+", "+maxPoint.Time);
-        Console.WriteLine(left.Value+", "+left.Time);
-        Console.WriteLine(right.Value+", "+right.Time);
-        Console.WriteLine("");
         return right.Time - left.Time;
     }
 

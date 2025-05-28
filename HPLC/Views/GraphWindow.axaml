@@ -8,9 +8,40 @@
     <UserControl.Resources>
         <local:InputConverterHelper x:Key="InputConverterHelper"/>
     </UserControl.Resources>
-
     <DockPanel>
-        <TabControl DockPanel.Dock="Top" Margin="10" SelectedIndex="{Binding SelectedTabIndex}">
+        <TabControl DockPanel.Dock="Top" SelectedIndex="{Binding SelectedTabIndex}" Padding="0">
+            <TabControl.Template>
+                <ControlTemplate TargetType="TabControl">
+                    <DockPanel>
+                        <!-- Tab Strip with Shadow -->
+                        <Border 
+                            Background="White"
+                            DockPanel.Dock="Top">
+                            <Border.Effect>
+                                <DropShadowEffect 
+                                    Color="Black"
+                                    BlurRadius="10"
+                                    Opacity="0.2"/>
+                            </Border.Effect>
+                            <ItemsPresenter 
+                                Name="PART_ItemsPresenter"
+                                Margin="0,0,0,0"
+                                VerticalAlignment="Top"/>
+                        </Border>
+
+                        <!-- Tab Content -->
+                        <ContentPresenter 
+                            Name="PART_SelectedContentHost"
+                            Margin="4"
+                            Content="{TemplateBinding SelectedContent}"/>
+                    </DockPanel>
+                </ControlTemplate>
+            </TabControl.Template>
+            <TabControl.Styles>
+                <Style Selector="TabControl /template/ StackPanel">
+                    <Setter Property="Orientation" Value="Horizontal"/>
+                </Style>
+            </TabControl.Styles>
             <!-- Graph Viewer -->
             <TabItem Header="Graph View">
                 <Grid>
@@ -116,7 +147,7 @@
                         <TextBlock FontWeight="Bold" FontSize="16" Text="Uitleg van de piekdetectie" Margin="0,0,0,10"/>
                         
                         <TextBlock TextWrapping="Wrap">
-                            Deze pagina legt uit hoe pieken in een dataset automatisch worden gedetecteerd met behulp van de MathService-klasse. 
+                            Deze pagina legt uit hoe pieken in een dataset automatisch worden gedetecteerd.
                             Het algoritme bestaat uit drie belangrijke stappen:
                         </TextBlock>
                         
