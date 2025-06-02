@@ -78,6 +78,7 @@
     <None Remove="Assets\logo.png" />
     <AvaloniaResource Include="Assets\logo.png" />
     <AvaloniaResource Include="Assets\download-image-icon.png" />
+    <AvaloniaResource Include="Assets\baseline.png" />
   </ItemGroup>
 
 </Project>

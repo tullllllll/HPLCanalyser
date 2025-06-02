@@ -75,6 +75,7 @@ public class GraphViewModel : INotifyPropertyChanged
 
         }
     }  
+    private Baseline _baseline { get; set; }
     
     public Axis[] XAxes { get; set; } = {
         new Axis
@@ -101,6 +102,7 @@ public class GraphViewModel : INotifyPropertyChanged
     // Command
     public ICommand DeletePeakCommand { get; }
     public ReactiveCommand<Unit, Unit> SaveImageCommand { get; }
+    public ReactiveCommand<Unit, Unit> ToggleBaselineCommand { get; }
     
     // Interaction
     public Interaction<Unit, (CartesianChart chart, Window parent)> RequestChartExport { get; } = new();
@@ -121,7 +123,7 @@ public class GraphViewModel : INotifyPropertyChanged
                 await SaveChartWithDialogAsync(chart, window);
             }
         });
-
+        ToggleBaselineCommand = ReactiveCommand.Create(ShowBaseline);
         UpdateChartData();
     }
     
@@ -239,6 +241,10 @@ public class GraphViewModel : INotifyPropertyChanged
         XAxes.First().MaxLimit = null;
         YAxes.First().MinLimit = null;
         YAxes.First().MaxLimit = null;
+
+        var dataPoints = DataSet.DataPoints.ToList();
+        double dTime = dataPoints[1].Time - dataPoints[0].Time;
+        _baseline = Baseline.CalculateBaseline(dataPoints,dTime);
         
         OnPropertyChanged(nameof(SeriesCollection));
         DrawThemPeaks(Threshold, MinPeakWidth);
@@ -247,8 +253,7 @@ public class GraphViewModel : INotifyPropertyChanged
     private void DrawThemPeaks(double treshhold, double minPeakWidth)
     {
         if (DataSet == null || DataSet.DataPoints == null) return;
-        
-        var detectedPeaks = _mathService.DetectPeaks(DataSet.DataPoints.ToList(), treshhold, minPeakWidth);
+        var detectedPeaks = _mathService.DetectPeaks(DataSet.DataPoints.ToList(), treshhold, minPeakWidth, _baseline);
 
         var linesToRemove = SeriesCollection
             .Where(line => line.Tag?.ToString() != "Main" && line.Tag?.ToString() != "Reference")
@@ -348,6 +353,36 @@ public class GraphViewModel : INotifyPropertyChanged
                 otherLine.GeometryStroke = c;
         }
 
+    }
+
+    public void ShowBaseline()
+    {
+        var dataPoints = DataSet.DataPoints.ToList();
+        double dTime = dataPoints[1].Time - dataPoints[0].Time;
+        double lastTime = dataPoints[^1].Time;
+
+        var existingBaseline = SeriesCollection.FirstOrDefault(s => s.Name == "Baseline");
+
+        if (existingBaseline != null) SeriesCollection.Remove(existingBaseline);
+        else
+        {
+            var baseline = new LineSeries<ObservablePoint, DiamondGeometry>
+            {
+                Values = new ObservableCollection<ObservablePoint>
+                {
+                    new ObservablePoint(0, _baseline.GetBaseline(0, dTime)),
+                    new ObservablePoint(lastTime, _baseline.GetBaseline(lastTime, dTime))
+                },
+                Stroke = new SolidColorPaint(SKColors.Red, 3),
+                GeometryStroke = new SolidColorPaint(SKColors.Red, 3),
+                Fill = null,
+                GeometryFill = null,
+                LineSmoothness = 0,
+                Name = "Baseline"
+            };
+
+            SeriesCollection.Add(baseline);
+        }
     }
     
     public event PropertyChangedEventHandler PropertyChanged;

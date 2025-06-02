@@ -70,11 +70,18 @@
                                 <TextBox Width="100" Text="{Binding GraphViewModel.MinPeakWidth, Converter={StaticResource InputConverterHelper}, Mode=TwoWay, StringFormat='F1'}" />
                             </StackPanel>
 
-                            <Button Grid.Column="2" Command="{Binding GraphViewModel.SaveImageCommand}" 
-                                    Background="DodgerBlue" Foreground="White" 
-                                    Cursor="Hand" HorizontalAlignment="Right">
-                                <Image Height="16" Width="16" Source="avares://HPLC/Assets/download-image-icon.png" />
-                            </Button>
+                            <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4">
+                                <Button Command="{Binding GraphViewModel.ToggleBaselineCommand}" 
+                                        Background="DodgerBlue" Foreground="White" 
+                                        Cursor="Hand">
+                                    <Image Height="16" Width="16" Source="avares://HPLC/Assets/baseline.png" />
+                                </Button>
+                                <Button Command="{Binding GraphViewModel.SaveImageCommand}" 
+                                        Background="DodgerBlue" Foreground="White" 
+                                        Cursor="Hand">
+                                    <Image Height="16" Width="16" Source="avares://HPLC/Assets/download-image-icon.png" />
+                                </Button>
+                            </StackPanel>
                         </Grid>
                         
                         <!-- Expander for Peak Data -->
@@ -153,7 +160,7 @@
                         
                         <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
                             1. Baselinebepaling: Er wordt een lineaire baseline berekend op basis van drie gemiddelde meetpunten uit het begin van de dataset 
-                            (de eerste 20, daarna 30-50, en 60-80 datapunten). Met deze drie punten wordt via lineaire regressie een rechte lijn gefit, die 
+                            (de eerste 30 datapunten en daarna 31-60 en 61-90). Met deze drie punten wordt via lineaire regressie een rechte lijn gefit, die 
                             de verwachte nulwaarde van het signaal vertegenwoordigt.
                         </TextBlock>
                         

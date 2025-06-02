@@ -31,7 +31,7 @@ public class MathService
         return smoothed;
     }
     
-    public List<Peak> DetectPeaks(List<DataPoint> dataPoints, double threshold, double minPeakWidth)
+    public List<Peak> DetectPeaks(List<DataPoint> dataPoints, double threshold, double minPeakWidth,Baseline baseline)
     {
         var peaks = new List<Peak>();
 
@@ -40,8 +40,7 @@ public class MathService
         int peakMaxIndex = -1;
         double peakMaxValue = double.MinValue;
         double dTime = dataPoints[1].Time - dataPoints[0].Time;
-        Baseline baseline = Baseline.CalculateBaseline(dataPoints,dTime);
-
+        
         for (int i = 0; i < dataPoints.Count; i++)
         {
             var dp = dataPoints[i];
