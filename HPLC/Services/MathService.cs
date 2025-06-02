@@ -85,7 +85,7 @@ public class MathService
         
     }
     
-    private Peak CreatePeak(List<DataPoint> dataPoints, Baseline baseline, int startIdx, int endIdx, int maxIdx)
+    public Peak CreatePeak(List<DataPoint> dataPoints, Baseline baseline, int startIdx, int endIdx, int maxIdx)
     {
         var peakData = dataPoints.GetRange(startIdx, endIdx - startIdx + 1);
         
@@ -169,7 +169,7 @@ public class MathService
         return right.Time - left.Time;
     }
 
-    private DataPoint Interpolate(DataPoint p1, DataPoint p2, double targetValue)
+    public DataPoint Interpolate(DataPoint p1, DataPoint p2, double targetValue)
     {
         if (Math.Abs(p2.Time - p1.Time) < double.Epsilon)
             return new DataPoint { Time = p1.Time, Value = targetValue };
@@ -179,7 +179,7 @@ public class MathService
         return new DataPoint { Time = timeAtTarget, Value = targetValue };
     }
 
-    private int GetMaxPointIndex(List<DataPoint> dataPoints, DataPoint maxPoint)
+    public int GetMaxPointIndex(List<DataPoint> dataPoints, DataPoint maxPoint)
     {
         return dataPoints.FindIndex(dp => dp.Time == maxPoint.Time && dp.Value == maxPoint.Value);
     }
