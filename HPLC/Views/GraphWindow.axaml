@@ -71,6 +71,11 @@
                             </StackPanel>
 
                             <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4">
+                                <Button Command="{Binding GraphViewModel.ToggleSelectionModeCommand}" 
+                                        Background="DodgerBlue" Foreground="White" 
+                                        Cursor="Hand">
+                                    <Image Height="16" Width="16" Source="avares://HPLC/Assets/baseline.png" />
+                                </Button>
                                 <Button Command="{Binding GraphViewModel.ToggleBaselineCommand}" 
                                         Background="DodgerBlue" Foreground="White" 
                                         Cursor="Hand">

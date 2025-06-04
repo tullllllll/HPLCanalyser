@@ -117,7 +117,6 @@ public class FileService
     {
         var dataPoints = new List<DataPoint>();
         var lines = fileContent.ReplaceLineEndings("\n").Split('\n');
-        var valueDivider = (type=="Shimadzu")?1:1000;
         foreach (var line in lines)
         {
             var formattedLine = (Regex.Replace(line.Trim(), @"[\t; ]+", " ").Replace(",", ".")).Split(' ');
@@ -127,7 +126,7 @@ public class FileService
                 dataPoints.Add(new DataPoint()
                 {
                     Time = double.Parse(formattedLine[0], CultureInfo.InvariantCulture),
-                    Value = double.Parse(formattedLine[1], CultureInfo.InvariantCulture)/valueDivider
+                    Value = double.Parse(formattedLine[1], CultureInfo.InvariantCulture)/1000
                 });
             }
         }

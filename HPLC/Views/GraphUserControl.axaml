@@ -8,8 +8,11 @@
     <lvc:CartesianChart Series="{Binding SeriesCollection}"
                         XAxes="{Binding XAxes}"
                         YAxes="{Binding YAxes}"
+                        DataPointerDownCommand="{Binding DataPointerDownCommand}"
                         ZoomMode="Both"
                         LegendPosition="Bottom"
                         TooltipPosition="Hidden"
-                        x:Name="ChartForSave"/>
+                        x:Name="ChartForSave">
+    </lvc:CartesianChart>
+        
 </UserControl>

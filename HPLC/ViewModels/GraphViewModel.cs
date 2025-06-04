@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Linq;
@@ -11,6 +12,7 @@ using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
 using Avalonia.Controls;
+using Avalonia.Input;
 using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
@@ -20,9 +22,12 @@ using HPLC.Services;
 using HPLC.Views;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
+using LiveChartsCore.Drawing;
+using LiveChartsCore.Kernel;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Avalonia;
 using LiveChartsCore.SkiaSharpView.Painting;
+using LiveChartsCore.Kernel.Events;
 using ReactiveUI;
 using SkiaSharp;
 using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
@@ -44,6 +49,10 @@ public class GraphViewModel : INotifyPropertyChanged
     public ObservableCollection<ISeries> SeriesCollection { get; set; }
     public ObservableCollection<Peak> Peaks { get; set; } = new ObservableCollection<Peak>();
     public ObservableCollection<Peak> ReferencePeaks { get; set; } = new ObservableCollection<Peak>();
+    
+    
+    private List<ObservablePoint> _selectedPoints = new List<ObservablePoint>();
+    private bool IsSelectionModeActive { get; set; }
 
     private double _threshold = 60; 
     public double Threshold
@@ -103,6 +112,8 @@ public class GraphViewModel : INotifyPropertyChanged
     public ICommand DeletePeakCommand { get; }
     public ReactiveCommand<Unit, Unit> SaveImageCommand { get; }
     public ReactiveCommand<Unit, Unit> ToggleBaselineCommand { get; }
+    public ReactiveCommand<IEnumerable<ChartPoint>, Unit> DataPointerDownCommand { get; }
+    public ReactiveCommand<Unit, Unit> ToggleSelectionModeCommand { get; }
     
     // Interaction
     public Interaction<Unit, (CartesianChart chart, Window parent)> RequestChartExport { get; } = new();
@@ -114,16 +125,10 @@ public class GraphViewModel : INotifyPropertyChanged
         
         _dataSetService.PropertyChanged += HandlePropertyChanged;
         DeletePeakCommand = ReactiveCommand.Create<Peak>(DeletePeak);
-        SaveImageCommand = ReactiveCommand.CreateFromTask(async () =>
-        {
-            var (chart, window) = await RequestChartExport.Handle(Unit.Default).FirstAsync();
-
-            if (chart != null && window != null)
-            {
-                await SaveChartWithDialogAsync(chart, window);
-            }
-        });
+        SaveImageCommand = ReactiveCommand.CreateFromTask(SaveImage);
         ToggleBaselineCommand = ReactiveCommand.Create(ShowBaseline);
+        ToggleSelectionModeCommand = ReactiveCommand.Create(ToggleSelectionMode);
+        DataPointerDownCommand = ReactiveCommand.Create<IEnumerable<ChartPoint>>(GetPointerPoints);
         UpdateChartData();
     }
     
@@ -182,7 +187,47 @@ public class GraphViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(Peaks));
         OnPropertyChanged(nameof(SeriesCollection));
     }
+    
+    public async Task SaveImage()
+    {
+        var (chart, window) = await RequestChartExport.Handle(Unit.Default).FirstAsync();
 
+        if (chart != null && window != null)
+        {
+            await SaveChartWithDialogAsync(chart, window);
+        }
+    }
+
+    public void ShowBaseline()
+    {
+        var dataPoints = DataSet.DataPoints.ToList();
+        double dTime = dataPoints[1].Time - dataPoints[0].Time;
+        double lastTime = dataPoints[^1].Time;
+
+        var existingBaseline = SeriesCollection.FirstOrDefault(s => s.Name == "Baseline");
+
+        if (existingBaseline != null) SeriesCollection.Remove(existingBaseline);
+        else
+        {
+            var baseline = new LineSeries<ObservablePoint, DiamondGeometry>
+            {
+                Values = new ObservableCollection<ObservablePoint>
+                {
+                    new ObservablePoint(0, _baseline.GetBaseline(0, dTime)),
+                    new ObservablePoint(lastTime, _baseline.GetBaseline(lastTime, dTime))
+                },
+                Stroke = new SolidColorPaint(SKColors.Red, 3),
+                GeometryStroke = new SolidColorPaint(SKColors.Red, 3),
+                Fill = null,
+                GeometryFill = null,
+                LineSmoothness = 0,
+                Name = "Baseline"
+            };
+
+            SeriesCollection.Add(baseline);
+        }
+    }
+    
     private void Peak_PropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         if (sender is Peak peak)
@@ -354,39 +399,34 @@ public class GraphViewModel : INotifyPropertyChanged
         }
 
     }
-
-    public void ShowBaseline()
-    {
-        var dataPoints = DataSet.DataPoints.ToList();
-        double dTime = dataPoints[1].Time - dataPoints[0].Time;
-        double lastTime = dataPoints[^1].Time;
-
-        var existingBaseline = SeriesCollection.FirstOrDefault(s => s.Name == "Baseline");
-
-        if (existingBaseline != null) SeriesCollection.Remove(existingBaseline);
-        else
-        {
-            var baseline = new LineSeries<ObservablePoint, DiamondGeometry>
-            {
-                Values = new ObservableCollection<ObservablePoint>
-                {
-                    new ObservablePoint(0, _baseline.GetBaseline(0, dTime)),
-                    new ObservablePoint(lastTime, _baseline.GetBaseline(lastTime, dTime))
-                },
-                Stroke = new SolidColorPaint(SKColors.Red, 3),
-                GeometryStroke = new SolidColorPaint(SKColors.Red, 3),
-                Fill = null,
-                GeometryFill = null,
-                LineSmoothness = 0,
-                Name = "Baseline"
-            };
-
-            SeriesCollection.Add(baseline);
-        }
-    }
     
     public event PropertyChangedEventHandler PropertyChanged;
     
     protected void OnPropertyChanged(string propertyName) => 
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+    
+    public void ToggleSelectionMode()
+    {
+        IsSelectionModeActive = !IsSelectionModeActive;
+        Debug.WriteLine($"Selection mode: {IsSelectionModeActive}");
+    }
+    public void GetPointerPoints(IEnumerable<ChartPoint> Points)
+    {
+        if (IsSelectionModeActive)
+        {
+            var points = Points;
+
+            // Example: get first point's data values
+            var firstPoint = points.FirstOrDefault();
+            if (firstPoint != null)
+            {
+                var x = firstPoint.Coordinate.SecondaryValue;
+                var y = firstPoint.Coordinate.PrimaryValue;
+                Debug.WriteLine($"Point: {firstPoint.Context.Series.Name == DataSet.Name}, X: {x}, Y: {y}, Index: {firstPoint.Index}");
+                SeriesCollection.Add(new LineSeries<ObservablePoint>(new ObservablePoint(y,x)));
+            }    
+        }
+    }
+
+    
 }
