@@ -84,10 +84,15 @@ public class MathService
         
     }
     
-    public Peak CreatePeak(List<DataPoint> dataPoints, Baseline baseline, int startIdx, int endIdx, int maxIdx)
+    public Peak CreatePeak(List<DataPoint> dataPoints, Baseline baseline, int startIdx, int endIdx, int? maxIdx = null)
     {
         var peakData = dataPoints.GetRange(startIdx, endIdx - startIdx + 1);
-        
+        if (maxIdx == null)
+        {
+            double maxValue = peakData.Max(point => point.Value);
+            int localMaxIdx = peakData.FindIndex(point => point.Value == maxValue);
+            maxIdx = startIdx + localMaxIdx;
+        }
         // Area onder de piek berekenen
         double area = CalculateArea(peakData,baseline);
 
@@ -97,12 +102,12 @@ public class MathService
         return new Peak
         {
             StartTime = dataPoints[startIdx].Time,
-            PeakTime = dataPoints[maxIdx].Time,
+            PeakTime = dataPoints[maxIdx.Value].Time,
             EndTime = dataPoints[endIdx].Time,
-            PeakHeight = dataPoints[maxIdx].Value,
+            PeakHeight = dataPoints[maxIdx.Value].Value,
             Area = area,
             WidthAtHalfHeight = widthAtHalfHeight,
-            Name = "Peak at " + dataPoints[maxIdx].Time.ToString("0.00")
+            Name = "Peak at " + dataPoints[maxIdx.Value].Time.ToString("0.00")
         };
     }
     
@@ -181,6 +186,11 @@ public class MathService
     public int GetMaxPointIndex(List<DataPoint> dataPoints, DataPoint maxPoint)
     {
         return dataPoints.FindIndex(dp => dp.Time == maxPoint.Time && dp.Value == maxPoint.Value);
+    }
+
+    public bool AboutEqual(double time1, double time2, double epsilon)
+    {
+        return Math.Abs(time1 - time2) < epsilon;
     }
 
 }

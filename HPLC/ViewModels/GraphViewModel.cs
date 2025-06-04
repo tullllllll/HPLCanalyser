@@ -22,12 +22,10 @@ using HPLC.Services;
 using HPLC.Views;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
-using LiveChartsCore.Drawing;
 using LiveChartsCore.Kernel;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Avalonia;
 using LiveChartsCore.SkiaSharpView.Painting;
-using LiveChartsCore.Kernel.Events;
 using ReactiveUI;
 using SkiaSharp;
 using LiveChartsCore.SkiaSharpView.Drawing.Geometries;
@@ -50,8 +48,7 @@ public class GraphViewModel : INotifyPropertyChanged
     public ObservableCollection<Peak> Peaks { get; set; } = new ObservableCollection<Peak>();
     public ObservableCollection<Peak> ReferencePeaks { get; set; } = new ObservableCollection<Peak>();
     
-    
-    private List<ObservablePoint> _selectedPoints = new List<ObservablePoint>();
+    private List<(ChartPoint,ObservablePoint)> _selectedPoints = new List<(ChartPoint,ObservablePoint)>();
     private bool IsSelectionModeActive { get; set; }
 
     private double _threshold = 60; 
@@ -295,10 +292,10 @@ public class GraphViewModel : INotifyPropertyChanged
         DrawThemPeaks(Threshold, MinPeakWidth);
     }
 
-    private void DrawThemPeaks(double treshhold, double minPeakWidth)
+    private void DrawThemPeaks(double treshhold, double minPeakWidth, bool detectPeaks = true)
     {
         if (DataSet == null || DataSet.DataPoints == null) return;
-        var detectedPeaks = _mathService.DetectPeaks(DataSet.DataPoints.ToList(), treshhold, minPeakWidth, _baseline);
+        var detectedPeaks = detectPeaks? _mathService.DetectPeaks(DataSet.DataPoints.ToList(), treshhold, minPeakWidth, _baseline) : Peaks.ToList();
 
         var linesToRemove = SeriesCollection
             .Where(line => line.Tag?.ToString() != "Main" && line.Tag?.ToString() != "Reference")
@@ -312,7 +309,6 @@ public class GraphViewModel : INotifyPropertyChanged
         {
             SeriesCollection.Remove(line);
         }
-        
         for (int i = 0; i < detectedPeaks.Count; i++)
         {
             var peak = detectedPeaks[i];
@@ -323,7 +319,7 @@ public class GraphViewModel : INotifyPropertyChanged
             {
                 Values = new ObservableCollection<ObservablePoint>(
                     DataSet.DataPoints
-                        .Where(dp => dp.Time == peak.StartTime || dp.Time == peak.EndTime)
+                        .Where(dp => _mathService.AboutEqual(dp.Time,peak.StartTime,0.001) || _mathService.AboutEqual(dp.Time,peak.EndTime,0.001))
                         .Select(dp => new ObservablePoint(dp.Time, dp.Value))
                 ),
                 Stroke = new SolidColorPaint(skColor, 3),
@@ -412,19 +408,32 @@ public class GraphViewModel : INotifyPropertyChanged
     }
     public void GetPointerPoints(IEnumerable<ChartPoint> Points)
     {
-        if (IsSelectionModeActive)
+        if (!IsSelectionModeActive) return;
+        
+        var firstPoint = Points.FirstOrDefault();
+        if (firstPoint == null) return;
+        if (firstPoint.Context.Series.Name != DataSet.Name) return;
+        
+        var x = firstPoint.Coordinate.SecondaryValue;
+        var y = firstPoint.Coordinate.PrimaryValue;
+        Debug.WriteLine($"Point: X: {x}, Y: {y}, Index: {firstPoint.Index}");
+        
+        var selectedPoint = new ObservablePoint(x, y);
+        
+        // Add point if not already selected (optional: avoid duplicates)
+        if (_selectedPoints.Count < 2)
         {
-            var points = Points;
+            _selectedPoints.Add((firstPoint,selectedPoint));
+            SeriesCollection.Add(new LineSeries<ObservablePoint>(new ObservablePoint(x,y)));
+        }
 
-            // Example: get first point's data values
-            var firstPoint = points.FirstOrDefault();
-            if (firstPoint != null)
-            {
-                var x = firstPoint.Coordinate.SecondaryValue;
-                var y = firstPoint.Coordinate.PrimaryValue;
-                Debug.WriteLine($"Point: {firstPoint.Context.Series.Name == DataSet.Name}, X: {x}, Y: {y}, Index: {firstPoint.Index}");
-                SeriesCollection.Add(new LineSeries<ObservablePoint>(new ObservablePoint(y,x)));
-            }    
+        // Once two points are selected, call your peak method
+        if (_selectedPoints.Count == 2)
+        {
+            if (_selectedPoints[0].Item1.Index>_selectedPoints[1].Item1.Index) _selectedPoints.Reverse(0,2);
+            Peaks.Add(_mathService.CreatePeak(DataSet.DataPoints.ToList(), _baseline, _selectedPoints[0].Item1.Index, _selectedPoints[1].Item1.Index));
+            DrawThemPeaks(_threshold, _minPeakWidth,false);
+            _selectedPoints.Clear();
         }
     }
 
