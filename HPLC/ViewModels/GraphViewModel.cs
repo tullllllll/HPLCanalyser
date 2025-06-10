@@ -4,10 +4,12 @@ using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Diagnostics;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Reactive;
 using System.Reactive.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia;
@@ -49,7 +51,7 @@ public class GraphViewModel : INotifyPropertyChanged
     public ObservableCollection<Peak> ReferencePeaks { get; set; } = new ObservableCollection<Peak>();
     
     private List<(ChartPoint,ObservablePoint)> _selectedPoints = new List<(ChartPoint,ObservablePoint)>();
-    private bool IsSelectionModeActive { get; set; }
+    public bool IsSelectionModeActive { get; set; } = false;
 
     private double _threshold = 60; 
     public double Threshold
@@ -98,7 +100,7 @@ public class GraphViewModel : INotifyPropertyChanged
         {
             Name = "Intensity (mV):",
             TextSize = 14,
-            MinLimit = null,
+            MinLimit = 0,
             MaxLimit = null,
             ShowSeparatorLines = false,
             TicksPaint = new SolidColorPaint{Color = SKColors.Black}
@@ -108,12 +110,14 @@ public class GraphViewModel : INotifyPropertyChanged
     // Command
     public ICommand DeletePeakCommand { get; }
     public ReactiveCommand<Unit, Unit> SaveImageCommand { get; }
+    public ReactiveCommand<Unit, Unit> SavePeakTableCommand { get; }
     public ReactiveCommand<Unit, Unit> ToggleBaselineCommand { get; }
     public ReactiveCommand<IEnumerable<ChartPoint>, Unit> DataPointerDownCommand { get; }
     public ReactiveCommand<Unit, Unit> ToggleSelectionModeCommand { get; }
     
     // Interaction
     public Interaction<Unit, (CartesianChart chart, Window parent)> RequestChartExport { get; } = new();
+    public Interaction<Unit, (string a, Window parent)> RequestPeakTableExport { get; } = new();
 
     public GraphViewModel(DataSetService dataSetService, MathService mathService)
     {
@@ -123,6 +127,7 @@ public class GraphViewModel : INotifyPropertyChanged
         _dataSetService.PropertyChanged += HandlePropertyChanged;
         DeletePeakCommand = ReactiveCommand.Create<Peak>(DeletePeak);
         SaveImageCommand = ReactiveCommand.CreateFromTask(SaveImage);
+        SavePeakTableCommand = ReactiveCommand.CreateFromTask(SavePeakTable);
         ToggleBaselineCommand = ReactiveCommand.Create(ShowBaseline);
         ToggleSelectionModeCommand = ReactiveCommand.Create(ToggleSelectionMode);
         DataPointerDownCommand = ReactiveCommand.Create<IEnumerable<ChartPoint>>(GetPointerPoints);
@@ -151,6 +156,50 @@ public class GraphViewModel : INotifyPropertyChanged
             
             using var fileStream = File.OpenWrite(file.Path.LocalPath);
             bitmap.Save(fileStream);
+        }
+    }
+
+    private async Task SavePeakTabletWithDialogAsync(ObservableCollection<Peak> peaks, Window window)
+    {
+        var storage = window.StorageProvider;
+
+        var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions()
+        {
+            SuggestedFileName = "peaks",
+            DefaultExtension = "csv",
+            Title = "Save Peak Data to CSV",
+        });
+
+        if (file is not null)
+        {
+            var csvLines = new List<string>
+            {
+                "Name; Start Time (min); Peak Time (min); End Time (min); Total Time (min); Height (mV); Area (mV.min); Width ½ Height (min)"
+            };
+
+            foreach (var peak in peaks)
+            {
+                string line = string.Format(
+                    CultureInfo.InvariantCulture,
+                    "{0}; {1:F3}; {2:F3}; {3:F3}; {4:F3}; {5:F2}; {6:F1}; {7:F6}",
+                    peak.Name,
+                    peak.StartTime,
+                    peak.PeakTime,
+                    peak.EndTime,
+                    peak.Time,
+                    peak.PeakHeight,
+                    peak.Area,
+                    peak.WidthAtHalfHeight
+                );
+                csvLines.Add(line);
+            }
+
+            await using var stream = File.OpenWrite(file.Path.LocalPath);
+            using var writer = new StreamWriter(stream, Encoding.UTF8);
+            foreach (var line in csvLines)
+            {
+                await writer.WriteLineAsync(line);
+            }
         }
     }
     
@@ -192,6 +241,16 @@ public class GraphViewModel : INotifyPropertyChanged
         if (chart != null && window != null)
         {
             await SaveChartWithDialogAsync(chart, window);
+        }
+    }
+    public async Task SavePeakTable()
+    {
+        var (e,window) = await RequestPeakTableExport.Handle(Unit.Default).FirstAsync();
+        var peaks = Peaks;
+
+        if (peaks != null && window != null)
+        {
+            await SavePeakTabletWithDialogAsync(peaks, window);
         }
     }
 
@@ -279,9 +338,9 @@ public class GraphViewModel : INotifyPropertyChanged
             },
         };
         
-        XAxes.First().MinLimit = null;
+        XAxes.First().MinLimit = 0;
         XAxes.First().MaxLimit = null;
-        YAxes.First().MinLimit = null;
+        YAxes.First().MinLimit = 0;
         YAxes.First().MaxLimit = null;
 
         var dataPoints = DataSet.DataPoints.ToList();
@@ -404,6 +463,7 @@ public class GraphViewModel : INotifyPropertyChanged
     public void ToggleSelectionMode()
     {
         IsSelectionModeActive = !IsSelectionModeActive;
+        OnPropertyChanged(nameof(IsSelectionModeActive));
         Debug.WriteLine($"Selection mode: {IsSelectionModeActive}");
     }
     public void GetPointerPoints(IEnumerable<ChartPoint> Points)

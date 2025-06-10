@@ -57,6 +57,14 @@
                             <RowDefinition Height="Auto" />
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
+                        <Panel IsVisible="{Binding GraphViewModel.IsSelectionModeActive}">
+                            <Border Background="DarkRed" Opacity="0.1">
+                                <Border.Effect>
+                                    <DropShadowEffect Color="Black" BlurRadius="250"></DropShadowEffect>
+                                </Border.Effect>
+                            </Border>
+                            <TextBlock Text="Select Peaks" VerticalAlignment="Top" FontSize="30" Foreground="Coral" Opacity="1"/>
+                        </Panel>
                         <views:GraphUserControl Grid.Row="0" DataContext="{Binding GraphViewModel}" x:Name="graphUserControl"/>
 
                         <Grid Grid.Row="1" ColumnDefinitions="Auto Auto *" Margin="10">
@@ -73,17 +81,26 @@
                             <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4">
                                 <Button Command="{Binding GraphViewModel.ToggleSelectionModeCommand}" 
                                         Background="DodgerBlue" Foreground="White" 
-                                        Cursor="Hand">
+                                        Cursor="Hand"
+                                        ToolTip.Tip="Selection Mode">
+                                    <Image Height="16" Width="16" Source="avares://HPLC/Assets/baseline.png" />
+                                </Button>
+                                <Button Command="{Binding GraphViewModel.SavePeakTableCommand}" 
+                                        Background="DodgerBlue" Foreground="White" 
+                                        Cursor="Hand"
+                                        ToolTip.Tip="Export Peak Table">
                                     <Image Height="16" Width="16" Source="avares://HPLC/Assets/baseline.png" />
                                 </Button>
                                 <Button Command="{Binding GraphViewModel.ToggleBaselineCommand}" 
                                         Background="DodgerBlue" Foreground="White" 
-                                        Cursor="Hand">
+                                        Cursor="Hand"
+                                        ToolTip.Tip="Show Baseline">
                                     <Image Height="16" Width="16" Source="avares://HPLC/Assets/baseline.png" />
                                 </Button>
                                 <Button Command="{Binding GraphViewModel.SaveImageCommand}" 
                                         Background="DodgerBlue" Foreground="White" 
-                                        Cursor="Hand">
+                                        Cursor="Hand"
+                                        ToolTip.Tip="Export Graph">
                                     <Image Height="16" Width="16" Source="avares://HPLC/Assets/download-image-icon.png" />
                                 </Button>
                             </StackPanel>
@@ -150,6 +167,8 @@
                                 Margin="0,5" Cursor="Hand"
                                 HorizontalAlignment="Center" FontSize="20"/>
                     </Panel>
+                    
+
                 </Grid>
             </TabItem>
 

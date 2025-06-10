@@ -12,6 +12,7 @@
                         ZoomMode="Both"
                         LegendPosition="Bottom"
                         TooltipPosition="Hidden"
+                        
                         x:Name="ChartForSave">
     </lvc:CartesianChart>
         

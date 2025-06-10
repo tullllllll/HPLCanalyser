@@ -31,6 +31,13 @@ public partial class GraphWindow : ReactiveUserControl<GraphViewModel>
                 interaction.SetOutput((chart, window));
                 return Task.CompletedTask;
             }).DisposeWith(disposable);
+            _graphViewModel!.RequestPeakTableExport.RegisterHandler(interaction =>
+            {
+                var window = this.GetVisualRoot() as Window;
+
+                interaction.SetOutput(("e",window));
+                return Task.CompletedTask;
+            }).DisposeWith(disposable);
         });
     }
 
