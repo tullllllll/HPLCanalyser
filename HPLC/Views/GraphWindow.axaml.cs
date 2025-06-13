@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reactive.Disposables;
 using System.Threading.Tasks;
 using Avalonia.Controls;
 using Avalonia.ReactiveUI;
 using Avalonia.VisualTree;
 using HPLC.ViewModels;
+using LiveChartsCore.Kernel.Sketches;
 using Microsoft.Extensions.DependencyInjection;
 using ReactiveUI;
 using SkiaSharp;
@@ -13,6 +15,7 @@ namespace HPLC.Views;
 
 public partial class GraphWindow : ReactiveUserControl<GraphViewModel>
 {
+
     private readonly GraphViewModel _graphViewModel;
     
     public GraphWindow()
@@ -43,6 +46,8 @@ public partial class GraphWindow : ReactiveUserControl<GraphViewModel>
 
     private void ColorView_OnColorChanged(object? sender, ColorChangedEventArgs e)
     {
+        Debug.WriteLine(_graphViewModel!.Peaks);
+        Debug.WriteLine(_graphViewModel!.SeriesCollection);
         if (sender is Control control && control.Tag is string Target)
         {
             var selectedColor = e.NewColor;
@@ -50,4 +55,6 @@ public partial class GraphWindow : ReactiveUserControl<GraphViewModel>
             _graphViewModel.UpdateLineColor(Target, SkColor);
         }
     }
+    
+
 }

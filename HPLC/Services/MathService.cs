@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using Avalonia.Media;
 using HPLC.Models;
 
 namespace HPLC.Services;
@@ -107,7 +108,7 @@ public class MathService
             PeakHeight = dataPoints[maxIdx.Value].Value,
             Area = area,
             WidthAtHalfHeight = widthAtHalfHeight,
-            Name = "Peak at " + dataPoints[maxIdx.Value].Time.ToString("0.00")
+            Name = "Peak at " + dataPoints[maxIdx.Value].Time.ToString("0.00"),
         };
     }
     
@@ -137,7 +138,7 @@ public class MathService
     {
         if (dataPoints == null || dataPoints.Count < 2) return 0;
 
-        var maxPoint = dataPoints.OrderByDescending(dp => dp.Value).First();
+        DataPoint maxPoint = dataPoints.OrderByDescending(dp => dp.Value).First();
         int maxIndex = GetMaxPointIndex(dataPoints, maxPoint);
         double dTime = dataPoints[1].Time - dataPoints[0].Time;
         double baselineValueMaxPoint = baseline.GetBaseline(maxPoint.Time, dTime);

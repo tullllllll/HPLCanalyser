@@ -165,7 +165,7 @@ public class GraphViewModel : INotifyPropertyChanged
 
         var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions()
         {
-            SuggestedFileName = "peaks",
+            SuggestedFileName = DataSet.Name + " Peak Table",
             DefaultExtension = "csv",
             Title = "Save Peak Data to CSV",
         });
@@ -233,8 +233,8 @@ public class GraphViewModel : INotifyPropertyChanged
         OnPropertyChanged(nameof(Peaks));
         OnPropertyChanged(nameof(SeriesCollection));
     }
-    
-    public async Task SaveImage()
+
+    private async Task SaveImage()
     {
         var (chart, window) = await RequestChartExport.Handle(Unit.Default).FirstAsync();
 
@@ -243,7 +243,8 @@ public class GraphViewModel : INotifyPropertyChanged
             await SaveChartWithDialogAsync(chart, window);
         }
     }
-    public async Task SavePeakTable()
+
+    private async Task SavePeakTable()
     {
         var (e,window) = await RequestPeakTableExport.Handle(Unit.Default).FirstAsync();
         var peaks = Peaks;
@@ -254,7 +255,7 @@ public class GraphViewModel : INotifyPropertyChanged
         }
     }
 
-    public void ShowBaseline()
+    private void ShowBaseline()
     {
         var dataPoints = DataSet.DataPoints.ToList();
         double dTime = dataPoints[1].Time - dataPoints[0].Time;
@@ -360,10 +361,8 @@ public class GraphViewModel : INotifyPropertyChanged
             .Where(line => line.Tag?.ToString() != "Main" && line.Tag?.ToString() != "Reference")
             .ToList();
 
-        if (Peaks.Count > 0)
-        {
-            Peaks.Clear();
-        }
+        if (Peaks.Count > 0) Peaks.Clear();
+        
         foreach (var line in linesToRemove)
         {
             SeriesCollection.Remove(line);
@@ -403,10 +402,7 @@ public class GraphViewModel : INotifyPropertyChanged
             .OfType<LineSeries<ObservablePoint>>()
             .FirstOrDefault(series => series.Tag?.ToString() == "Reference");
 
-        if (existingReference != null)
-        {
-            SeriesCollection.Remove(existingReference);
-        }
+        if (existingReference != null) SeriesCollection.Remove(existingReference);
         
         ReferenceObservablePoints = new ObservableCollection<ObservablePoint>();
         if (ReferenceDataSet == null) return;
@@ -456,18 +452,20 @@ public class GraphViewModel : INotifyPropertyChanged
     }
     
     public event PropertyChangedEventHandler PropertyChanged;
-    
-    protected void OnPropertyChanged(string propertyName) => 
+
+    private void OnPropertyChanged(string propertyName) => 
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-    
-    public void ToggleSelectionMode()
+
+    private void ToggleSelectionMode()
     {
         IsSelectionModeActive = !IsSelectionModeActive;
         OnPropertyChanged(nameof(IsSelectionModeActive));
         Debug.WriteLine($"Selection mode: {IsSelectionModeActive}");
     }
-    public void GetPointerPoints(IEnumerable<ChartPoint> Points)
+
+    private void GetPointerPoints(IEnumerable<ChartPoint> Points)
     {
+        XAxes.First().MinLimit = 0;
         if (!IsSelectionModeActive) return;
         
         var firstPoint = Points.FirstOrDefault();
@@ -484,18 +482,24 @@ public class GraphViewModel : INotifyPropertyChanged
         if (_selectedPoints.Count < 2)
         {
             _selectedPoints.Add((firstPoint,selectedPoint));
-            SeriesCollection.Add(new LineSeries<ObservablePoint>(new ObservablePoint(x,y)));
+            SeriesCollection.Add(new LineSeries<ObservablePoint>
+            {
+                Values = [new ObservablePoint(x, y)],
+                Name = "Point " + _selectedPoints.Count
+            });
         }
 
         // Once two points are selected, call your peak method
         if (_selectedPoints.Count == 2)
         {
-            if (_selectedPoints[0].Item1.Index>_selectedPoints[1].Item1.Index) _selectedPoints.Reverse(0,2);
-            Peaks.Add(_mathService.CreatePeak(DataSet.DataPoints.ToList(), _baseline, _selectedPoints[0].Item1.Index, _selectedPoints[1].Item1.Index));
+            if (_selectedPoints[0].Item1.Index > _selectedPoints[1].Item1.Index) _selectedPoints.Reverse(0,2);
+            Peak newPeak = _mathService.CreatePeak(DataSet.DataPoints.ToList(), _baseline, _selectedPoints[0].Item1.Index, _selectedPoints[1].Item1.Index);
+            newPeak.Color = Colors.Coral;
+            newPeak.Tag = Peaks.Count.ToString();
+            Peaks.Add(newPeak);
             DrawThemPeaks(_threshold, _minPeakWidth,false);
             _selectedPoints.Clear();
         }
     }
-
     
 }

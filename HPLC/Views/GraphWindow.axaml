@@ -58,7 +58,7 @@
                             <RowDefinition Height="Auto" />
                         </Grid.RowDefinitions>
                         <Panel IsVisible="{Binding GraphViewModel.IsSelectionModeActive}">
-                            <Border Background="DarkRed" Opacity="0.1">
+                            <Border Background="DarkRed" Opacity="0.05">
                                 <Border.Effect>
                                     <DropShadowEffect Color="Black" BlurRadius="250"></DropShadowEffect>
                                 </Border.Effect>
