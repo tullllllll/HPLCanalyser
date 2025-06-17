@@ -10,6 +10,7 @@
         MinWidth="200">
     <StackPanel Margin="10" Spacing="10">
         <TextBlock Text="{Binding ErrorMessage}" TextWrapping="Wrap" />
-        <Button Content="OK" HorizontalAlignment="Center" Width="80" Click="Ok_Click"/>
+        <Button Content="OK" HorizontalAlignment="Center" Width="80" Click="Ok_Click" x:Name="OkButton" IsDefault="True" HorizontalContentAlignment="Center"
+                Background="DodgerBlue" Foreground="White" Cursor="Hand"/>
     </StackPanel>
 </Window>

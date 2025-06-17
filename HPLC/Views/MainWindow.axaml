@@ -6,7 +6,7 @@
         mc:Ignorable="d"
         d:DesignWidth="1920" d:DesignHeight="1080"
         x:Class="HPLC.Views.MainWindow"
-        Title="Chromalyse"
+        Title="SundaeX"
         Icon="/Assets/logo.png">
        <v:GraphWindow />
 </Window>

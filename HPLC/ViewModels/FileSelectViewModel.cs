@@ -1,9 +1,6 @@
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.ComponentModel;
 using System.Linq;
-using System.Reactive;
 using System.Threading.Tasks;
 using System.Windows.Input;
 using Avalonia.Controls;
@@ -19,22 +16,9 @@ public class FileSelectViewModel
     private Window? _window;
     private Action? _onDatasetSelected;
     
-    public event PropertyChangedEventHandler PropertyChanged;
-
-    private ObservableCollection<DataSet> _dataSets;
-    public ObservableCollection<DataSet> dataSets 
-    {
-        get => _dataSets;
-        set
-        {
-            _dataSets = value;
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(nameof(dataSets)));
-        }
-    }
+    public ObservableCollection<DataSet> dataSets { get; } = [];
     public string ActiveDataSetType { get; set; }
     public ICommand UploadFileCommand {get; set;}
-    public ICommand SelectDatasetCommand {get; set;}
-    public ICommand DeleteCommand {get; set;}
     
     // Services
     private readonly SimpleKeyCRUDService<DataSet> _dataSetCrudService;
@@ -47,11 +31,14 @@ public class FileSelectViewModel
         _dataSetService = dataSetService;
         _fileService = fileService;
         
-        dataSets = new ObservableCollection<DataSet>(_dataSetCrudService.Get().ToList());
+        foreach (var ds in _dataSetCrudService.Get())
+        {
+            ds.SelectCommand = new RelayCommand(() => OnSelectDataset(ds.ID));
+            ds.DeleteCommand = new RelayCommand(() => DeleteDataSet(ds.ID));
+            dataSets.Add(ds);
+        }
 
         UploadFileCommand = ReactiveCommand.CreateFromTask<string>(UploadFileAsync);
-        SelectDatasetCommand = new RelayCommand<int>(OnSelectDataset);
-        DeleteCommand = ReactiveCommand.Create<int>(DeleteDataSet);
     }
     
     public void SetHostWindow(Window window)
@@ -83,9 +70,17 @@ public class FileSelectViewModel
     private async Task UploadFileAsync(string dataSetType)
     {
         var result = await _fileService.UploadFileAsync(dataSetType);
-        
+
         if (result)
-            dataSets.Add(_dataSetCrudService.Get(_dataSetService.GetLastInsertId()));
+        {
+            var newSet = _dataSetCrudService.Get(_dataSetService.GetLastInsertId());
+            newSet.SelectCommand = new RelayCommand(() => OnSelectDataset(newSet.ID));
+            newSet.DeleteCommand = new RelayCommand(() => DeleteDataSet(newSet.ID));
+            dataSets.Add(newSet);
+        }
+        
+        _onDatasetSelected?.Invoke();
+        _window?.Close();
     }
 
     private void DeleteDataSet(int id)

@@ -10,6 +10,11 @@ public partial class ErrorWindow : Window
     public ErrorWindow()
     {
         InitializeComponent();
+
+        this.Opened += (_, __) =>
+        {
+            OkButton.Focus();
+        };
     }
 
     public ErrorWindow(string message) : this()

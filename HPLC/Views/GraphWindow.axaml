@@ -79,23 +79,17 @@
                             </StackPanel>
 
                             <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4">
-                                <Button Command="{Binding GraphViewModel.ToggleSelectionModeCommand}" 
-                                        Background="DodgerBlue" Foreground="White" 
-                                        Cursor="Hand"
-                                        ToolTip.Tip="Selection Mode">
-                                    <Image Height="16" Width="16" Source="avares://HPLC/Assets/baseline.png" />
-                                </Button>
+                                <StackPanel Orientation="Horizontal" Margin="5,0" Spacing="10">
+                                    <TextBlock Text="Points to Calculate baseline:" VerticalAlignment="Center"/>
+                                    <TextBox Width="100" Text="{Binding GraphViewModel.PointsForBaseline, Converter={StaticResource InputConverterHelper}, Mode=TwoWay, StringFormat='F0'}" />
+                                </StackPanel>
+                                <CheckBox IsChecked="{Binding GraphViewModel.BaseLineIsVisible}" Content="Baseline"/>
+                                <CheckBox IsChecked="{Binding GraphViewModel.IsSelectionModeActive, Mode=TwoWay}" Content="Peak Creation Mode"/>
                                 <Button Command="{Binding GraphViewModel.SavePeakTableCommand}" 
                                         Background="DodgerBlue" Foreground="White" 
                                         Cursor="Hand"
                                         ToolTip.Tip="Export Peak Table">
-                                    <Image Height="16" Width="16" Source="avares://HPLC/Assets/baseline.png" />
-                                </Button>
-                                <Button Command="{Binding GraphViewModel.ToggleBaselineCommand}" 
-                                        Background="DodgerBlue" Foreground="White" 
-                                        Cursor="Hand"
-                                        ToolTip.Tip="Show Baseline">
-                                    <Image Height="16" Width="16" Source="avares://HPLC/Assets/baseline.png" />
+                                    <Image Height="16" Width="16" Source="avares://HPLC/Assets/export_data.png" />
                                 </Button>
                                 <Button Command="{Binding GraphViewModel.SaveImageCommand}" 
                                         Background="DodgerBlue" Foreground="White" 
@@ -167,8 +161,6 @@
                                 Margin="0,5" Cursor="Hand"
                                 HorizontalAlignment="Center" FontSize="20"/>
                     </Panel>
-                    
-
                 </Grid>
             </TabItem>
 

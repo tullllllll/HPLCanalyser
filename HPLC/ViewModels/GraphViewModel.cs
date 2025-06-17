@@ -51,7 +51,20 @@ public class GraphViewModel : INotifyPropertyChanged
     public ObservableCollection<Peak> ReferencePeaks { get; set; } = new ObservableCollection<Peak>();
     
     private List<(ChartPoint,ObservablePoint)> _selectedPoints = new List<(ChartPoint,ObservablePoint)>();
-    public bool IsSelectionModeActive { get; set; } = false;
+
+    private bool _IsSelectionModeActive;
+    public bool IsSelectionModeActive
+    {
+        get => _IsSelectionModeActive;
+        set
+        {
+            if (_IsSelectionModeActive != value)
+            {
+                _IsSelectionModeActive = value;
+                OnPropertyChanged(nameof(IsSelectionModeActive));
+            }
+        }
+    }
 
     private double _threshold = 60; 
     public double Threshold
@@ -63,12 +76,14 @@ public class GraphViewModel : INotifyPropertyChanged
             {
                 _threshold = value;
                 OnPropertyChanged(nameof(Threshold));
-                DrawThemPeaks(_threshold, MinPeakWidth); 
+                DrawThemPeaks(_threshold, MinPeakWidth);
             }
 
         }
-    }    
-    private double _minPeakWidth { get; set; } = 0.1; 
+    }
+
+    private double _minPeakWidth { get; set; } = 0.1;
+
     public double MinPeakWidth
     {
         get => _minPeakWidth;
@@ -78,35 +93,54 @@ public class GraphViewModel : INotifyPropertyChanged
             {
                 _minPeakWidth = value;
                 OnPropertyChanged(nameof(MinPeakWidth));
-                DrawThemPeaks(_threshold, _minPeakWidth); 
+                DrawThemPeaks(_threshold, _minPeakWidth);
             }
-
         }
-    }  
+    }
+
+    private int _pointsForBaseline = 90;
+
+    public int PointsForBaseline
+    {
+        get => _pointsForBaseline;
+        set
+        {
+            if (_pointsForBaseline != value)
+            {
+                _pointsForBaseline = value;
+                OnPropertyChanged(nameof(PointsForBaseline));
+                UpdateBaseline();
+            }
+        }
+    }
+
     private Baseline _baseline { get; set; }
-    
-    public Axis[] XAxes { get; set; } = {
+
+    public Axis[] XAxes { get; set; } =
+    {
         new Axis
         {
             Name = "Time (min): ",
             TextSize = 14,
-            MinLimit = 0,
+            MinLimit = null,
             MaxLimit = null,
             ShowSeparatorLines = false
         }
     };
-    public Axis[] YAxes { get; set; } = {
+
+    public Axis[] YAxes { get; set; } =
+    {
         new Axis
         {
             Name = "Intensity (mV):",
             TextSize = 14,
-            MinLimit = 0,
+            MinLimit = null,
             MaxLimit = null,
             ShowSeparatorLines = false,
-            TicksPaint = new SolidColorPaint{Color = SKColors.Black}
+            TicksPaint = new SolidColorPaint { Color = SKColors.Black }
         }
     };
-    
+
     // Command
     public ICommand DeletePeakCommand { get; }
     public ReactiveCommand<Unit, Unit> SaveImageCommand { get; }
@@ -123,37 +157,45 @@ public class GraphViewModel : INotifyPropertyChanged
     {
         _dataSetService = dataSetService;
         _mathService = mathService;
-        
+
         _dataSetService.PropertyChanged += HandlePropertyChanged;
         DeletePeakCommand = ReactiveCommand.Create<Peak>(DeletePeak);
         SaveImageCommand = ReactiveCommand.CreateFromTask(SaveImage);
         SavePeakTableCommand = ReactiveCommand.CreateFromTask(SavePeakTable);
         ToggleBaselineCommand = ReactiveCommand.Create(ShowBaseline);
-        ToggleSelectionModeCommand = ReactiveCommand.Create(ToggleSelectionMode);
         DataPointerDownCommand = ReactiveCommand.Create<IEnumerable<ChartPoint>>(GetPointerPoints);
+        SaveImageCommand = ReactiveCommand.CreateFromTask(async () =>
+        {
+            var (chart, window) = await RequestChartExport.Handle(Unit.Default).FirstAsync();
+
+            if (chart != null && window != null)
+            {
+                await SaveChartWithDialogAsync(chart, window);
+            }
+        });
         UpdateChartData();
     }
-    
+
     private async Task SaveChartWithDialogAsync(CartesianChart chart, Window window)
     {
         var storage = window.StorageProvider;
-        
+
         var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions()
         {
             SuggestedFileName = "output",
             DefaultExtension = "jpg",
             Title = "Save Image",
         });
-        
+
         if (file is not null)
         {
             int width = (int)chart.Bounds.Width;
             int height = (int)chart.Bounds.Height;
             var bitmap = new RenderTargetBitmap(new PixelSize(width, height));
-            
+
             chart.Background = new SolidColorBrush(Colors.White);
             bitmap.Render(chart);
-            
+
             using var fileStream = File.OpenWrite(file.Path.LocalPath);
             bitmap.Save(fileStream);
         }
@@ -207,14 +249,14 @@ public class GraphViewModel : INotifyPropertyChanged
     {
         peak.PropertyChanged -= Peak_PropertyChanged;
     }
-    
+
     private void DeletePeak(Peak peak)
     {
         if (peak == null) return;
 
         UnsubscribeFromPeak(peak);
         Peaks.Remove(peak);
-        
+
         var lineToRemove = SeriesCollection
             .Cast<object>()
             .FirstOrDefault(series =>
@@ -225,7 +267,7 @@ public class GraphViewModel : INotifyPropertyChanged
         {
             if (lineToRemove is LineSeries<ObservablePoint> lineSeries1)
                 SeriesCollection.Remove(lineSeries1);
-            
+
             if (lineToRemove is LineSeries<ObservablePoint, DiamondGeometry> lineSeries2)
                 SeriesCollection.Remove(lineSeries2);
         }
@@ -255,34 +297,35 @@ public class GraphViewModel : INotifyPropertyChanged
         }
     }
 
-    private void ShowBaseline()
+    public void ShowBaseline()
     {
         var dataPoints = DataSet.DataPoints.ToList();
         double dTime = dataPoints[1].Time - dataPoints[0].Time;
         double lastTime = dataPoints[^1].Time;
 
-        var existingBaseline = SeriesCollection.FirstOrDefault(s => s.Name == "Baseline");
-
-        if (existingBaseline != null) SeriesCollection.Remove(existingBaseline);
-        else
+        if (BaseLineIsVisible)
         {
-            var baseline = new LineSeries<ObservablePoint, DiamondGeometry>
-            {
-                Values = new ObservableCollection<ObservablePoint>
-                {
-                    new ObservablePoint(0, _baseline.GetBaseline(0, dTime)),
-                    new ObservablePoint(lastTime, _baseline.GetBaseline(lastTime, dTime))
-                },
-                Stroke = new SolidColorPaint(SKColors.Red, 3),
-                GeometryStroke = new SolidColorPaint(SKColors.Red, 3),
-                Fill = null,
-                GeometryFill = null,
-                LineSmoothness = 0,
-                Name = "Baseline"
-            };
-
-            SeriesCollection.Add(baseline);
+            RemoveBaseline();
         }
+
+        var baseline = new LineSeries<ObservablePoint>
+        {
+            Values = new ObservableCollection<ObservablePoint>
+            {
+                new ObservablePoint(0, _baseline.GetBaseline(0, dTime)),
+                new ObservablePoint(lastTime, _baseline.GetBaseline(lastTime, dTime))
+            },
+            Stroke = new SolidColorPaint(SKColors.Gray, 2),
+            Fill = null,
+            GeometryFill = null,
+            GeometryStroke = null,
+            ZIndex = 1,
+            LineSmoothness = 0,
+            Name = "BaseLine",
+            Tag = "Baseline"
+        };
+
+        SeriesCollection.Add(baseline);
     }
     
     private void Peak_PropertyChanged(object? sender, PropertyChangedEventArgs e)
@@ -292,7 +335,7 @@ public class GraphViewModel : INotifyPropertyChanged
             SeriesCollection.FirstOrDefault(el => el.Tag?.ToString() == peak.Tag).Name = peak.Name;
         }
     }
-    
+
     private void HandlePropertyChanged(object? sender, PropertyChangedEventArgs e)
     {
         switch (e.PropertyName)
@@ -314,17 +357,17 @@ public class GraphViewModel : INotifyPropertyChanged
         ObservablePoints = new ObservableCollection<ObservablePoint>();
         Peaks = new ObservableCollection<Peak>();
         OnPropertyChanged(nameof(Peaks));
-        
+
         if (DataSet == null || DataSet.DataPoints == null)
         {
             SeriesCollection = new ObservableCollection<ISeries>();
             OnPropertyChanged(nameof(SeriesCollection));
-            return; 
+            return;
         }
-        
+
         foreach (var dp in DataSet.DataPoints)
             ObservablePoints.Add(new ObservablePoint(dp.Time, dp.Value));
-        
+
         SeriesCollection = new ObservableCollection<ISeries>
         {
             new LineSeries<ObservablePoint>(ObservablePoints)
@@ -335,21 +378,23 @@ public class GraphViewModel : INotifyPropertyChanged
                 GeometryStroke = null,
                 Name = DataSet.Name,
                 Tag = "Main",
-                Stroke = new SolidColorPaint(SKColors.Blue) { StrokeThickness = 3},
+                Stroke = new SolidColorPaint(SKColors.Blue) { StrokeThickness = 3 },
             },
         };
         
-        XAxes.First().MinLimit = 0;
+        XAxes.First().MinLimit = null;
         XAxes.First().MaxLimit = null;
-        YAxes.First().MinLimit = 0;
+        YAxes.First().MinLimit = null;
         YAxes.First().MaxLimit = null;
 
         var dataPoints = DataSet.DataPoints.ToList();
         double dTime = dataPoints[1].Time - dataPoints[0].Time;
-        _baseline = Baseline.CalculateBaseline(dataPoints,dTime);
+        _baseline = Baseline.CalculateBaseline(dataPoints, dTime, PointsForBaseline);
         
         OnPropertyChanged(nameof(SeriesCollection));
         DrawThemPeaks(Threshold, MinPeakWidth);
+        if (BaseLineIsVisible)
+            ShowBaseline();
     }
 
     private void DrawThemPeaks(double treshhold, double minPeakWidth, bool detectPeaks = true)
@@ -358,15 +403,19 @@ public class GraphViewModel : INotifyPropertyChanged
         var detectedPeaks = detectPeaks? _mathService.DetectPeaks(DataSet.DataPoints.ToList(), treshhold, minPeakWidth, _baseline) : Peaks.ToList();
 
         var linesToRemove = SeriesCollection
-            .Where(line => line.Tag?.ToString() != "Main" && line.Tag?.ToString() != "Reference")
+            .Where(line => line.Tag?.ToString() != "Main" && line.Tag?.ToString() != "Reference" && line.Tag?.ToString() != "Baseline" && line.Tag?.ToString() != "NonGeneratedPeak")
             .ToList();
 
-        if (Peaks.Count > 0) Peaks.Clear();
-        
+        if (Peaks.Count > 0)
+        {
+            Peaks.Clear();
+        }
+
         foreach (var line in linesToRemove)
         {
             SeriesCollection.Remove(line);
         }
+
         for (int i = 0; i < detectedPeaks.Count; i++)
         {
             var peak = detectedPeaks[i];
@@ -388,11 +437,12 @@ public class GraphViewModel : INotifyPropertyChanged
                 Name = peak.Name,
                 Tag = i.ToString(),
             };
-            
+
             SeriesCollection.Add(peakLine);
             Peaks.Add(peak);
             peak.PropertyChanged += Peak_PropertyChanged;
         }
+
         OnPropertyChanged(nameof(SeriesCollection));
     }
 
@@ -404,37 +454,42 @@ public class GraphViewModel : INotifyPropertyChanged
 
         if (existingReference != null) SeriesCollection.Remove(existingReference);
         
+        if (existingReference != null)
+        {
+            SeriesCollection.Remove(existingReference);
+        }
+
         ReferenceObservablePoints = new ObservableCollection<ObservablePoint>();
         if (ReferenceDataSet == null) return;
-        
+
         foreach (var dp in ReferenceDataSet.DataPoints)
             ReferenceObservablePoints.Add(new ObservablePoint(dp.Time, dp.Value));
 
         var newLine = new LineSeries<ObservablePoint>(ReferenceObservablePoints)
         {
             Fill = null,
-            ZIndex = 1,
+            ZIndex = 3,
             GeometryFill = null,
             GeometryStroke = null,
             Name = ReferenceDataSet.Name,
             Tag = "Reference",
-            Stroke = new SolidColorPaint(SKColors.Red) {StrokeThickness = 3}
+            Stroke = new SolidColorPaint(SKColors.Red) { StrokeThickness = 3 }
         };
-        
+
         SeriesCollection.Add(newLine);
     }
-    
+
     public void UpdateLineColor(string line_name, SKColor color)
     {
         if (SeriesCollection == null || SeriesCollection.Count == 0) return;
-        
+
         var line = SeriesCollection
             .Cast<object>()
             .FirstOrDefault(series =>
                 (series is LineSeries<ObservablePoint> obs && obs.Tag?.ToString() == line_name) ||
                 (series is LineSeries<ObservablePoint, DiamondGeometry> other && other.Tag?.ToString() == line_name));
 
-  
+
         var c = new SolidColorPaint(color) { StrokeThickness = 3 };
         if (line is LineSeries<ObservablePoint> obsLine)
         {
@@ -448,20 +503,46 @@ public class GraphViewModel : INotifyPropertyChanged
             if ((string)otherLine.Tag != "Reference" && (string)otherLine.Tag != "Main")
                 otherLine.GeometryStroke = c;
         }
+    }
 
+    private bool _BaselineIsVisible = false;
+    public bool BaseLineIsVisible
+    {
+        get => _BaselineIsVisible;
+        set
+        {
+            _BaselineIsVisible = value;
+            OnPropertyChanged(nameof(BaseLineIsVisible));
+            if (value)
+                ShowBaseline();
+            else
+                RemoveBaseline();
+        }
+    }
+
+    public void UpdateBaseline()
+    {
+        var dataPoints = DataSet.DataPoints.ToList();
+        double dTime = dataPoints[1].Time - dataPoints[0].Time;
+        _baseline = Baseline.CalculateBaseline(dataPoints, dTime, PointsForBaseline);
+        
+        DrawThemPeaks(Threshold, MinPeakWidth);
+        
+        if (BaseLineIsVisible)
+            ShowBaseline();
     }
     
+    private void RemoveBaseline()
+    {
+        var existingBaseline = SeriesCollection.FirstOrDefault(s => (string)s.Tag == "Baseline");
+
+        if (existingBaseline != null) SeriesCollection.Remove(existingBaseline);
+    }
+
     public event PropertyChangedEventHandler PropertyChanged;
 
     private void OnPropertyChanged(string propertyName) => 
         PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
-
-    private void ToggleSelectionMode()
-    {
-        IsSelectionModeActive = !IsSelectionModeActive;
-        OnPropertyChanged(nameof(IsSelectionModeActive));
-        Debug.WriteLine($"Selection mode: {IsSelectionModeActive}");
-    }
 
     private void GetPointerPoints(IEnumerable<ChartPoint> Points)
     {
@@ -495,7 +576,8 @@ public class GraphViewModel : INotifyPropertyChanged
             if (_selectedPoints[0].Item1.Index > _selectedPoints[1].Item1.Index) _selectedPoints.Reverse(0,2);
             Peak newPeak = _mathService.CreatePeak(DataSet.DataPoints.ToList(), _baseline, _selectedPoints[0].Item1.Index, _selectedPoints[1].Item1.Index);
             newPeak.Color = Colors.Coral;
-            newPeak.Tag = Peaks.Count.ToString();
+            newPeak.Tag = "NonGeneratedPeak";
+            newPeak.AutoGenerated = false;
             Peaks.Add(newPeak);
             DrawThemPeaks(_threshold, _minPeakWidth,false);
             _selectedPoints.Clear();

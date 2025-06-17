@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using HPLC.Models;
+using HPLC.Services;
 
 namespace HPLC;
 
@@ -15,24 +16,35 @@ public struct Baseline
         A = a;
         B = b;
     }
-    public static Baseline CalculateBaseline(List<DataPoint> dataPoints,double dTime)
+    public static Baseline CalculateBaseline(List<DataPoint> dataPoints, double dTime, int pointsToUse)
     {
-        if (dataPoints.Count < 90)
-            throw new ArgumentException("At least 90 data points are required.");
+        if (dataPoints.Count < pointsToUse)
+        {
+            ErrorService.CreateWindow($"DataSet doesn't contain enough data points.\nPoints: {dataPoints.Count}\nExpected: {pointsToUse}");
+            return new Baseline(0, 0); // fallback: flat line
+        }
 
+        if (pointsToUse < 3)
+        {
+            ErrorService.CreateWindow($"Minimum data points is 3");
+            return new Baseline(0, 0); // fallback: flat line
+        }
+
+        int thirdSlice = (int)Math.Round((double)pointsToUse / 3, MidpointRounding.AwayFromZero);
+        
         // Helper to get average point from a slice
         (double avgTime, double avgValue) Avg(int start)
         {
-            var slice = dataPoints.Skip(start).Take(20).ToList();
+            var slice = dataPoints.Skip(start).Take(thirdSlice).ToList();
             double avgTime = slice.Average(dp => dp.Time/dTime);
             double avgValue = slice.Average(dp => dp.Value);
             return (avgTime, avgValue);
         }
-
+        
         // Get the three average points
         var (x1, y1) = Avg(0);    // First 30
-        var (x2, y2) = Avg(30);   // Second 30
-        var (x3, y3) = Avg(60);   // Third 30
+        var (x2, y2) = Avg(thirdSlice);   // Second 30
+        var (x3, y3) = Avg(thirdSlice*2);   // Third 30
 
         // Fit a line using linear regression on the three points
         double[] xs = { x1, x2, x3 };

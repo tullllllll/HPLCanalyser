@@ -89,7 +89,14 @@ public class FileService
             else
             {
                 type = "Shimadzu";
-                sampleDate = DateTime.ParseExact(result, "d-M-yyyy HH:mm:ss", CultureInfo.InvariantCulture);
+                if (DateTime.TryParse(result, CultureInfo.InvariantCulture, DateTimeStyles.None, out sampleDate))
+                {
+                }
+                else
+                {
+                    ErrorService.CreateWindow("Invalid acquired date format");
+                    return false;
+                }
             }
             
             string datapointString = fileContent.Substring(fileContent.ToLower().LastIndexOf("intensity", StringComparison.Ordinal) + 9);
@@ -106,9 +113,9 @@ public class FileService
 
             return true;
         }
-        catch
+        catch (Exception e)
         {
-            ErrorService.CreateWindow("Invalid file content");
+            ErrorService.CreateWindow(e.Message);
             return false;
         }
     }
