@@ -1,27 +1,25 @@
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
+using Avalonia.Media;
+using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using HPLC.Models;
-using HPLC.ViewModels;
-using HPLC.Views;
-using LiveChartsCore.Kernel;
-using Microsoft.Extensions.DependencyInjection;
+using LiveChartsCore.SkiaSharpView.Avalonia;
 
 namespace HPLC.Services;
 
 public class FileService
 {
-    private static FilePickerFileType FileTypes { get; } = new(".txt and .csv") {
-        Patterns = ["*.txt", "*.csv"]
-    };
-    
     private readonly SimpleKeyCRUDService<DataSet> _dataSetService;
     private readonly MessengerService _messengerService;
 
@@ -30,12 +28,17 @@ public class FileService
         _dataSetService = dataSetService;
         _messengerService = messenger;
     }
-    
+
+    private static FilePickerFileType FileTypes { get; } = new(".txt and .csv")
+    {
+        Patterns = ["*.txt", "*.csv"]
+    };
+
     public async Task<bool> UploadFileAsync(string dataSetType)
     {
         var topLevel =
             TopLevel.GetTopLevel(
-                Avalonia.Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
+                Application.Current.ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop
                     ? desktop.MainWindow
                     : null);
         if (topLevel == null) return false;
@@ -48,7 +51,7 @@ public class FileService
             SuggestedStartLocation = suggestedStartLocation,
             Title = "Open Text File",
             AllowMultiple = false,
-            FileTypeFilter = new[] { FileTypes },
+            FileTypeFilter = new[] { FileTypes }
         });
 
         var file = files.FirstOrDefault();
@@ -64,23 +67,23 @@ public class FileService
             _messengerService.SendMessage(dataSetType);
             return true;
         }
-        
+
         _messengerService.SendMessage("nee");
         return false;
     }
-    
+
     public bool ReadFile(string fileName, string fileContent)
     {
         try
-        {   
+        {
             var acquiredData = fileContent.Split(new[] { '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries)
                 .FirstOrDefault(line => line.TrimStart().StartsWith("Acquired", StringComparison.OrdinalIgnoreCase));
 
-            string? result = acquiredData?.Split('\t').Last().Trim();
-            
+            var result = acquiredData?.Split('\t').Last().Trim();
+
             string type;
             DateTime sampleDate;
-            
+
             if (string.IsNullOrEmpty(result))
             {
                 type = "Jasco";
@@ -98,11 +101,12 @@ public class FileService
                     return false;
                 }
             }
-            
-            string datapointString = fileContent.Substring(fileContent.ToLower().LastIndexOf("intensity", StringComparison.Ordinal) + 9);
-            var dataPoints = FormatFileContent(datapointString,type);
 
-            _dataSetService.Add(new DataSet()
+            var datapointString =
+                fileContent.Substring(fileContent.ToLower().LastIndexOf("intensity", StringComparison.Ordinal) + 9);
+            var dataPoints = FormatFileContent(datapointString, type);
+
+            _dataSetService.Add(new DataSet
             {
                 Name = Path.GetFileNameWithoutExtension(fileName),
                 Date_Added = DateTime.Now,
@@ -119,25 +123,89 @@ public class FileService
             return false;
         }
     }
-    
-    private List<DataPoint> FormatFileContent (string fileContent, string type)
+
+    private List<DataPoint> FormatFileContent(string fileContent, string type)
     {
         var dataPoints = new List<DataPoint>();
         var lines = fileContent.ReplaceLineEndings("\n").Split('\n');
         foreach (var line in lines)
         {
-            var formattedLine = (Regex.Replace(line.Trim(), @"[\t; ]+", " ").Replace(",", ".")).Split(' ');
+            var formattedLine = Regex.Replace(line.Trim(), @"[\t; ]+", " ").Replace(",", ".").Split(' ');
 
             if (formattedLine.Length == 2)
-            {
-                dataPoints.Add(new DataPoint()
+                dataPoints.Add(new DataPoint
                 {
                     Time = double.Parse(formattedLine[0], CultureInfo.InvariantCulture),
-                    Value = double.Parse(formattedLine[1], CultureInfo.InvariantCulture)/1000
+                    Value = double.Parse(formattedLine[1], CultureInfo.InvariantCulture) / 1000
                 });
-            }
         }
-        
+
         return dataPoints;
+    }
+
+    public async Task SaveChartWithDialogAsync(CartesianChart chart, Window window)
+    {
+        var storage = window.StorageProvider;
+
+        var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            SuggestedFileName = "output",
+            DefaultExtension = "jpg",
+            Title = "Save Image"
+        });
+
+        if (file is not null)
+        {
+            var width = (int)chart.Bounds.Width;
+            var height = (int)chart.Bounds.Height;
+            var bitmap = new RenderTargetBitmap(new PixelSize(width, height));
+
+            chart.Background = new SolidColorBrush(Colors.White);
+            bitmap.Render(chart);
+
+            using var fileStream = File.OpenWrite(file.Path.LocalPath);
+            bitmap.Save(fileStream);
+        }
+    }
+
+    public async Task SavePeakTableWithDialogAsync(ObservableCollection<Peak> peaks, string dataSetName, Window window)
+    {
+        var storage = window.StorageProvider;
+
+        var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions
+        {
+            SuggestedFileName = dataSetName + " Peak Table",
+            DefaultExtension = "csv",
+            Title = "Save Peak Data to CSV"
+        });
+
+        if (file is not null)
+        {
+            var csvLines = new List<string>
+            {
+                "Name; Start Time (min); Peak Time (min); End Time (min); Total Time (min); Height (mV); Area (mV.min); Width ½ Height (min)"
+            };
+
+            foreach (var peak in peaks)
+            {
+                var line = string.Format(
+                    CultureInfo.InvariantCulture,
+                    "{0}; {1:F3}; {2:F3}; {3:F3}; {4:F3}; {5:F2}; {6:F1}; {7:F6}",
+                    peak.Name,
+                    peak.StartTime,
+                    peak.PeakTime,
+                    peak.EndTime,
+                    peak.Time,
+                    peak.PeakHeight,
+                    peak.Area,
+                    peak.WidthAtHalfHeight
+                );
+                csvLines.Add(line);
+            }
+
+            await using var stream = File.OpenWrite(file.Path.LocalPath);
+            using var writer = new StreamWriter(stream, Encoding.UTF8);
+            foreach (var line in csvLines) await writer.WriteLineAsync(line);
+        }
     }
 }

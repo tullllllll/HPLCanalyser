@@ -4,7 +4,7 @@
              xmlns:lvc="using:LiveChartsCore.SkiaSharpView.Avalonia"
              x:Class="HPLC.Views.GraphUserControl"
              x:DataType="vm:GraphViewModel">
-    
+
     <lvc:CartesianChart Series="{Binding SeriesCollection}"
                         XAxes="{Binding XAxes}"
                         YAxes="{Binding YAxes}"
@@ -12,7 +12,6 @@
                         ZoomMode="Both"
                         LegendPosition="Bottom"
                         TooltipPosition="Hidden"
-                        x:Name="ChartForSave">
-    </lvc:CartesianChart>
-        
+                        x:Name="ChartForSave" />
+
 </UserControl>

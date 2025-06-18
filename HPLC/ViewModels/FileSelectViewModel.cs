@@ -13,24 +13,20 @@ namespace HPLC.ViewModels;
 
 public class FileSelectViewModel
 {
-    private Window? _window;
-    private Action? _onDatasetSelected;
-    
-    public ObservableCollection<DataSet> dataSets { get; } = [];
-    public string ActiveDataSetType { get; set; }
-    public ICommand UploadFileCommand {get; set;}
-    
     // Services
     private readonly SimpleKeyCRUDService<DataSet> _dataSetCrudService;
     private readonly DataSetService _dataSetService;
     private readonly FileService _fileService;
+    private Action? _onDatasetSelected;
+    private Window? _window;
 
-    public FileSelectViewModel(SimpleKeyCRUDService<DataSet> dataSetCrudService, DataSetService dataSetService, FileService fileService)
+    public FileSelectViewModel(SimpleKeyCRUDService<DataSet> dataSetCrudService, DataSetService dataSetService,
+        FileService fileService)
     {
         _dataSetCrudService = dataSetCrudService;
         _dataSetService = dataSetService;
         _fileService = fileService;
-        
+
         foreach (var ds in _dataSetCrudService.Get())
         {
             ds.SelectCommand = new RelayCommand(() => OnSelectDataset(ds.ID));
@@ -40,12 +36,16 @@ public class FileSelectViewModel
 
         UploadFileCommand = ReactiveCommand.CreateFromTask<string>(UploadFileAsync);
     }
-    
+
+    public ObservableCollection<DataSet> dataSets { get; } = [];
+    public string ActiveDataSetType { get; set; }
+    public ICommand UploadFileCommand { get; set; }
+
     public void SetHostWindow(Window window)
     {
         _window = window;
     }
-    
+
     public void SetOnDatasetSelected(Action callback)
     {
         _onDatasetSelected = callback;
@@ -62,7 +62,7 @@ public class FileSelectViewModel
                 _dataSetService.SetReferenceDataSet(datasetId);
                 break;
         }
-        
+
         _onDatasetSelected?.Invoke();
         _window?.Close();
     }
@@ -78,7 +78,7 @@ public class FileSelectViewModel
             newSet.DeleteCommand = new RelayCommand(() => DeleteDataSet(newSet.ID));
             dataSets.Add(newSet);
         }
-        
+
         _onDatasetSelected?.Invoke();
         _window?.Close();
     }

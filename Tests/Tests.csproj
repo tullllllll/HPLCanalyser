@@ -21,7 +21,7 @@
     </ItemGroup>
 
     <ItemGroup>
-      <ProjectReference Include="..\HPLC\HPLC.csproj" />
+        <ProjectReference Include="..\HPLC\HPLC.csproj"/>
     </ItemGroup>
 
 </Project>

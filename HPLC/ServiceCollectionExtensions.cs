@@ -15,21 +15,21 @@ public static class ServiceCollectionExtensions
         collection.AddSingleton<MainViewModel>();
         collection.AddSingleton<GraphViewModel>();
         collection.AddSingleton<FileSelectViewModel>();
-        
+
         // Views
         collection.AddSingleton<GraphWindow>();
         collection.AddSingleton<GraphUserControl>();
-        
+
         // Database Context
         collection.AddSingleton<HPLCDbContext>();
-        
+
         // CRUD Services
         collection.AddScoped<SimpleKeyCRUDService<DataSet>>();
-        
+
         // Services
         collection.AddScoped<DataSetService>();
         collection.AddSingleton<MessengerService>();
         collection.AddScoped<FileService>();
         collection.AddScoped<MathService>();
-    } 
+    }
 }

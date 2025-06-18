@@ -4,7 +4,7 @@ using HPLC.Views;
 
 namespace HPLC.Services;
 
-public static class ErrorService 
+public static class ErrorService
 {
     public static async void CreateWindow(string message)
     {

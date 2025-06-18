@@ -8,5 +8,5 @@
         x:Class="HPLC.Views.MainWindow"
         Title="SundaeX"
         Icon="/Assets/logo.png">
-       <v:GraphWindow />
+    <v:GraphWindow />
 </Window>

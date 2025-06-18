@@ -2,12 +2,9 @@ using System;
 using Avalonia;
 using Avalonia.Controls;
 using Avalonia.Controls.ApplicationLifetimes;
-using Avalonia.Platform;
 using Avalonia.Markup.Xaml;
-using HPLC.Data;
 using HPLC.ViewModels;
 using HPLC.Views;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace HPLC;
@@ -15,7 +12,7 @@ namespace HPLC;
 public class App : Application
 {
     public static IServiceProvider ServiceProvider { get; private set; } = null!;
-    
+
     public override void Initialize()
     {
         AvaloniaXamlLoader.Load(this);
@@ -26,20 +23,20 @@ public class App : Application
         // Register all the services needed for the application to run
         var serviceCollection = new ServiceCollection();
         serviceCollection.AddCommonServices();
-        
+
         // Creates a ServiceProvider containing services from the provided IServiceCollection
         ServiceProvider = serviceCollection.BuildServiceProvider();
-        
+
         var viewModel = ServiceProvider.GetRequiredService<MainViewModel>();
-        
+
         if (ApplicationLifetime is IClassicDesktopStyleApplicationLifetime desktop)
         {
-            desktop.MainWindow = new MainWindow()
+            desktop.MainWindow = new MainWindow
             {
                 WindowState = WindowState.Maximized,
                 DataContext = viewModel
             };
-            
+
             desktop.ShutdownMode = ShutdownMode.OnMainWindowClose;
         }
 

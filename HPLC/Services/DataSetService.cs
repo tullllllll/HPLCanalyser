@@ -6,16 +6,18 @@ using ReactiveUI;
 
 namespace HPLC.Services;
 
-public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService, HPLCDbContext context) : ReactiveObject
+public class DataSetService(SimpleKeyCRUDService<DataSet> dataSetService, HPLCDbContext context) : ReactiveObject
 {
     private DataSet _selectedDataSet;
+
+    private DataSet _selectedReferenceDataSet;
+
     public DataSet SelectedDataSet
     {
         get => _selectedDataSet;
         set => this.RaiseAndSetIfChanged(ref _selectedDataSet, value);
     }
 
-    private DataSet _selectedReferenceDataSet;
     public DataSet SelectedReferenceDataSet
     {
         get => _selectedReferenceDataSet;
@@ -33,7 +35,7 @@ public class DataSetService (SimpleKeyCRUDService<DataSet> dataSetService, HPLCD
     {
         dataSetService.Delete(datasetId);
     }
-    
+
     public void SetActiveDataSet(int dataSetId)
     {
         SelectedDataSet = dataSetService.GetWithChildren(dataSetId);

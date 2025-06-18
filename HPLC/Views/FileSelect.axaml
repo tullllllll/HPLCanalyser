@@ -9,42 +9,41 @@
         CornerRadius="0">
     <Window.Styles>
         <Style Selector="Button.effect:pressed">
-            <Setter Property="RenderTransform" Value="{x:Null}"/>
+            <Setter Property="RenderTransform" Value="{x:Null}" />
         </Style>
         <Style Selector="Button.effect:pointerover /template/ ContentPresenter">
-            <Setter Property="Opacity" Value="0.6"/>
+            <Setter Property="Opacity" Value="0.6" />
         </Style>
-        
+
         <Style Selector="DataGridRow:selected /template/ Border DataGridFrozenGrid Rectangle">
-            <Setter Property="Fill" Value="Transparent"/>
+            <Setter Property="Fill" Value="Transparent" />
         </Style>
-        
+
         <Style Selector="DataGridRow:pointerover /template/ Border DataGridFrozenGrid Rectangle">
-            <Setter Property="Fill" Value="Gray"/>
-            <Setter Property="Opacity" Value="0.1"/>
+            <Setter Property="Fill" Value="Gray" />
+            <Setter Property="Opacity" Value="0.1" />
         </Style>
-        
-        <Style Selector="DataGridRow:pointerover /template/ Border DataGridFrozenGrid DataGridCellsPresenter DataGridCell Border Grid Rectangle">
-            <Setter Property="Opacity" Value="0.0"/>
+
+        <Style
+            Selector="DataGridRow:pointerover /template/ Border DataGridFrozenGrid DataGridCellsPresenter DataGridCell Border Grid Rectangle">
+            <Setter Property="Opacity" Value="0.0" />
         </Style>
-        
-        <Style Selector="DataGrid:focus DataGridCell:current /template/ Grid#FocusVisual"> 
-            <Setter Property="IsVisible" Value="False" /> 
-        </Style> 
-        
-        <Style Selector="Rectangle">
-            
+
+        <Style Selector="DataGrid:focus DataGridCell:current /template/ Grid#FocusVisual">
+            <Setter Property="IsVisible" Value="False" />
         </Style>
-        
+
+        <Style Selector="Rectangle" />
+
         <Style Selector="DataGridRow:pointerover /template/ Border">
-            <Setter Property="Background" Value="Transparent"></Setter>
+            <Setter Property="Background" Value="Transparent" />
         </Style>
     </Window.Styles>
-    
+
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="*"></RowDefinition>
-            <RowDefinition Height="40"></RowDefinition>
+            <RowDefinition Height="*" />
+            <RowDefinition Height="40" />
         </Grid.RowDefinitions>
         <DataGrid Grid.Row="0"
                   x:Name="FileSelectGrid"
@@ -56,13 +55,13 @@
                   GridLinesVisibility="All"
                   HorizontalAlignment="Stretch">
             <DataGrid.Columns>
-                <DataGridTextColumn Header="File Name"  Binding="{Binding Name}" Width="*"/>
-                <DataGridTextColumn Header="Sampled at" Binding="{Binding Sample_Date}" Width="*"/>
-                <DataGridTextColumn Header="Last Used" Binding="{Binding Last_Used}" Width="*"/>
-                <DataGridTextColumn Header="Uploaded at" Binding="{Binding Date_Added}" Width="*"/>
+                <DataGridTextColumn Header="File Name" Binding="{Binding Name}" Width="*" />
+                <DataGridTextColumn Header="Sampled at" Binding="{Binding Sample_Date}" Width="*" />
+                <DataGridTextColumn Header="Last Used" Binding="{Binding Last_Used}" Width="*" />
+                <DataGridTextColumn Header="Uploaded at" Binding="{Binding Date_Added}" Width="*" />
                 <DataGridTemplateColumn Header="Select" Width="125">
                     <DataGridTemplateColumn.CellTemplate>
-                        <DataTemplate >
+                        <DataTemplate>
                             <Button Command="{Binding SelectCommand}"
                                     CommandParameter="{Binding ID}"
                                     Background="DodgerBlue"

@@ -1,84 +1,84 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <OutputType>WinExe</OutputType>
-    <TargetFramework>net8.0</TargetFramework>
-    <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
-    <ApplicationIcon>Assets\logo.ico</ApplicationIcon>
-  </PropertyGroup>
+    <PropertyGroup>
+        <OutputType>WinExe</OutputType>
+        <TargetFramework>net8.0</TargetFramework>
+        <RuntimeIdentifiers>win-x64</RuntimeIdentifiers>
+        <ApplicationIcon>Assets\logo.ico</ApplicationIcon>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <!-- Avalonia Core -->
-    <PackageReference Include="Avalonia" Version="11.2.5" />
-    <PackageReference Include="Avalonia.Desktop" Version="11.2.1" />
-    <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.5" />
-    <PackageReference Include="Avalonia.ReactiveUI.Events" Version="0.10.22" />
-    <PackageReference Include="Avalonia.Controls.ColorPicker" Version="11.2.5" />
-    <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.5" />
-    <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.1" />
-    <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.1" />
+    <ItemGroup>
+        <!-- Avalonia Core -->
+        <PackageReference Include="Avalonia" Version="11.2.5"/>
+        <PackageReference Include="Avalonia.Desktop" Version="11.2.1"/>
+        <PackageReference Include="Avalonia.ReactiveUI" Version="11.2.5"/>
+        <PackageReference Include="Avalonia.ReactiveUI.Events" Version="0.10.22"/>
+        <PackageReference Include="Avalonia.Controls.ColorPicker" Version="11.2.5"/>
+        <PackageReference Include="Avalonia.Controls.DataGrid" Version="11.2.5"/>
+        <PackageReference Include="Avalonia.Themes.Fluent" Version="11.2.1"/>
+        <PackageReference Include="Avalonia.Fonts.Inter" Version="11.2.1"/>
 
-    <!-- Avalonia Diagnostics (Debug only) -->
-    <PackageReference Include="Avalonia.Diagnostics" Version="11.2.1">
-      <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
-      <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
-    </PackageReference>
+        <!-- Avalonia Diagnostics (Debug only) -->
+        <PackageReference Include="Avalonia.Diagnostics" Version="11.2.1">
+            <IncludeAssets Condition="'$(Configuration)' != 'Debug'">None</IncludeAssets>
+            <PrivateAssets Condition="'$(Configuration)' != 'Debug'">All</PrivateAssets>
+        </PackageReference>
 
-    <!-- MVVM + Reactive -->
-    <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0" />
-    <PackageReference Include="ReactiveUI" Version="20.2.45" />
+        <!-- MVVM + Reactive -->
+        <PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.0"/>
+        <PackageReference Include="ReactiveUI" Version="20.2.45"/>
 
-    <!-- Charts -->
-    <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-rc5.4" />
+        <!-- Charts -->
+        <PackageReference Include="LiveChartsCore.SkiaSharpView.Avalonia" Version="2.0.0-rc5.4"/>
 
-    <!-- Entity Framework Core -->
-    <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.3" />
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-    <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.3">
-      <PrivateAssets>all</PrivateAssets>
-      <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
-    </PackageReference>
-  </ItemGroup>
+        <!-- Entity Framework Core -->
+        <PackageReference Include="Microsoft.EntityFrameworkCore" Version="9.0.3"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="9.0.3"/>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Design" Version="9.0.3">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+        <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="9.0.3">
+            <PrivateAssets>all</PrivateAssets>
+            <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
+    </ItemGroup>
 
-  <ItemGroup>
-    <Folder Include="Controls\" />
-    <Folder Include="Migrations\" />
-    <Folder Include="Resources\" />
-  </ItemGroup>
+    <ItemGroup>
+        <Folder Include="Controls\"/>
+        <Folder Include="Migrations\"/>
+        <Folder Include="Resources\"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <!-- Copy DB to output -->
-    <None Update="HPLC.db">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
+    <ItemGroup>
+        <!-- Copy DB to output -->
+        <None Update="HPLC.db">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </None>
+    </ItemGroup>
 
-  <ItemGroup>
-    <!-- Remove all files under Model from compilation -->
-    <AvaloniaXaml Remove="Model\**" />
-    <Compile Remove="Model\**" />
-    <EmbeddedResource Remove="Model\**" />
-    <None Remove="Model\**" />
-  </ItemGroup>
+    <ItemGroup>
+        <!-- Remove all files under Model from compilation -->
+        <AvaloniaXaml Remove="Model\**"/>
+        <Compile Remove="Model\**"/>
+        <EmbeddedResource Remove="Model\**"/>
+        <None Remove="Model\**"/>
+    </ItemGroup>
 
-  <ItemGroup>
-    <!-- XAML code-behind relationship -->
-    <Compile Update="Views\MainWindow.axaml.cs">
-      <DependentUpon>MainWindow.axaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-  </ItemGroup>
+    <ItemGroup>
+        <!-- XAML code-behind relationship -->
+        <Compile Update="Views\MainWindow.axaml.cs">
+            <DependentUpon>MainWindow.axaml</DependentUpon>
+            <SubType>Code</SubType>
+        </Compile>
+    </ItemGroup>
 
-  <ItemGroup>
-    <!-- Logo asset as AvaloniaResource -->
-    <None Remove="Assets\logo.png" />
-    <AvaloniaResource Include="Assets\logo.png" />
-    <AvaloniaResource Include="Assets\download-image-icon.png" />
-    <AvaloniaResource Include="Assets\export_data.png" />
-  </ItemGroup>
+    <ItemGroup>
+        <!-- Logo asset as AvaloniaResource -->
+        <None Remove="Assets\logo.png"/>
+        <AvaloniaResource Include="Assets\logo.png"/>
+        <AvaloniaResource Include="Assets\download-image-icon.png"/>
+        <AvaloniaResource Include="Assets\export_data.png"/>
+    </ItemGroup>
 
 </Project>
