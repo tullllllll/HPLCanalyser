@@ -19,12 +19,14 @@ using Avalonia.Media;
 using Avalonia.Media.Imaging;
 using Avalonia.Platform.Storage;
 using Avalonia.VisualTree;
+using DynamicData;
 using HPLC.Models;
 using HPLC.Services;
 using HPLC.Views;
 using LiveChartsCore;
 using LiveChartsCore.Defaults;
 using LiveChartsCore.Kernel;
+using LiveChartsCore.Measure;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Avalonia;
 using LiveChartsCore.SkiaSharpView.Painting;
@@ -62,6 +64,32 @@ public class GraphViewModel : INotifyPropertyChanged
             {
                 _IsSelectionModeActive = value;
                 OnPropertyChanged(nameof(IsSelectionModeActive));
+
+                if (!_IsSelectionModeActive) // Selection mode turned off
+                {
+                    _selectedPoints = new List<(ChartPoint,ObservablePoint)>();
+                    Debug.WriteLine(SeriesCollection.ToString());
+
+                    var series = SeriesCollection.FirstOrDefault(x => x.Name == "Point 1");
+                    if (series != null)
+                    {
+                        SeriesCollection.Remove(series);
+                    }
+                }
+            }
+        }
+    }
+
+    private ZoomAndPanMode _panningMode = ZoomAndPanMode.Both;
+    public ZoomAndPanMode PanningMode
+    {
+        get => _panningMode;
+        set
+        {
+            if (_panningMode != value)
+            {
+                _panningMode = value;
+                OnPropertyChanged(nameof(PanningMode)); // or RaisePropertyChanged if you're using MVVM frameworks
             }
         }
     }
@@ -599,8 +627,16 @@ public class GraphViewModel : INotifyPropertyChanged
 
     private void GetPointerPoints(IEnumerable<ChartPoint> Points)
     {
-        XAxes.First().MinLimit = 0;
-        if (!IsSelectionModeActive) return;
+        
+        if (!IsSelectionModeActive)
+        {
+            PanningMode = ZoomAndPanMode.Both;
+            return;
+        }
+        
+        var minLimit = XAxes.First().MinLimit;
+        if (minLimit != null) XAxes.First().MinLimit = Math.Max((double)minLimit, 0);
+        PanningMode = ZoomAndPanMode.ZoomX;
         
         var firstPoint = Points.FirstOrDefault();
         if (firstPoint == null) return;
@@ -608,7 +644,6 @@ public class GraphViewModel : INotifyPropertyChanged
         
         var x = firstPoint.Coordinate.SecondaryValue;
         var y = firstPoint.Coordinate.PrimaryValue;
-        Debug.WriteLine($"Point: X: {x}, Y: {y}, Index: {firstPoint.Index}");
         
         var selectedPoint = new ObservablePoint(x, y);
         
