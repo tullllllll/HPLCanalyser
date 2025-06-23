@@ -75,13 +75,13 @@ public class MathService
 
         // Breedte bij halve hoogte berekenen
         double widthAtHalfHeight = CalculateWidthAtHalfHeight(peakData, baseline);
-
+        double dTime = dataPoints[1].Time - dataPoints[0].Time;
         return new Peak
         {
             StartTime = dataPoints[startIdx].Time,
             PeakTime = dataPoints[maxIdx.Value].Time,
             EndTime = dataPoints[endIdx].Time,
-            PeakHeight = dataPoints[maxIdx.Value].Value,
+            PeakHeight = dataPoints[maxIdx.Value].Value - baseline.GetBaseline(dataPoints[maxIdx.Value].Time,dTime),
             Area = area,
             WidthAtHalfHeight = widthAtHalfHeight,
             Name = "Peak at " + dataPoints[maxIdx.Value].Time.ToString("0.00"),

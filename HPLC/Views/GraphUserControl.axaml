@@ -9,7 +9,7 @@
                         XAxes="{Binding XAxes}"
                         YAxes="{Binding YAxes}"
                         DataPointerDownCommand="{Binding DataPointerDownCommand}"
-                        ZoomMode="Both"
+                        ZoomMode="{Binding PanningMode}"
                         LegendPosition="Bottom"
                         TooltipPosition="Hidden"
                         x:Name="ChartForSave">
