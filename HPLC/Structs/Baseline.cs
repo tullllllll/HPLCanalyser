@@ -20,13 +20,11 @@ public struct Baseline
     {
         if (dataPoints.Count < pointsToUse)
         {
-            ErrorService.CreateWindow($"DataSet doesn't contain enough data points.\nPoints: {dataPoints.Count}\nExpected: {pointsToUse}");
             return new Baseline(0, 0); // fallback: flat line
         }
 
         if (pointsToUse < 3)
         {
-            ErrorService.CreateWindow($"Minimum data points is 3");
             return new Baseline(0, 0); // fallback: flat line
         }
 
