@@ -227,6 +227,12 @@
                             Ondersteunde bestandsformaten: .txt en .csv
                         </TextBlock>
 
+                        <TextBlock FontWeight="Bold" FontSize="16" Text="Toelichting baseline" Margin="0,10,0,10"/>
+
+                        <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                            De baseline wordt vastgesteld op basis van datapunten, waarvan het aantal per minuut kan variëren. Je kunt het vergelijken met één regel in een .CSV-bestand: elke regel vertegenwoordigt één datapunt.              
+                        </TextBlock>
+                        
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
