@@ -103,7 +103,7 @@ public class MathService
             var heightDp1 = dp1.Value - baselineDp1;
             var heightDp2 = dp2.Value - baselineDp2;
             
-            area += ((heightDp1 + heightDp2) / 2) * time;
+            area += ((heightDp1 + heightDp2) / 2) * time * 60;
         }
        
         return area;

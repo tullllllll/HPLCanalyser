@@ -65,7 +65,7 @@ public class MathServiceTests
         };
         var baseline1 = new Baseline(0, 0); // Negative Slope
         double result = _mathService.CalculateArea(dataPoints1, baseline1);
-        Assert.That(result, Is.EqualTo(21).Within(0.01));
+        Assert.That(result, Is.EqualTo(21*60).Within(0.01));
     }
     [Test]
     public void Area_NegativeBaseline()
@@ -82,7 +82,7 @@ public class MathServiceTests
         };
         var baseline1 = new Baseline(-0.1, 0); // Negative Slope
         double result = _mathService.CalculateArea(dataPoints1, baseline1);
-        Assert.That(result, Is.EqualTo(21).Within(0.01));
+        Assert.That(result, Is.EqualTo(21*60).Within(0.01));
     }
     [Test]
     public void Area_PositiveBaseline()
@@ -99,6 +99,6 @@ public class MathServiceTests
         };
         var baseline1 = new Baseline(0.1, 0); // Negative Slope
         double result = _mathService.CalculateArea(dataPoints1, baseline1);
-        Assert.That(result, Is.EqualTo(21).Within(0.01));
+        Assert.That(result, Is.EqualTo(21*60).Within(0.01));
     }
 }

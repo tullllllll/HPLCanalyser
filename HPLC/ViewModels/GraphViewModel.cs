@@ -183,7 +183,7 @@ public class GraphViewModel : INotifyPropertyChanged
     {
         new Axis
         {
-            Name = "Intensity (mV):",
+            Name = "Intensity (µV):",
             TextSize = 14,
             MinLimit = null,
             MaxLimit = null,
@@ -463,7 +463,7 @@ public class GraphViewModel : INotifyPropertyChanged
             },
         };
         
-        XAxes.First().MinLimit = null;
+        XAxes.First().MinLimit = 0;
         XAxes.First().MaxLimit = null;
         YAxes.First().MinLimit = null;
         YAxes.First().MaxLimit = null;

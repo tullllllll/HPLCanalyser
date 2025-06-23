@@ -81,8 +81,8 @@
                             <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4">
                                 <StackPanel Orientation="Horizontal" Margin="5,0" Spacing="10">
                                     <TextBlock Text="Range baseline (Datapoints):" VerticalAlignment="Center"/>
-                                    <TextBox Width="50" Text="{Binding GraphViewModel.StartpointBaseline, Converter={StaticResource InputConverterHelper}, Mode=TwoWay, StringFormat='F0'}" />
-                                    <TextBox Width="50" Text="{Binding GraphViewModel.EndpointBaseline, Converter={StaticResource InputConverterHelper}, Mode=TwoWay, StringFormat='F0'}" />
+                                    <TextBox Width="50" Text="{Binding GraphViewModel.StartpointBaseline, Converter={StaticResource InputConverterHelper}, Mode=TwoWay, StringFormat='F0'}" ToolTip.Tip="Start Point" />
+                                    <TextBox Width="50" Text="{Binding GraphViewModel.EndpointBaseline, Converter={StaticResource InputConverterHelper}, Mode=TwoWay, StringFormat='F0'}" ToolTip.Tip="End Point"/>
                                 </StackPanel>
                                 <CheckBox IsChecked="{Binding GraphViewModel.BaseLineIsVisible}" Content="Baseline"/>
                                 <CheckBox IsChecked="{Binding GraphViewModel.IsSelectionModeActive, Mode=TwoWay}" Content="Peak Creation Mode"/>
@@ -117,8 +117,8 @@
                                     <DataGridTextColumn Header="Peak Time (min)" Binding="{Binding PeakTime, StringFormat='F3'}" IsReadOnly="true" />
                                     <DataGridTextColumn Header="End Time (min)" Binding="{Binding EndTime, StringFormat='F3'}" IsReadOnly="true" />
                                     <DataGridTextColumn Header="Total Time (min)" Binding="{Binding Time, StringFormat='F3'}" IsReadOnly="true"/>
-                                    <DataGridTextColumn Header="Height (mV)" Binding="{Binding PeakHeight, StringFormat='F2'}" IsReadOnly="true" />
-                                    <DataGridTextColumn Header="Area (mV.min)" Binding="{Binding Area, StringFormat='F1'}" IsReadOnly="true" />
+                                    <DataGridTextColumn Header="Height (µV)" Binding="{Binding PeakHeight, StringFormat='F2'}" IsReadOnly="true" />
+                                    <DataGridTextColumn Header="Area (µV·sec)" Binding="{Binding Area, StringFormat='F1'}" IsReadOnly="true" />
                                     <DataGridTextColumn Header="Width ½ Height (min)" Binding="{Binding WidthAtHalfHeight, StringFormat='F6'}" IsReadOnly="true" />
                                     
                                     <DataGridTemplateColumn Header="Color" IsReadOnly="true">
