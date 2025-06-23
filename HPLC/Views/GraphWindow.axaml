@@ -168,7 +168,7 @@
             <!-- Info tab -->
             <TabItem Header="Info">
                 <ScrollViewer>
-                    <StackPanel Margin="10">
+                    <StackPanel Margin="10" MaxWidth="1200">
                         <TextBlock FontWeight="Bold" FontSize="16" Text="Uitleg van de piekdetectie" Margin="0,0,0,10"/>
                         
                         <TextBlock TextWrapping="Wrap">
@@ -177,9 +177,10 @@
                         </TextBlock>
                         
                         <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
-                            1. Baselinebepaling: Er wordt een lineaire baseline berekend op basis van drie gemiddelde meetpunten uit het begin van de dataset 
-                            (de eerste 30 datapunten en daarna 31-60 en 61-90). Met deze drie punten wordt via lineaire regressie een rechte lijn gefit, die 
-                            de verwachte nulwaarde van het signaal vertegenwoordigt.
+                            1. Baselinebepaling: Een lineaire baseline wordt berekend op basis van drie gemiddelde meetpunten binnen de dataset, 
+                            tussen het opgegeven startpunt en eindpunt. De geselecteerde bereik wordt in drie gelijke delen opgesplitst. Uit elk 
+                            deel wordt het gemiddelde genomen, en met deze drie punten wordt via lineaire regressie een rechte lijn gefit die de 
+                            verwachte nulwaarde van het signaal weergeeft.
                         </TextBlock>
                         
                         <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
@@ -227,13 +228,80 @@
                             Ondersteunde bestandsformaten: .txt en .csv
                         </TextBlock>
 
-                        <TextBlock FontWeight="Bold" FontSize="16" Text="Toelichting baseline" Margin="0,10,0,10"/>
+                        <TextBlock FontWeight="Bold" FontSize="16" Text="Toelichting baseline" Margin="0,20,0,0"/>
 
                         <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
                             De baseline wordt vastgesteld op basis van datapunten, waarvan het aantal per minuut kan variëren. Je kunt het vergelijken met één regel in een .CSV-bestand: elke regel vertegenwoordigt één datapunt.              
                         </TextBlock>
                         
+                        <Rectangle Height="1" Fill="Black" Margin="0,30,0,30"/>
+                        
+                        <TextBlock FontWeight="Bold" FontSize="16" Text="Explanation of Peak Detection" Margin="0,0,0,10"/>
+
+                        <TextBlock TextWrapping="Wrap">
+                            This page explains how peaks in a dataset are automatically detected.
+                            The algorithm consists of three main steps:
+                        </TextBlock>
+
+                        <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                            1. Baseline determination: A linear baseline is calculated based on three average data points from within the dataset, 
+                            between the specified start and end points. The selected range is divided into three equal segments. From each segment, 
+                            the average is taken. These three values are then used to fit a straight line via linear regression, representing the expected zero level of the signal.
+                        </TextBlock>
+
+                        <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                            2. Peak detection: The algorithm iterates through the data points and checks whether a point lies above the baseline plus a configured 
+                            threshold. When this occurs, a peak is initiated. A peak ends when the signal falls back to or below the threshold. 
+                            Only peaks that are wider than the specified minimum duration (minPeakWidth) are considered valid.
+                        </TextBlock>
+
+                        <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                            3. Peak analysis: For each valid peak, two values are calculated. First, the area under the peak, determined via numerical 
+                            integration (trapezoidal rule). Then, the full width at half maximum is calculated by interpolating on both sides of the peak 
+                            where the signal exactly reaches half of the peak height.
+                        </TextBlock>
+
+                        <TextBlock TextWrapping="Wrap" Margin="0,10,0,20">
+                            This algorithm is suitable for analyzing data series with multiple peaks, such as in chromatography. 
+                            The results can be used for further quantitative or qualitative analysis.
+                        </TextBlock>
+
+                        <!-- NEW SECTION ON FILE PROCESSING -->
+                        <TextBlock FontWeight="Bold" FontSize="16" Text="Explanation of File Processing" Margin="0,0,0,10"/>
+
+                        <TextBlock TextWrapping="Wrap">
+                            This application allows you to import .txt or .csv files with measurement data from an HPLC analysis.
+                            The system automatically recognizes whether the file comes from a Shimadzu or Jasco device.
+                        </TextBlock>
+
+                        <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                            When opening a file:
+                            <LineBreak />- It searches for a line starting with "Acquired" to determine if it is a Shimadzu file.
+                            <LineBreak />- For Shimadzu, the corresponding date is read and saved as the analysis time.
+                            <LineBreak />- For Jasco, a default date (1-1-2000) is set.
+                        </TextBlock>
+
+                        <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                            The system then looks for the line containing "Intensity". From that point, the data is interpreted 
+                            as data points (time and value). These are automatically scaled and stored in a dataset.
+                        </TextBlock>
+
+                        <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                            Note: Only files with two columns are accepted. If the file is incorrectly formatted in any way, an error message will be displayed.
+                        </TextBlock>
+
+                        <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                            Supported file formats: .txt and .csv
+                        </TextBlock>
+
+                        <TextBlock FontWeight="Bold" FontSize="16" Text="Explanation of Baseline" Margin="0,20,0,0"/>
+
+                        <TextBlock TextWrapping="Wrap" Margin="0,10,0,0">
+                            The baseline is determined based on data points, where the number per minute may vary. 
+                            You can compare it to one row in a .CSV file: each row represents one data point.
+                        </TextBlock>
                     </StackPanel>
+
                 </ScrollViewer>
             </TabItem>
             
