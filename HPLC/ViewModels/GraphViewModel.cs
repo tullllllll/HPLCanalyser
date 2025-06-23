@@ -126,19 +126,42 @@ public class GraphViewModel : INotifyPropertyChanged
         }
     }
 
-    private int _pointsForBaseline = 90;
-
-    public int PointsForBaseline
+    private int _startpointBaseline = 0;
+    public int StartpointBaseline
     {
-        get => _pointsForBaseline;
+        get => _startpointBaseline;
         set
         {
-            if (_pointsForBaseline != value)
+            if (_startpointBaseline != value)
             {
-                _pointsForBaseline = value;
-                OnPropertyChanged(nameof(PointsForBaseline));
+                _startpointBaseline = value;
+                OnPropertyChanged(nameof(StartpointBaseline));
                 UpdateBaseline();
             }
+        }
+    }
+    
+    private int _endpointBaseline = 90;
+    public int EndpointBaseline
+    {
+        get => _endpointBaseline;
+        set
+        {
+            if (_endpointBaseline != value)
+            {
+                _endpointBaseline = value;
+                OnPropertyChanged(nameof(EndpointBaseline));
+                UpdateBaseline();
+            }
+        }
+    }
+    
+    public int PointsForBaseline
+    {
+        get => EndpointBaseline - StartpointBaseline;
+        set
+        {
+            return;
         }
     }
 

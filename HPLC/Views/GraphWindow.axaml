@@ -80,8 +80,9 @@
 
                             <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4">
                                 <StackPanel Orientation="Horizontal" Margin="5,0" Spacing="10">
-                                    <TextBlock Text="Points to Calculate baseline:" VerticalAlignment="Center"/>
-                                    <TextBox Width="100" Text="{Binding GraphViewModel.PointsForBaseline, Converter={StaticResource InputConverterHelper}, Mode=TwoWay, StringFormat='F0'}" />
+                                    <TextBlock Text="Range baseline (Datapoints):" VerticalAlignment="Center"/>
+                                    <TextBox Width="50" Text="{Binding GraphViewModel.StartpointBaseline, Converter={StaticResource InputConverterHelper}, Mode=TwoWay, StringFormat='F0'}" />
+                                    <TextBox Width="50" Text="{Binding GraphViewModel.EndpointBaseline, Converter={StaticResource InputConverterHelper}, Mode=TwoWay, StringFormat='F0'}" />
                                 </StackPanel>
                                 <CheckBox IsChecked="{Binding GraphViewModel.BaseLineIsVisible}" Content="Baseline"/>
                                 <CheckBox IsChecked="{Binding GraphViewModel.IsSelectionModeActive, Mode=TwoWay}" Content="Peak Creation Mode"/>
@@ -261,7 +262,7 @@
 
                                     <TextBlock Grid.Row="0" Grid.ColumnSpan="2" FontWeight="Bold" FontSize="22" Margin="0,0,0,15" HorizontalAlignment="Center" Text="Main" />
                                     <TextBlock Grid.Row="1" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Text="Name:" Margin="0,0,10,5"/>
-                                    <TextBlock Grid.Row="1" Grid.Column="1" FontSize="16" VerticalAlignment="Center" Text="{Binding DataSet.Name}" Margin="0,0,0,5"/>
+                                    <TextBox Grid.Row="1" Grid.Column="1" FontSize="16" VerticalAlignment="Center" HorizontalAlignment="Left" Text="{Binding DataSet.Name, Mode=TwoWay}" Width="120" Margin="0,0,0,5"/>
                                     
                                     <TextBlock Grid.Row="2" Grid.Column="0" FontSize="16" VerticalAlignment="Center" Text="Points:" Margin="0,0,10,5"/>
                                     <TextBlock Grid.Row="2" Grid.Column="1" FontSize="16" VerticalAlignment="Center" Text="{Binding DataSet.DataPoints.Count}" Margin="0,0,0,5"/>
