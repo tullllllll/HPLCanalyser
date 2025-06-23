@@ -203,11 +203,30 @@ public class GraphViewModel : INotifyPropertyChanged
     {
         var storage = window.StorageProvider;
 
-        var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions()
+        var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             SuggestedFileName = "output",
             DefaultExtension = "jpg",
             Title = "Save Image",
+            FileTypeChoices = new List<FilePickerFileType>
+            {
+                new FilePickerFileType("JPEG Image (*.jpg)")
+                {
+                    Patterns = new[] { "*.jpg" }
+                },
+                new FilePickerFileType("JPEG Image (*.jpeg)")
+                {
+                    Patterns = new[] { "*.jpeg" }
+                },
+                new FilePickerFileType("PNG Image (*.png)")
+                {
+                    Patterns = new[] { "*.png" }
+                },
+                new FilePickerFileType("All Files")
+                {
+                    Patterns = new[] { "*.*" }
+                }
+            }
         });
 
         if (file is not null)
@@ -228,11 +247,22 @@ public class GraphViewModel : INotifyPropertyChanged
     {
         var storage = window.StorageProvider;
 
-        var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions()
+        var file = await storage.SaveFilePickerAsync(new FilePickerSaveOptions
         {
             SuggestedFileName = DataSet.Name + " Peak Table",
             DefaultExtension = "csv",
             Title = "Save Peak Data to CSV",
+            FileTypeChoices = new List<FilePickerFileType>
+            {
+                new FilePickerFileType("CSV Files")
+                {
+                    Patterns = new[] { "*.csv" }
+                },
+                new FilePickerFileType("All Files")
+                {
+                    Patterns = new[] { "*.*" }
+                }
+            }
         });
 
         if (file is not null)

@@ -133,7 +133,7 @@ public class FileService
                 dataPoints.Add(new DataPoint()
                 {
                     Time = double.Parse(formattedLine[0], CultureInfo.InvariantCulture),
-                    Value = double.Parse(formattedLine[1], CultureInfo.InvariantCulture)/1000
+                    Value = double.Parse(formattedLine[1], CultureInfo.InvariantCulture)
                 });
             }
         }
