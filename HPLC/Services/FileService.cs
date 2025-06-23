@@ -102,6 +102,12 @@ public class FileService
             string datapointString = fileContent.Substring(fileContent.ToLower().LastIndexOf("intensity", StringComparison.Ordinal) + 9);
             var dataPoints = FormatFileContent(datapointString,type);
 
+            if (dataPoints == null || dataPoints.Any() == false)
+            {
+                ErrorService.CreateWindow("Invalid File content");
+                return false;
+            }
+            
             _dataSetService.Add(new DataSet()
             {
                 Name = Path.GetFileNameWithoutExtension(fileName),
