@@ -141,7 +141,7 @@ public class GraphViewModel : INotifyPropertyChanged
         }
     }
     
-    private double _endpointBaseline = 90;
+    private double _endpointBaseline = 1.5;
     public double EndpointBaseline
     {
         get => _endpointBaseline;
