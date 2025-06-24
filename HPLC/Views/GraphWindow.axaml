@@ -80,7 +80,7 @@
 
                             <StackPanel Grid.Column="2" Orientation="Horizontal" HorizontalAlignment="Right" Spacing="4">
                                 <StackPanel Orientation="Horizontal" Margin="5,0" Spacing="10">
-                                    <TextBlock Text="Range baseline (Datapoints):" VerticalAlignment="Center"/>
+                                    <TextBlock Text="Range baseline (Min):" VerticalAlignment="Center"/>
                                     <TextBox Width="50" Text="{Binding GraphViewModel.StartpointBaseline, Converter={StaticResource InputConverterHelper}, Mode=TwoWay, StringFormat='F0'}" MaxLength="9" ToolTip.Tip="Start Point" />
                                     <TextBox Width="50" Text="{Binding GraphViewModel.EndpointBaseline, Converter={StaticResource InputConverterHelper}, Mode=TwoWay, StringFormat='F0'}" MaxLength="9" ToolTip.Tip="End Point"/>
                                 </StackPanel>
@@ -387,6 +387,19 @@
                                 </Grid>
                             </Border>
                         </Grid>
+                        
+                        <DockPanel LastChildFill="True" VerticalAlignment="Bottom" Margin="0,300" Tag="Legal stuff">
+                            <TextBlock DockPanel.Dock="Bottom" Text="©2025" HorizontalAlignment="Center" Margin="0,5"/>
+                            <TextBlock DockPanel.Dock="Bottom" Text="Commissioned by: Van Hall Larenstein, C. Postema" HorizontalAlignment="Center" Margin="0,5"/>
+                            <TextBlock DockPanel.Dock="Bottom" Text="Made by: T. van der Velde, C. van der Bos, Y. de Vries" HorizontalAlignment="Center" Margin="0,5"/>
+                            
+                            
+                            <StackPanel DockPanel.Dock="Bottom" Orientation="Horizontal" HorizontalAlignment="Center" Margin="0,5">
+                                <Image Height="120" Width="120" Source="avares://HPLC/Assets/NHL.png" Margin="0,0,10,0" />
+                                <Image Height="120" Width="120" Source="avares://HPLC/Assets/NHLStudents.png" />
+                            </StackPanel>
+                        </DockPanel>
+
                     </StackPanel>
                 </ScrollViewer>
             </TabItem>
@@ -394,3 +407,4 @@
         </TabControl>
     </DockPanel>
 </UserControl>
+

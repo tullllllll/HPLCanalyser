@@ -126,8 +126,8 @@ public class GraphViewModel : INotifyPropertyChanged
         }
     }
 
-    private int _startpointBaseline = 0;
-    public int StartpointBaseline
+    private double _startpointBaseline = 0;
+    public double StartpointBaseline
     {
         get => _startpointBaseline;
         set
@@ -141,8 +141,8 @@ public class GraphViewModel : INotifyPropertyChanged
         }
     }
     
-    private int _endpointBaseline = 90;
-    public int EndpointBaseline
+    private double _endpointBaseline = 90;
+    public double EndpointBaseline
     {
         get => _endpointBaseline;
         set
@@ -156,7 +156,7 @@ public class GraphViewModel : INotifyPropertyChanged
         }
     }
     
-    public int PointsForBaseline
+    public double PointsForBaseline
     {
         get => EndpointBaseline - StartpointBaseline;
         set
@@ -470,7 +470,7 @@ public class GraphViewModel : INotifyPropertyChanged
 
         var dataPoints = DataSet.DataPoints.ToList();
         double dTime = dataPoints[1].Time - dataPoints[0].Time;
-        _baseline = Baseline.CalculateBaseline(dataPoints, dTime, PointsForBaseline);
+        _baseline = Baseline.CalculateBaseline(dataPoints, dTime, PointsForBaseline,(int)Math.Floor(StartpointBaseline/dTime));
         
         OnPropertyChanged(nameof(SeriesCollection));
         DrawThemPeaks(Threshold, MinPeakWidth);
@@ -605,7 +605,7 @@ public class GraphViewModel : INotifyPropertyChanged
     {
         var dataPoints = DataSet.DataPoints.ToList();
         double dTime = dataPoints[1].Time - dataPoints[0].Time;
-        _baseline = Baseline.CalculateBaseline(dataPoints, dTime, PointsForBaseline);
+        _baseline = Baseline.CalculateBaseline(dataPoints, dTime, PointsForBaseline,(int)Math.Floor(StartpointBaseline/dTime));
         
         DrawThemPeaks(Threshold, MinPeakWidth);
         

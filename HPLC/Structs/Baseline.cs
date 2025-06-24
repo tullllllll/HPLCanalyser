@@ -16,8 +16,9 @@ public struct Baseline
         A = a;
         B = b;
     }
-    public static Baseline CalculateBaseline(List<DataPoint> dataPoints, double dTime, int pointsToUse)
+    public static Baseline CalculateBaseline(List<DataPoint> dataPoints, double dTime, double timeRange, int firstPoint)
     {
+        int pointsToUse = (int)Math.Floor(timeRange/dTime);
         if (dataPoints.Count < pointsToUse)
         {
             return new Baseline(0, 0); // fallback: flat line
@@ -40,9 +41,9 @@ public struct Baseline
         }
         
         // Get the three average points
-        var (x1, y1) = Avg(0);    // First 30
-        var (x2, y2) = Avg(thirdSlice);   // Second 30
-        var (x3, y3) = Avg(thirdSlice*2);   // Third 30
+        var (x1, y1) = Avg(firstPoint);    // First 30
+        var (x2, y2) = Avg(firstPoint+thirdSlice);   // Second 30
+        var (x3, y3) = Avg(firstPoint+thirdSlice*2);   // Third 30
 
         // Fit a line using linear regression on the three points
         double[] xs = { x1, x2, x3 };

@@ -79,6 +79,8 @@
     <AvaloniaResource Include="Assets\logo.png" />
     <AvaloniaResource Include="Assets\download-image-icon.png" />
     <AvaloniaResource Include="Assets\export_data.png" />
+    <AvaloniaResource Include="Assets\NHL.png" />
+    <AvaloniaResource Include="Assets\NHLStudents.png" />
   </ItemGroup>
 
 </Project>
